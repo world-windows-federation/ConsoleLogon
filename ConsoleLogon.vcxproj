@@ -148,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="sdk\inc\consoleuiview.h" />
     <ClInclude Include="sdk\inc\logoninterfaces.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\consoleuimanager.h" />

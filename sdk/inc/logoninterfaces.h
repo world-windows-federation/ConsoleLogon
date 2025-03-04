@@ -93,6 +93,14 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_SerializationIcon(CredentialProviderStatusIcon*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(HSTRING*) PURE;
 		};
+
+		struct IComboBoxField : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_Items(WF::Collections::IObservableVector<HSTRING> **) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_SelectedIndex(int*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_SelectedIndex(int) PURE;
+		};
+
 	}
 
 	namespace Controller
