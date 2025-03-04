@@ -337,3 +337,15 @@ namespace Windows::Internal::UI::Logon
 		};
 	}
 }
+
+struct IDispatchNotification : public IUnknown
+{
+	virtual void STDMETHODCALLTYPE Dispatch() PURE;
+};
+
+struct INotificationDispatcher : public IUnknown
+{
+	virtual HRESULT STDMETHODCALLTYPE QueueNotification(IDispatchNotification*) PURE;
+	virtual void STDMETHODCALLTYPE StartProcessingNotifications() PURE;
+	virtual void STDMETHODCALLTYPE StopProcessingNotifications() PURE;
+};
