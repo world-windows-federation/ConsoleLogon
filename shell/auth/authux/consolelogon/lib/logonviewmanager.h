@@ -9,8 +9,8 @@ class LogonViewManager
 		ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::CredProvDataModel*, 
 		Windows::Internal::UI::Logon::CredProvData::CredentialSerialization*>, 
 		ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::CredProvDataModel*, 
-		enum Windows::Internal::UI::Logon::CredProvData::BioFeedbackState>, 
-		ABI::Windows::Foundation::ITypedEventHandler<IInspectable*, IInspectable*>, Windows::Foundation::Collections::VectorChangedEventHandler<IInspectable*>,
+		Windows::Internal::UI::Logon::CredProvData::BioFeedbackState>, 
+		ABI::Windows::Foundation::ITypedEventHandler<IInspectable*, IInspectable*>, ABI::Windows::Foundation::Collections::VectorChangedEventHandler<IInspectable*>,
 		ABI::Windows::Foundation::Collections::VectorChangedEventHandler<Windows::Internal::UI::Logon::CredProvData::Credential*>,
 		ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::Credential*, IInspectable*>,
 		INavigationCallback, 
@@ -20,8 +20,8 @@ public:
 	LogonViewManager();
 	HRESULT RuntimeClassInitialize();
 	HRESULT Invoke(struct Windows::Internal::UI::Logon::CredProvData::ICredential*, struct IInspectable*);
-	HRESULT Invoke(struct Windows::Foundation::Collections::IObservableVector<Windows::Internal::UI::Logon::CredProvData::Credential*>*, struct Windows::Foundation::Collections::IVectorChangedEventArgs*);
-	HRESULT Invoke(struct Windows::Foundation::Collections::IObservableVector<IInspectable*>*, struct Windows::Foundation::Collections::IVectorChangedEventArgs*);
+	HRESULT Invoke(struct ABI::Windows::Foundation::Collections::IObservableVector<Windows::Internal::UI::Logon::CredProvData::Credential*>*, struct ABI::Windows::Foundation::Collections::IVectorChangedEventArgs*);
+	HRESULT Invoke(struct ABI::Windows::Foundation::Collections::IObservableVector<IInspectable*>*, struct ABI::Windows::Foundation::Collections::IVectorChangedEventArgs*);
 	HRESULT Invoke(struct IInspectable*, struct IInspectable*);
 	HRESULT Invoke(struct Windows::Internal::UI::Logon::CredProvData::ICredProvDataModel*, enum Windows::Internal::UI::Logon::CredProvData::BioFeedbackState);
 	HRESULT Invoke(struct Windows::Internal::UI::Logon::CredProvData::ICredProvDataModel*, struct Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization*);

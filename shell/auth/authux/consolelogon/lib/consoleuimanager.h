@@ -3,7 +3,6 @@
 #include <wil/com.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
-
 #include "consoleuiview.h"
 #include "logoninterfaces.h"
 
@@ -20,7 +19,7 @@ public:
 protected:
 	~ConsoleUIManager();
 
-	HRESULT SetActiveView(Windows::Internal::UI::Logon::ConsoleUIView::IConsoleUIView*);
+	HRESULT SetActiveView(IConsoleUIView*);
 	HRESULT EnsureUIStarted();
 
 	Microsoft::WRL::ComPtr<INotificationDispatcher> m_Dispatcher;
@@ -29,7 +28,7 @@ private:
 	HRESULT HandleIncomingInput(INPUT_RECORD);
 	HRESULT HandleKeyboardInput(KEY_EVENT_RECORD);
 
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::ConsoleUIView::IConsoleUIViewInternal> m_activeView;
+	Microsoft::WRL::ComPtr<IConsoleUIViewInternal> m_activeView;
 
 	static DWORD WINAPI s_UIThreadHostStartThreadProc(void*);
 	HRESULT UIThreadHostStartThreadProc();
