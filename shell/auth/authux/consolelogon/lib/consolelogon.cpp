@@ -142,7 +142,7 @@ HRESULT ConsoleLogon::Start(
 	Wrappers::SRWLock::SyncLockExclusive lock = m_Lock.LockExclusive();
 	RETURN_IF_FAILED(MakeAndInitialize<LogonViewManager>(&m_consoleUIManager)); // 102
 
-	RETURN_IF_FAILED(ConsoleUIManager::StartUI()); // 104
+	RETURN_IF_FAILED(m_consoleUIManager->StartUI()); // 104
 
 	RETURN_IF_FAILED(m_consoleUIManager->SetContext(autoLogonManager, userSettingManager, redirectionManager, displayStateProvider, bioFeedbackListener)); // 106
 	return S_OK;
