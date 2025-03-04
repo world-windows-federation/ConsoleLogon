@@ -17,13 +17,13 @@ namespace Windows::Internal::UI::Logon
 {
 	namespace CredProvData
 	{
-		enum class UserAccountKind
+		enum UserAccountKind
 		{
-			Unknown = 0,
-			Local = 1,
-			Domain = 2,
-			Connected = 3,
-			CloudDomain = 4,
+			UserAccountKind_Unknown = 0,
+			UserAccountKind_Local = 1,
+			UserAccountKind_Domain = 2,
+			UserAccountKind_Connected = 3,
+			UserAccountKind_CloudDomain = 4,
 		};
 
 		struct ITelemetryDataProvider : IInspectable
@@ -32,21 +32,21 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_CurrentLogonUIRequestReason(DWORD*) PURE;
 		};
 
-		enum class DisplayStateFlags
+		enum DisplayStateFlags
 		{
-			None = 0,
-			DisplayOn = 1,
-			DisplayDim = 2,
-			LockScreenVisible = 4,
-			LockScreenManipulated = 8,
-			AppOnLockScreen = 0x10,
-			UserSwitching = 0x20,
-			SessionLocked = 0x40,
-			AcceptingCreds = 0x80,
-			LidClosed = 0x100,
-			DelayLocked = 0x200,
-			LoggedOut = 0x400,
-			ResumeFromHibernateOrScreenSaver = 0x800,
+			DisplayStateFlags_None = 0,
+			DisplayStateFlags_DisplayOn = 1,
+			DisplayStateFlags_DisplayDim = 2,
+			DisplayStateFlags_LockScreenVisible = 4,
+			DisplayStateFlags_LockScreenManipulated = 8,
+			DisplayStateFlags_AppOnLockScreen = 0x10,
+			DisplayStateFlags_UserSwitching = 0x20,
+			DisplayStateFlags_SessionLocked = 0x40,
+			DisplayStateFlags_AcceptingCreds = 0x80,
+			DisplayStateFlags_LidClosed = 0x100,
+			DisplayStateFlags_DelayLocked = 0x200,
+			DisplayStateFlags_LoggedOut = 0x400,
+			DisplayStateFlags_ResumeFromHibernateOrScreenSaver = 0x800,
 		};
 
 		DEFINE_ENUM_FLAG_OPERATORS(DisplayStateFlags);
@@ -58,32 +58,32 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE remove_DisplayStateChanged(EventRegistrationToken) PURE;
 		};
 
-		enum class BioFeedbackState
+		enum BioFeedbackState
 		{
-			None = 0,
-			Error = 1,
-			PowerOn = 2,
-			Searching = 3,
-			Authenticated = 4,
-			TooFar = 5,
-			TooClose = 6,
-			MessageOnly = 7,
+			BioFeedbackState_None = 0,
+			BioFeedbackState_Error = 1,
+			BioFeedbackState_PowerOn = 2,
+			BioFeedbackState_Searching = 3,
+			BioFeedbackState_Authenticated = 4,
+			BioFeedbackState_TooFar = 5,
+			BioFeedbackState_TooClose = 6,
+			BioFeedbackState_MessageOnly = 7,
 		};
 
-		enum class SerializationResponse
+		enum SerializationResponse
 		{
-			NoCredentialIncomplete = 0,
-			NoCredentialComplete = 1,
-			ReturnCredentialComplete = 2,
-			ReturnNoCredentialComplete = 3,
+			SerializationResponse_NoCredentialIncomplete = 0,
+			SerializationResponse_NoCredentialComplete = 1,
+			SerializationResponse_ReturnCredentialComplete = 2,
+			SerializationResponse_ReturnNoCredentialComplete = 3,
 		};
 
-		enum class CredentialProviderStatusIcon
+		enum CredentialProviderStatusIcon
 		{
-			None = 0,
-			Error = 1,
-			Warning = 2,
-			Success = 3,
+			CredentialProviderStatusIcon_None = 0,
+			CredentialProviderStatusIcon_Error = 1,
+			CredentialProviderStatusIcon_Warning = 2,
+			CredentialProviderStatusIcon_Success = 3,
 		};
 
 		struct ICredentialSerialization : IInspectable
@@ -105,23 +105,23 @@ namespace Windows::Internal::UI::Logon
 
 	namespace Controller
 	{
-		enum class LogonErrorRedirectorResponse
+		enum LogonErrorRedirectorResponse
 		{
-			Invalid = 0,
-			NotHandled = 1,
-			HandledShowLocally = 2,
-			HandledDoNotShowLocally = 3,
-			HandledDoNotShowLocallyStartOver = 4,
+			LogonErrorRedirectorResponse_Invalid = 0,
+			LogonErrorRedirectorResponse_NotHandled = 1,
+			LogonErrorRedirectorResponse_HandledShowLocally = 2,
+			LogonErrorRedirectorResponse_HandledDoNotShowLocally = 3,
+			LogonErrorRedirectorResponse_HandledDoNotShowLocallyStartOver = 4,
 		};
 
-		enum class LogonUIRequestReason
+		enum LogonUIRequestReason
 		{
-			LogonUILogon = 0,
-			LogonUIUnlock = 1,
-			LogonUIChange = 2,
-			LogonUISessionRecovery = 3,
-			LogonUIAlternate = 4,
-			CredUI = 5,
+			LogonUIRequestReason_LogonUILogon = 0,
+			LogonUIRequestReason_LogonUIUnlock = 1,
+			LogonUIRequestReason_LogonUIChange = 2,
+			LogonUIRequestReason_LogonUISessionRecovery = 3,
+			LogonUIRequestReason_LogonUIAlternate = 4,
+			LogonUIRequestReason_CredUI = 5,
 		};
 
 		struct IRedirectionManager : IInspectable
@@ -133,23 +133,23 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_IsRedirectMode(BOOLEAN*) PURE;
 		};
 
-		enum class UserTheme
+		enum UserTheme
 		{
-			Dark = 0,
-			HCDark = 1,
-			Light = 2,
-			HCLight = 3,
+			UserTheme_Dark = 0,
+			UserTheme_HCDark = 1,
+			UserTheme_Light = 2,
+			UserTheme_HCLight = 3,
 		};
 
-		enum class EmbeddedSKUPolicyFlags
+		enum EmbeddedSKUPolicyFlags
 		{
-			DisableAll = 0,
-			EnableShutdownOption = 0x1,
-			EnableLanguageOption = 0x2,
-			EnableEaseOfAccessOption = 0x4,
-			EnableBackButton = 0x10,
-			EnableBSDR = 0x20,
-			EnableAll = 0x3F,
+			EmbeddedSKUPolicyFlags_DisableAll = 0,
+			EmbeddedSKUPolicyFlags_EnableShutdownOption = 0x1,
+			EmbeddedSKUPolicyFlags_EnableLanguageOption = 0x2,
+			EmbeddedSKUPolicyFlags_EnableEaseOfAccessOption = 0x4,
+			EmbeddedSKUPolicyFlags_EnableBackButton = 0x10,
+			EmbeddedSKUPolicyFlags_EnableBSDR = 0x20,
+			EmbeddedSKUPolicyFlags_EnableAll = 0x3F,
 		};
 
 		DEFINE_ENUM_FLAG_OPERATORS(EmbeddedSKUPolicyFlags);
@@ -197,12 +197,12 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE CheckCompletion() PURE;
 		};
 
-		enum class LogonUIFlags
+		enum LogonUIFlags
 		{
-			None = 0x0,
-			SecureGestureDisabled = 0x1,
-			PasswordExpired = 0x2,
-			AllowDirectUserSwitching = 0x4,
+			LogonUIFlags_None = 0x0,
+			LogonUIFlags_SecureGestureDisabled = 0x1,
+			LogonUIFlags_PasswordExpired = 0x2,
+			LogonUIFlags_AllowDirectUserSwitching = 0x4,
 		};
 
 		DEFINE_ENUM_FLAG_OPERATORS(LogonUIFlags);
@@ -212,39 +212,39 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE OnBioFeedbackUpdate(CredProvData::BioFeedbackState, HSTRING) PURE;
 		};
 
-		enum class LogonMessageMode
+		enum LogonMessageMode
 		{
-			None = 0,
-			Message = 1,
-			LogonError = 2,
-			NoCredentialNotFinished = 3,
-			NoCredentialFinished = 4,
-			EmergencyRestart = 5,
-			TerminalServiceDisconnectOptions = 6,
-			CredentialConnecting = 7,
+			LogonMessageMode_None = 0,
+			LogonMessageMode_Message = 1,
+			LogonMessageMode_LogonError = 2,
+			LogonMessageMode_NoCredentialNotFinished = 3,
+			LogonMessageMode_NoCredentialFinished = 4,
+			LogonMessageMode_EmergencyRestart = 5,
+			LogonMessageMode_TerminalServiceDisconnectOptions = 6,
+			LogonMessageMode_CredentialConnecting = 7,
 		};
 
-		enum class LogonUIState
+		enum LogonUIState
 		{
-			Start = 0,
-			Welcome = 1,
-			Logon = 2,
-			Authenticate = 3,
-			LoggingOn = 4,
-			LoggingOff = 5,
-			StandingBy = 6,
-			ShuttingDown = 7,
-			Restarting = 8,
+			LogonUIState_Start = 0,
+			LogonUIState_Welcome = 1,
+			LogonUIState_Logon = 2,
+			LogonUIState_Authenticate = 3,
+			LogonUIState_LoggingOn = 4,
+			LogonUIState_LoggingOff = 5,
+			LogonUIState_StandingBy = 6,
+			LogonUIState_ShuttingDown = 7,
+			LogonUIState_Restarting = 8,
 		};
 
-		enum class LogonUISecurityOptions
+		enum LogonUISecurityOptions
 		{
-			Cancel = 0x0,
-			Lock = 0x1,
-			LogOff = 0x2,
-			ChangePassword = 0x4,
-			TaskManager = 0x8,
-			SwitchUser = 0x10,
+			LogonUISecurityOptions_Cancel = 0x0,
+			LogonUISecurityOptions_Lock = 0x1,
+			LogonUISecurityOptions_LogOff = 0x2,
+			LogonUISecurityOptions_ChangePassword = 0x4,
+			LogonUISecurityOptions_TaskManager = 0x8,
+			LogonUISecurityOptions_SwitchUser = 0x10,
 		};
 
 		DEFINE_ENUM_FLAG_OPERATORS(LogonUISecurityOptions);
@@ -260,11 +260,11 @@ namespace Windows::Internal::UI::Logon
 
 		};
 
-		enum class LogonUICredProvResponse
+		enum LogonUICredProvResponse
 		{
-			LogonUIResponseDefault = 0,
-			LogonUIResponseRetry = 1,
-			LogonUIResponseAbort = 2,
+			LogonUICredProvResponse_LogonUIResponseDefault = 0,
+			LogonUICredProvResponse_LogonUIResponseRetry = 1,
+			LogonUICredProvResponse_LogonUIResponseAbort = 2,
 		};
 
 		struct IReportCredentialsData : IInspectable
@@ -286,21 +286,21 @@ namespace Windows::Internal::UI::Logon
 		{
 		};
 
-		enum class LogonUIShutdownChoice
+		enum LogonUIShutdownChoice
 		{
-			None = 0x0,
-			TurnOff = 0x1,
-			Restart = 0x2,
-			StandBy = 0x4,
-			AdvStandBy = 0x8,
-			Hibernate = 0x10,
-			EmergencyRestart = 0x20,
-			ForceCurrentSession = 0x40,
-			ForceOtherSessions = 0x80,
-			InstallUpdates = 0x100,
-			HybridMode = 0x200,
-			BootOptions = 0x400,
-			Disconnect = 0x800,
+			LogonUIShutdownChoice_None = 0x0,
+			LogonUIShutdownChoice_TurnOff = 0x1,
+			LogonUIShutdownChoice_Restart = 0x2,
+			LogonUIShutdownChoice_StandBy = 0x4,
+			LogonUIShutdownChoice_AdvStandBy = 0x8,
+			LogonUIShutdownChoice_Hibernate = 0x10,
+			LogonUIShutdownChoice_EmergencyRestart = 0x20,
+			LogonUIShutdownChoice_ForceCurrentSession = 0x40,
+			LogonUIShutdownChoice_ForceOtherSessions = 0x80,
+			LogonUIShutdownChoice_InstallUpdates = 0x100,
+			LogonUIShutdownChoice_HybridMode = 0x200,
+			LogonUIShutdownChoice_BootOptions = 0x400,
+			LogonUIShutdownChoice_Disconnect = 0x800,
 		};
 
 		DEFINE_ENUM_FLAG_OPERATORS(LogonUIShutdownChoice);
