@@ -12,7 +12,6 @@ namespace Windows::Internal::UI::Logon
 {
 	namespace ConsoleUIView
 	{
-
 		struct INavigationCallback : IUnknown
 		{
 			virtual HRESULT STDMETHODCALLTYPE OnNavigation() PURE;
