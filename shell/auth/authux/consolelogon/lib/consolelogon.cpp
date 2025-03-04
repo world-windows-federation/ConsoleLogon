@@ -1,49 +1,69 @@
 #include "pch.h"
+
 #include <wrl/implements.h>
 #include <wrl/wrappers/corewrappers.h>
+
 #include "logoninterfaces.h"
 
+using namespace Microsoft::WRL;
+
+using namespace ABI::Windows::Foundation;
+using namespace Windows::Internal::UI::Logon::Controller;
+using namespace Windows::Internal::UI::Logon::CredProvData;
+
 class DECLSPEC_UUID("00000000-0000-0000-0000-000000000000")
-ConsoleLogon 
-	: public Microsoft::WRL::RuntimeClass<
-		Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>, 
-		Windows::Internal::UI::Logon::Controller::ILogonUX, 
-		Microsoft::WRL::FtmBase>
+ConsoleLogon final
+	: public RuntimeClass<RuntimeClassFlags<WinRtClassicComMix>
+		, ILogonUX
+		, FtmBase
+	>
 {
 public:
 	WCHAR* InternalGetRuntimeClassName();
 	TrustLevel InternalGetTrustLevel();
-	HRESULT GetRuntimeClassName(HSTRING*);
-	HRESULT GetTrustLevel(TrustLevel*);
-	HRESULT GetIids(DWORD*, GUID**);
 
-	HRESULT QueryInterface(GUID&, void**);
-	unsigned long Release();
-	unsigned long AddRef();
+	//~ Begin IInspectable Interface
+	STDMETHODIMP GetRuntimeClassName(HSTRING* className) override;
+	STDMETHODIMP GetTrustLevel(TrustLevel* trustLevel) override;
+	STDMETHODIMP GetIids(ULONG* iidCount, GUID** iids) override;
+	//~ End IInspectable Interface
+
+	//~ Begin IUnknown Interface
+	STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override;
+	STDMETHODIMP_(ULONG) Release() override;
+	STDMETHODIMP_(ULONG) AddRef() override;
+	//~ End IUnknown Interface
 
 	ConsoleLogon();
+
+	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize();
-	HRESULT Start(IInspectable*, Windows::Internal::UI::Logon::Controller::IRedirectionManager*, Windows::Internal::UI::Logon::Controller::IUserSettingManager*, Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider*, Windows::Internal::UI::Logon::Controller::IBioFeedbackListener*);
-	HRESULT DelayLock(bool, Windows::Internal::UI::Logon::Controller::IUnlockTrigger*);
-	HRESULT HardLock(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, BYTE, Windows::Internal::UI::Logon::Controller::IUnlockTrigger*);
-	HRESULT RequestCredentialsAsync(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, Windows::Internal::UI::Logon::Controller::LogonUIFlags, ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::RequestCredentialsData*>**);
-	HRESULT ReportCredentialsAsync(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, long, long, HSTRING, HSTRING, HSTRING, ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::ReportCredentialsData*>**);
-	HRESULT DisplayMessageAsync(Windows::Internal::UI::Logon::Controller::LogonMessageMode, unsigned int, HSTRING, HSTRING, ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::MessageDisplayResult*>**);
-	HRESULT DisplayCredentialErrorAsync(long, long, unsigned int, HSTRING, HSTRING, ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::MessageDisplayResult*>**);
-	HRESULT DisplayStatusAsync(Windows::Internal::UI::Logon::Controller::LogonUIState, HSTRING, ABI::Windows::Foundation::IAsyncAction**);
-	HRESULT TriggerLogonAnimationAsync(ABI::Windows::Foundation::IAsyncAction**);
-	HRESULT ResetCredentials();
-	HRESULT RestoreFromFirstSignInAnimation();
-	HRESULT ClearUIState(HSTRING);
-	HRESULT ShowSecurityOptionsAsync(Windows::Internal::UI::Logon::Controller::LogonUISecurityOptions, ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::LogonUISecurityOptionsResult*>**);
-	HRESULT get_WindowContainer(IInspectable**);
-	HRESULT Hide();
-	HRESULT Stop();
+
+	//~ Begin Windows::Internal::UI::Logon::Controller::ILogonUX Interface
+	STDMETHODIMP Start(IInspectable*, IRedirectionManager*, IUserSettingManager*, IDisplayStateProvider*, IBioFeedbackListener*) override;
+	STDMETHODIMP DelayLock(BOOLEAN, IUnlockTrigger*) override;
+	STDMETHODIMP HardLock(LogonUIRequestReason, BYTE, IUnlockTrigger*) override;
+	STDMETHODIMP RequestCredentialsAsync(LogonUIRequestReason, LogonUIFlags, IAsyncOperation<RequestCredentialsData*>**) override;
+	STDMETHODIMP ReportCredentialsAsync(LogonUIRequestReason, long, long, HSTRING, HSTRING, HSTRING, IAsyncOperation<ReportCredentialsData*>**) override;
+	STDMETHODIMP DisplayMessageAsync(LogonMessageMode, UINT, HSTRING, HSTRING, IAsyncOperation<MessageDisplayResult*>**) override;
+	STDMETHODIMP DisplayCredentialErrorAsync(long, long, UINT, HSTRING, HSTRING, IAsyncOperation<MessageDisplayResult*>**) override;
+	STDMETHODIMP DisplayStatusAsync(LogonUIState, HSTRING, IAsyncAction**) override;
+	STDMETHODIMP TriggerLogonAnimationAsync(IAsyncAction**) override;
+	STDMETHODIMP ResetCredentials() override;
+	STDMETHODIMP RestoreFromFirstSignInAnimation() override;
+	STDMETHODIMP ClearUIState(HSTRING) override;
+	STDMETHODIMP ShowSecurityOptionsAsync(LogonUISecurityOptions, IAsyncOperation<LogonUISecurityOptionsResult*>**) override;
+	STDMETHODIMP get_WindowContainer(IInspectable**) override;
+	STDMETHODIMP Hide() override;
+	STDMETHODIMP Stop() override;
+	//~ End Windows::Internal::UI::Logon::Controller::ILogonUX Interface
 
 private:
-	~ConsoleLogon();
+	~ConsoleLogon() override;
+
 	HRESULT CheckUIStarted();
-	HRESULT Lock(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, bool, Windows::Internal::UI::Logon::Controller::IUnlockTrigger*);
-	Microsoft::WRL::Wrappers::SRWLock m_Lock;
-	//class Microsoft::WRL::ComPtr<LogonViewManager> m_consoleUIManager;
+	HRESULT Lock(LogonUIRequestReason, bool, IUnlockTrigger*);
+
+	Wrappers::SRWLock m_Lock;
+	//ComPtr<LogonViewManager> m_consoleUIManager;
 };
