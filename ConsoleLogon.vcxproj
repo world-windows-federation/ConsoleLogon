@@ -132,6 +132,9 @@
   <ItemGroup>
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="shell\auth\authux\consolelogon\dll\consolelogon.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

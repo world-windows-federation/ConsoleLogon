@@ -1,0 +1,11 @@
+#include <windows.h>
+
+#include <ntverp.h>
+#define VER_FILETYPE                    VFT_DLL
+#define VER_FILESUBTYPE                 VFT_UNKNOWN
+#define VER_COMPANYNAME_STR             "Microsoft Corporation"
+#define VER_PRODUCTNAME_STR             "Microsoft\xAE Windows\xAE Operating System"
+#define VER_FILEDESCRIPTION_STR         "Console Logon User Experience"
+#define VER_INTERNALNAME_STR            "ConsoleLogon.dll"
+#define VER_ORIGINALFILENAME_STR        "ConsoleLogon.dll"
+#include <common.ver>
