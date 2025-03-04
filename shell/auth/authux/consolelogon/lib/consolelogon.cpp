@@ -4,6 +4,7 @@
 #include <wrl/wrappers/corewrappers.h>
 
 #include "logoninterfaces.h"
+#include "logonviewmanager.h"
 
 using namespace Microsoft::WRL;
 

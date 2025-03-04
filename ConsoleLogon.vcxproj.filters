@@ -32,6 +32,12 @@
     <ClInclude Include="sdk\inc\logoninterfaces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\logonviewmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\consoleuimanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="shell\auth\authux\consolelogon\dll\consolelogon.rc">
@@ -42,5 +48,6 @@
     <None Include="shell\auth\authux\consolelogon\dll\ConsoleLogon.def">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
