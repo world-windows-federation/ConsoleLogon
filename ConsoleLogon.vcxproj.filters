@@ -32,4 +32,9 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shell\auth\authux\consolelogon\dll\ConsoleLogon.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
