@@ -137,18 +137,18 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_TileStream(struct ABI::Windows::Storage::Streams::IRandomAccessStream**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_TileStreamType(enum Windows::Internal::UI::Logon::CredProvData::TileStreamType*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Size(enum Windows::Internal::UI::Logon::CredProvData::UserTileImageSize*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_TilePath(struct HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_TilePath(HSTRING*) PURE;
 		};
 
 		struct IUser : public IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_IsLoggedIn(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsBuiltInGuest(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_DisplayName(struct HSTRING__**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_LogonStatus(struct HSTRING__**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_EmailAddress(struct HSTRING__**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_QualifiedUsername(struct HSTRING__**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_Sid(struct HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_DisplayName(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_LogonStatus(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_EmailAddress(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_QualifiedUsername(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Sid(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LargeUserTileImage(struct Windows::Internal::UI::Logon::CredProvData::IUserTileImage**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SmallUserTileImage(struct Windows::Internal::UI::Logon::CredProvData::IUserTileImage**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_ImageChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::User*, IInspectable*>*, struct EventRegistrationToken*) PURE;
@@ -247,7 +247,7 @@ namespace Windows::Internal::UI::Logon
 
 		struct ICredentialField : public IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_Label(struct HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Label(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInSelectedTile(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInDeselectedTile(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsHidden(unsigned char*) PURE;
@@ -255,7 +255,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateDisabled(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateReadOnly(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Kind(enum Windows::Internal::UI::Logon::CredProvData::CredentialFieldKind*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_ID(unsigned int*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ID(UINT*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_FieldChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::ICredentialField*, enum Windows::Internal::UI::Logon::CredProvData::CredentialFieldChangeKind>*, struct EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_FieldChanged(struct EventRegistrationToken) PURE;
 		};
@@ -277,7 +277,7 @@ namespace Windows::Internal::UI::Logon
 		struct ISerializationProgressInfo : public IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Status(enum Windows::Internal::UI::Logon::CredProvData::ConnectionStatus*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(struct HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(HSTRING*) PURE;
 
 		};
 
@@ -297,7 +297,7 @@ namespace Windows::Internal::UI::Logon
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Fields(struct ABI::Windows::Foundation::Collections::IVectorView<Windows::Internal::UI::Logon::CredProvData::ICredentialField*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LogoImageField(struct Windows::Internal::UI::Logon::CredProvData::ICredentialField**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_LogoLabel(struct HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_LogoLabel(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonAdjacentID(int*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SubmitButtonChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::Credential*, int>*, struct EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SubmitButtonChanged(struct EventRegistrationToken) PURE;
@@ -305,7 +305,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE add_SubmitButtonEnabledChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::Credential*, bool>*, struct EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SubmitButtonEnabledChanged(struct EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsPicturePassword(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_ProviderId(struct _GUID*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ProviderId(GUID*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_UIMode(enum Windows::Internal::UI::Logon::CredProvData::CredentialUIMode*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsSelected(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonField(struct Windows::Internal::UI::Logon::CredProvData::ICredentialField**) PURE;
@@ -418,11 +418,11 @@ namespace Windows::Internal::UI::Logon
 
 		struct IReportResultInfo : public IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_ProviderCLSID(struct _GUID*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ProviderCLSID(GUID*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_StatusCode(long*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SubstatusCode(long*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_StatusIcon(enum Windows::Internal::UI::Logon::CredProvData::CredentialProviderStatusIcon*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(struct HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(HSTRING*) PURE;
 		};
 
 		class ReportResultInfo : /*public Platform::Object,*/ public IReportResultInfo
@@ -449,7 +449,7 @@ namespace Windows::Internal::UI::Logon
 		struct ICredProvDataModel : public IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario, unsigned short, enum Windows::Internal::UI::Logon::CredProvData::SelectionMode, struct ABI::Windows::Foundation::IAsyncAction**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE InitializeWithContextAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario, unsigned short, enum Windows::Internal::UI::Logon::CredProvData::SelectionMode, unsigned int, unsigned char, struct IInspectable*, struct _GUID, struct ABI::Windows::Storage::Streams::IBuffer*, struct ABI::Windows::Foundation::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE InitializeWithContextAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario, unsigned short, enum Windows::Internal::UI::Logon::CredProvData::SelectionMode, UINT, unsigned char, struct IInspectable*, GUID, struct ABI::Windows::Storage::Streams::IBuffer*, struct ABI::Windows::Foundation::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectionMode(enum Windows::Internal::UI::Logon::CredProvData::SelectionMode*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectionMode(enum Windows::Internal::UI::Logon::CredProvData::SelectionMode) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Users(struct ABI::Windows::Foundation::Collections::IObservableVector<Windows::Internal::UI::Logon::CredProvData::User*>**) PURE;
@@ -480,10 +480,10 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE add_SerializationComplete(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::CredProvDataModel*, Windows::Internal::UI::Logon::CredProvData::CredentialSerialization*>*, struct EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SerializationComplete(struct EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_CurrentBioFeedbackState(enum Windows::Internal::UI::Logon::CredProvData::BioFeedbackState*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_BioFeedbackLabel(struct HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_BioFeedbackLabel(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_BioFeedbackStateChange(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::CredProvDataModel*, enum Windows::Internal::UI::Logon::CredProvData::BioFeedbackState>*, struct EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_BioFeedbackStateChange(struct EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE ReportResultAsync(long, long, struct HSTRING__*, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::CredProvData::ReportResultInfo*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ReportResultAsync(long, long, HSTRING, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::CredProvData::ReportResultInfo*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ClearState() PURE;
 			virtual HRESULT STDMETHODCALLTYPE ResetAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario, struct ABI::Windows::Foundation::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ResetSelection() PURE;
@@ -558,12 +558,25 @@ namespace Windows::Internal::UI::Logon
 			//public:
 			//	void DisconnectCredentials();
 			//	struct ABI::Windows::Foundation::IAsyncAction* InitializeAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario, unsigned short, enum Windows::Internal::UI::Logon::CredProvData::SelectionMode);
-			//	struct ABI::Windows::Foundation::IAsyncAction* InitializeWithContextAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario, unsigned short, enum Windows::Internal::UI::Logon::CredProvData::SelectionMode, unsigned int, bool, void/*class Platform::Object*/*, class Platform::Guid, struct Windows::Storage::Streams::IBuffer*);
+			//	struct ABI::Windows::Foundation::IAsyncAction* InitializeWithContextAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario, unsigned short, enum Windows::Internal::UI::Logon::CredProvData::SelectionMode, UINT, bool, void/*class Platform::Object*/*, class Platform::Guid, struct Windows::Storage::Streams::IBuffer*);
 			//	struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::CredProvData::ReportResultInfo* /*originally a ^ for c++/cx, made a ptr for now*/>* ReportResultAsync(int, int, void/*class Platform::String*/*);
 			//	void ClearState();
 			//	struct ABI::Windows::Foundation::IAsyncAction* ResetAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario);
 			//	void ResetSelection();
 			//	void Shutdown();
+		};
+
+		struct ICredentialGroup : public IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_Credentials(struct ABI::Windows::Foundation::Collections::IObservableVector<Windows::Internal::UI::Logon::CredProvData::Credential*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_SelectedCredential(struct Windows::Internal::UI::Logon::CredProvData::ICredential**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_SelectedCredential(struct Windows::Internal::UI::Logon::CredProvData::ICredential*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_SelectedCredentialChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::Credential*, IInspectable*>*, struct EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_SelectedCredentialChanged(struct EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE RefreshSelection() PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsAutoSubmitPending(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_IsAutoSubmitPendingChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::ICredentialGroup*, IInspectable*>*, struct EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_IsAutoSubmitPendingChanged(struct EventRegistrationToken) PURE;
 		};
 	}
 
