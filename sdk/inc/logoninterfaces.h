@@ -25,13 +25,8 @@ namespace Windows::Internal::UI::Logon
 
 		struct ITelemetryDataProvider : public IInspectable
 		{
-			HRESULT GetUserAccountKind(struct HSTRING__*, enum Windows::Internal::UI::Logon::CredProvData::UserAccountKind*);
-			HRESULT get_CurrentLogonUIRequestReason(unsigned long*);
-			ITelemetryDataProvider(struct Windows::Internal::UI::Logon::CredProvData::ITelemetryDataProvider*);
-			ITelemetryDataProvider(struct Windows::Internal::UI::Logon::CredProvData::ITelemetryDataProvider&);
-			ITelemetryDataProvider();
-			struct Windows::Internal::UI::Logon::CredProvData::ITelemetryDataProvider& operator=(struct Windows::Internal::UI::Logon::CredProvData::ITelemetryDataProvider*);
-			struct Windows::Internal::UI::Logon::CredProvData::ITelemetryDataProvider& operator=(struct Windows::Internal::UI::Logon::CredProvData::ITelemetryDataProvider&);
+			virtual HRESULT STDMETHODCALLTYPE GetUserAccountKind(struct HSTRING__*, enum Windows::Internal::UI::Logon::CredProvData::UserAccountKind*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_CurrentLogonUIRequestReason(unsigned long*) PURE;
 		};
 
 		enum class DisplayStateFlags
@@ -53,14 +48,9 @@ namespace Windows::Internal::UI::Logon
 
 		struct IDisplayStateProvider : public IInspectable
 		{
-			HRESULT get_DisplayState(enum Windows::Internal::UI::Logon::CredProvData::DisplayStateFlags*);
-			HRESULT add_DisplayStateChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider*, enum Windows::Internal::UI::Logon::CredProvData::DisplayStateFlags>*, struct EventRegistrationToken*);
-			HRESULT remove_DisplayStateChanged(struct EventRegistrationToken);
-			IDisplayStateProvider(struct Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider*);
-			IDisplayStateProvider(struct Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider&);
-			IDisplayStateProvider();
-			struct Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider& operator=(struct Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider*);
-			struct Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider& operator=(struct Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider&);
+			virtual HRESULT STDMETHODCALLTYPE get_DisplayState(enum Windows::Internal::UI::Logon::CredProvData::DisplayStateFlags*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_DisplayStateChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider*, enum Windows::Internal::UI::Logon::CredProvData::DisplayStateFlags>*, struct EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_DisplayStateChanged(struct EventRegistrationToken) PURE;
 		};
 
 		enum class BioFeedbackState
@@ -93,15 +83,10 @@ namespace Windows::Internal::UI::Logon
 
 		struct ICredentialSerialization : public IInspectable
 		{
-			HRESULT get_CredentialId(unsigned int*);
-			HRESULT get_SerializationResponse(enum Windows::Internal::UI::Logon::CredProvData::SerializationResponse*);
-			HRESULT get_SerializationIcon(enum Windows::Internal::UI::Logon::CredProvData::CredentialProviderStatusIcon*);
-			HRESULT get_StatusMessage(struct HSTRING__**);
-			ICredentialSerialization(struct Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization*);
-			ICredentialSerialization(struct Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization&);
-			ICredentialSerialization();
-			struct Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization& operator=(struct Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization*);
-			struct Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization& operator=(struct Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization&);
+			virtual HRESULT STDMETHODCALLTYPE get_CredentialId(unsigned int*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_SerializationResponse(enum Windows::Internal::UI::Logon::CredProvData::SerializationResponse*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_SerializationIcon(enum Windows::Internal::UI::Logon::CredProvData::CredentialProviderStatusIcon*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(struct HSTRING__**) PURE;
 		};
 	}
 
@@ -128,16 +113,11 @@ namespace Windows::Internal::UI::Logon
 
 		struct IRedirectionManager : public IInspectable
 		{
-			HRESULT OnBeginPainting();
-			HRESULT RedirectStatus(struct HSTRING__*, Windows::Internal::UI::Logon::Controller::LogonErrorRedirectorResponse*);
-			HRESULT RedirectMessage(struct HSTRING__*, struct HSTRING__*, unsigned int, unsigned int*, enum Windows::Internal::UI::Logon::Controller::LogonErrorRedirectorResponse*);
-			HRESULT RedirectLogonError(long, long, struct HSTRING__*, struct HSTRING__*, unsigned int, unsigned int*, enum Windows::Internal::UI::Logon::Controller::LogonErrorRedirectorResponse*);
-			HRESULT get_IsRedirectMode(unsigned char*);
-			IRedirectionManager(struct Windows::Internal::UI::Logon::Controller::IRedirectionManager*);
-			IRedirectionManager(struct Windows::Internal::UI::Logon::Controller::IRedirectionManager&);
-			IRedirectionManager();
-			struct Windows::Internal::UI::Logon::Controller::IRedirectionManager& operator=(struct Windows::Internal::UI::Logon::Controller::IRedirectionManager*);
-			struct Windows::Internal::UI::Logon::Controller::IRedirectionManager& operator=(struct Windows::Internal::UI::Logon::Controller::IRedirectionManager&);
+			virtual HRESULT STDMETHODCALLTYPE OnBeginPainting() PURE;
+			virtual HRESULT STDMETHODCALLTYPE RedirectStatus(struct HSTRING__*, Windows::Internal::UI::Logon::Controller::LogonErrorRedirectorResponse*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE RedirectMessage(struct HSTRING__*, struct HSTRING__*, unsigned int, unsigned int*, enum Windows::Internal::UI::Logon::Controller::LogonErrorRedirectorResponse*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE RedirectLogonError(long, long, struct HSTRING__*, struct HSTRING__*, unsigned int, unsigned int*, enum Windows::Internal::UI::Logon::Controller::LogonErrorRedirectorResponse*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsRedirectMode(unsigned char*) PURE;
 		};
 
 		enum class UserTheme
@@ -161,55 +141,45 @@ namespace Windows::Internal::UI::Logon
 
 		struct IUserSettingManager : public IInspectable
 		{
-			HRESULT IsUserSwitchingAllowed(enum Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, unsigned char*);
-			HRESULT CancelUserSwitch();
-			HRESULT get_IsLoggedOnUserSidPresent(unsigned char*);
-			HRESULT get_LangID(unsigned short*);
-			HRESULT get_UserSid(struct HSTRING__**);
-			HRESULT put_UserSid(struct HSTRING__*);
-			HRESULT get_CaretWidth(int*);
-			HRESULT get_LastLoggedOnUserSid(struct HSTRING__**);
-			HRESULT get_TelemetryDataProvider(struct Windows::Internal::UI::Logon::CredProvData::ITelemetryDataProvider**);
-			HRESULT get_IsLockScreenAllowed(unsigned char*);
-			HRESULT put_IsLockScreenAllowed(unsigned char);
-			HRESULT get_UserTheme(enum Windows::Internal::UI::Logon::Controller::UserTheme*);
-			HRESULT get_IsLowMemoryDevice(unsigned char*);
-			HRESULT get_IsFirstLogonAfterSignOutOrSwitchUser(unsigned char*);
-			HRESULT get_EmbeddedSKUPolicy(enum Windows::Internal::UI::Logon::Controller::EmbeddedSKUPolicyFlags*);
-			HRESULT get_ShowAccentColorInsteadOfLogonBackgroundImage(unsigned char*);
-			HRESULT get_IsFirstBoot(unsigned char*);
-			HRESULT get_ShouldLaunchFirstLogonAnimation(unsigned char*);
-			HRESULT get_IsOobeZDPRebootRequired(unsigned char*);
-			HRESULT get_ShouldLaunchFirstSignInAnimationInUserSession(unsigned char*);
-			HRESULT put_ShouldLaunchFirstSignInAnimationInUserSession(unsigned char);
-			HRESULT get_IsAudioHIDEnabled(unsigned char*);
-			HRESULT add_SessionDisconnected(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*);
-			HRESULT remove_SessionDisconnected(struct EventRegistrationToken);
-			HRESULT add_ColorSetChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*);
-			HRESULT remove_ColorSetChanged(struct EventRegistrationToken);
-			HRESULT add_HighContrastChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*);
-			HRESULT remove_HighContrastChanged(struct EventRegistrationToken);
-			HRESULT add_CaretWidthChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*);
-			HRESULT remove_CaretWidthChanged(struct EventRegistrationToken);
-			HRESULT add_SlideToShutdownDetected(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*);
-			HRESULT remove_SlideToShutdownDetected(struct EventRegistrationToken);
-			IUserSettingManager(struct Windows::Internal::UI::Logon::Controller::IUserSettingManager*);
-			IUserSettingManager(struct Windows::Internal::UI::Logon::Controller::IUserSettingManager&);
-			IUserSettingManager();
-			struct Windows::Internal::UI::Logon::Controller::IUserSettingManager& operator=(struct Windows::Internal::UI::Logon::Controller::IUserSettingManager*);
-			struct Windows::Internal::UI::Logon::Controller::IUserSettingManager& operator=(struct Windows::Internal::UI::Logon::Controller::IUserSettingManager&);
+			virtual HRESULT STDMETHODCALLTYPE IsUserSwitchingAllowed(enum Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE CancelUserSwitch() PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLoggedOnUserSidPresent(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_LangID(unsigned short*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_UserSid(struct HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_UserSid(struct HSTRING__*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_CaretWidth(int*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_LastLoggedOnUserSid(struct HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_TelemetryDataProvider(struct Windows::Internal::UI::Logon::CredProvData::ITelemetryDataProvider**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLockScreenAllowed(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_IsLockScreenAllowed(unsigned char) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_UserTheme(enum Windows::Internal::UI::Logon::Controller::UserTheme*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLowMemoryDevice(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsFirstLogonAfterSignOutOrSwitchUser(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_EmbeddedSKUPolicy(enum Windows::Internal::UI::Logon::Controller::EmbeddedSKUPolicyFlags*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ShowAccentColorInsteadOfLogonBackgroundImage(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsFirstBoot(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ShouldLaunchFirstLogonAnimation(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsOobeZDPRebootRequired(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ShouldLaunchFirstSignInAnimationInUserSession(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_ShouldLaunchFirstSignInAnimationInUserSession(unsigned char) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsAudioHIDEnabled(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_SessionDisconnected(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_SessionDisconnected(struct EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_ColorSetChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_ColorSetChanged(struct EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_HighContrastChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_HighContrastChanged(struct EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_CaretWidthChanged(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_CaretWidthChanged(struct EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_SlideToShutdownDetected(struct ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::Controller::IUserSettingManager*, IInspectable*>*, struct EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_SlideToShutdownDetected(struct EventRegistrationToken) PURE;
 		};
 
 		struct IUnlockTrigger : public IInspectable
 		{
-			HRESULT TriggerUnlock();
-			HRESULT SyncBackstop();
-			HRESULT CheckCompletion();
-			IUnlockTrigger(struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger*);
-			IUnlockTrigger(struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger&);
-			IUnlockTrigger();
-			struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger& operator=(struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger*);
-			struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger& operator=(struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger&);
+			virtual HRESULT STDMETHODCALLTYPE TriggerUnlock() PURE;
+			virtual HRESULT STDMETHODCALLTYPE SyncBackstop() PURE;
+			virtual HRESULT STDMETHODCALLTYPE CheckCompletion() PURE;
 		};
 
 		enum class LogonUIFlags
@@ -222,12 +192,7 @@ namespace Windows::Internal::UI::Logon
 
 		struct IBioFeedbackListener : public IInspectable
 		{
-			HRESULT OnBioFeedbackUpdate(enum Windows::Internal::UI::Logon::CredProvData::BioFeedbackState, struct HSTRING__*);
-			IBioFeedbackListener(struct Windows::Internal::UI::Logon::Controller::IBioFeedbackListener*);
-			IBioFeedbackListener(struct Windows::Internal::UI::Logon::Controller::IBioFeedbackListener&);
-			IBioFeedbackListener();
-			struct Windows::Internal::UI::Logon::Controller::IBioFeedbackListener& operator=(struct Windows::Internal::UI::Logon::Controller::IBioFeedbackListener*);
-			struct Windows::Internal::UI::Logon::Controller::IBioFeedbackListener& operator=(struct Windows::Internal::UI::Logon::Controller::IBioFeedbackListener&);
+			virtual HRESULT STDMETHODCALLTYPE OnBioFeedbackUpdate(enum Windows::Internal::UI::Logon::CredProvData::BioFeedbackState, struct HSTRING__*) PURE;
 		};
 
 		enum class LogonMessageMode
@@ -267,13 +232,8 @@ namespace Windows::Internal::UI::Logon
 
 		struct IRequestCredentialsData : public IInspectable
 		{
-			HRESULT get_Credential(struct Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization**);
-			HRESULT get_SaveCredential(unsigned char*);
-			//IRequestCredentialsData(struct Windows::Internal::UI::Credentials::Controller::IRequestCredentialsData*);
-			//IRequestCredentialsData(struct Windows::Internal::UI::Credentials::Controller::IRequestCredentialsData&);
-			//IRequestCredentialsData();
-			//struct Windows::Internal::UI::Credentials::Controller::IRequestCredentialsData& operator=(struct Windows::Internal::UI::Credentials::Controller::IRequestCredentialsData*);
-			//struct Windows::Internal::UI::Credentials::Controller::IRequestCredentialsData& operator=(struct Windows::Internal::UI::Credentials::Controller::IRequestCredentialsData&);
+			virtual HRESULT STDMETHODCALLTYPE get_Credential(struct Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_SaveCredential(unsigned char*) PURE;
 		};
 
 		class RequestCredentialsData : public IRequestCredentialsData
@@ -290,8 +250,8 @@ namespace Windows::Internal::UI::Logon
 
 		struct IReportCredentialsData : IInspectable
 		{
-			HRESULT get_Message(HSTRING__**);
-			HRESULT get_Response(Windows::Internal::UI::Logon::Controller::LogonUICredProvResponse*);
+			virtual HRESULT STDMETHODCALLTYPE get_Message(HSTRING__**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Response(Windows::Internal::UI::Logon::Controller::LogonUICredProvResponse*) PURE;
 		};
 
 
@@ -301,7 +261,7 @@ namespace Windows::Internal::UI::Logon
 
 		struct IMessageDisplayResult : public IInspectable
 		{
-			HRESULT get_ResultCode(unsigned int*);
+			virtual HRESULT STDMETHODCALLTYPE get_ResultCode(unsigned int*) PURE;
 		};
 
 		class MessageDisplayResult : public IMessageDisplayResult
@@ -327,43 +287,33 @@ namespace Windows::Internal::UI::Logon
 
 		struct ILogonUISecurityOptionsResult : public IInspectable
 		{
-			HRESULT get_SecurityOptionChoice(enum Windows::Internal::UI::Logon::Controller::LogonUISecurityOptions*);
-			HRESULT get_ShutdownChoice(enum Windows::Internal::UI::Logon::Controller::LogonUIShutdownChoice*);
-
-			ILogonUISecurityOptionsResult(struct Windows::Internal::UI::Logon::Controller::ILogonUISecurityOptionsResult*);
-			ILogonUISecurityOptionsResult(struct Windows::Internal::UI::Logon::Controller::ILogonUISecurityOptionsResult&);
-			ILogonUISecurityOptionsResult();
-			struct Windows::Internal::UI::Logon::Controller::ILogonUISecurityOptionsResult& operator=(struct Windows::Internal::UI::Logon::Controller::ILogonUISecurityOptionsResult*);
-			struct Windows::Internal::UI::Logon::Controller::ILogonUISecurityOptionsResult& operator=(struct Windows::Internal::UI::Logon::Controller::ILogonUISecurityOptionsResult&);
+			virtual HRESULT STDMETHODCALLTYPE get_SecurityOptionChoice(enum Windows::Internal::UI::Logon::Controller::LogonUISecurityOptions*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ShutdownChoice(enum Windows::Internal::UI::Logon::Controller::LogonUIShutdownChoice*) PURE;
 		};
 
 		class LogonUISecurityOptionsResult : ILogonUISecurityOptionsResult
 		{
 		};
 
-		struct ILogonUX : public IInspectable
+		MIDL_INTERFACE("fbc9fd2c-9b7e-4ed1-9b60-61cf17f4ec4c")
+		ILogonUX : public IInspectable
 		{
-			HRESULT Start(struct IInspectable*, struct Windows::Internal::UI::Logon::Controller::IRedirectionManager*, struct Windows::Internal::UI::Logon::Controller::IUserSettingManager*, struct Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider*, struct Windows::Internal::UI::Logon::Controller::IBioFeedbackListener*);
-			HRESULT DelayLock(unsigned char, struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger*);
-			HRESULT HardLock(enum Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, unsigned char, struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger*);
-			HRESULT RequestCredentialsAsync(enum Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, enum Windows::Internal::UI::Logon::Controller::LogonUIFlags, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::RequestCredentialsData*>**);
-			HRESULT ReportCredentialsAsync(enum Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, long, long, struct HSTRING__*, struct HSTRING__*, struct HSTRING__*, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::ReportCredentialsData*>**);
-			HRESULT DisplayMessageAsync(enum Windows::Internal::UI::Logon::Controller::LogonMessageMode, unsigned int, struct HSTRING__*, struct HSTRING__*, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::MessageDisplayResult*>**);
-			HRESULT DisplayCredentialErrorAsync(long, long, unsigned int, struct HSTRING__*, struct HSTRING__*, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::MessageDisplayResult*>**);
-			HRESULT DisplayStatusAsync(enum Windows::Internal::UI::Logon::Controller::LogonUIState, struct HSTRING__*, struct ABI::Windows::Foundation::IAsyncAction**);
-			HRESULT TriggerLogonAnimationAsync(struct ABI::Windows::Foundation::IAsyncAction**);
-			HRESULT ResetCredentials();
-			HRESULT ClearUIState(struct HSTRING__*);
-			HRESULT RestoreFromFirstSignInAnimation();
-			HRESULT ShowSecurityOptionsAsync(enum Windows::Internal::UI::Logon::Controller::LogonUISecurityOptions, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::LogonUISecurityOptionsResult*>**);
-			HRESULT get_WindowContainer(struct IInspectable**);
-			HRESULT Hide();
-			HRESULT Stop();
-			ILogonUX(struct Windows::Internal::UI::Logon::Controller::ILogonUX*);
-			ILogonUX(struct Windows::Internal::UI::Logon::Controller::ILogonUX&);
-			ILogonUX();
-			struct Windows::Internal::UI::Logon::Controller::ILogonUX& operator=(struct Windows::Internal::UI::Logon::Controller::ILogonUX*);
-			struct Windows::Internal::UI::Logon::Controller::ILogonUX& operator=(struct Windows::Internal::UI::Logon::Controller::ILogonUX&);
+			virtual HRESULT STDMETHODCALLTYPE Start(struct IInspectable*, struct Windows::Internal::UI::Logon::Controller::IRedirectionManager*, struct Windows::Internal::UI::Logon::Controller::IUserSettingManager*, struct Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider*, struct Windows::Internal::UI::Logon::Controller::IBioFeedbackListener*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE DelayLock(unsigned char, struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE HardLock(enum Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, unsigned char, struct Windows::Internal::UI::Logon::Controller::IUnlockTrigger*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE RequestCredentialsAsync(enum Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, enum Windows::Internal::UI::Logon::Controller::LogonUIFlags, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::RequestCredentialsData*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ReportCredentialsAsync(enum Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, long, long, struct HSTRING__*, struct HSTRING__*, struct HSTRING__*, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::ReportCredentialsData*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE DisplayMessageAsync(enum Windows::Internal::UI::Logon::Controller::LogonMessageMode, unsigned int, struct HSTRING__*, struct HSTRING__*, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::MessageDisplayResult*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE DisplayCredentialErrorAsync(long, long, unsigned int, struct HSTRING__*, struct HSTRING__*, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::MessageDisplayResult*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE DisplayStatusAsync(enum Windows::Internal::UI::Logon::Controller::LogonUIState, struct HSTRING__*, struct ABI::Windows::Foundation::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE TriggerLogonAnimationAsync(struct ABI::Windows::Foundation::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ResetCredentials() PURE;
+			virtual HRESULT STDMETHODCALLTYPE ClearUIState(struct HSTRING__*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE RestoreFromFirstSignInAnimation() PURE;
+			virtual HRESULT STDMETHODCALLTYPE ShowSecurityOptionsAsync(enum Windows::Internal::UI::Logon::Controller::LogonUISecurityOptions, struct ABI::Windows::Foundation::IAsyncOperation<Windows::Internal::UI::Logon::Controller::LogonUISecurityOptionsResult*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_WindowContainer(struct IInspectable**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE Hide() PURE;
+			virtual HRESULT STDMETHODCALLTYPE Stop() PURE;
 		};
 	}
 	

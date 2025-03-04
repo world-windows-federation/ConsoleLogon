@@ -29,10 +29,7 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sdk\inc\credentialprovider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sdk\inc\credentialproviderframework.h">
+    <ClInclude Include="sdk\inc\logoninterfaces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
