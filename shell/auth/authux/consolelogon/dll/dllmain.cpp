@@ -1,4 +1,7 @@
 #include "pch.h"
+#include <Windows.Foundation.h>
+#include <wrl\wrappers\corewrappers.h>
+#include <wrl\client.h>
 #include <wrl\module.h>
 
 using namespace Microsoft::WRL;
@@ -22,11 +25,11 @@ STDAPI DllCanUnloadNow()
 	return Module<InProc>::GetModule().Terminate() ? S_OK : S_FALSE;
 }
 
-STDAPI_(BOOL) DllMain(_In_opt_ HINSTANCE hinst, DWORD reason, _In_opt_ void*)
+STDAPI_(BOOL) DllMain(_In_opt_ HINSTANCE hInstance, DWORD dwReason, _In_opt_ void* __formal)
 {
-	if (reason == DLL_PROCESS_ATTACH)
+	if (dwReason == DLL_PROCESS_ATTACH)
 	{
-		DisableThreadLibraryCalls(hinst);
+		DisableThreadLibraryCalls(hInstance);
 	}
 	return TRUE;
 }
