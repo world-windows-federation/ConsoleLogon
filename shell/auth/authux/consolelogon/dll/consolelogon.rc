@@ -1,4 +1,34 @@
 #include <windows.h>
+#include "resource.h"
+
+STRINGTABLE
+{
+	IDS_CTRLALTDEL       "Press Ctrl-Alt-Del to unlock"
+	IDS_SELECTUSER       "Select a user"
+	IDS_SELECTSIGNINOPT  "Select a sign-in option for %s or hit ESC to switch users"
+	IDS_ENTERCREDS       "Enter credentials for %s or hit ESC to switch users/sign-in methods"
+	IDS_SELECTOPT        "Select an option or hit ESC to go back"
+	IDS_USER             "User"
+	IDS_OK               "Ok"
+	IDS_CANCEL           "Cancel"
+	IDS_YES              "Yes"
+	IDS_NO               "No"
+	IDS_LOCK             "Lock"
+	IDS_SIGNOUT          "Sign out"
+	IDS_CHANGEPASSWD     "Change a password"
+	IDS_TASKMGR          "Task Manager"
+	IDS_SWITCHUSER       "Switch User"
+	IDS_SOMEFORMAT       "%1!s! %2!s!"
+	IDS_X                "X"
+	IDS_UNDERSCORE       "_"
+}
+
+STRINGTABLE
+{
+	IDS_WINSECURITY      "Windows Security"
+	IDS_ENTERNEWCREDS    "Enter new credentials for %s or hit ESC to cancel"
+	IDS_SIGNIN           "Sign in"
+}
 
 #include <ntverp.h>
 #define VER_FILETYPE                    VFT_DLL
