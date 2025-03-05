@@ -158,6 +158,7 @@
     <ClInclude Include="sdk\inc\MarshaledInterface.h" />
     <ClInclude Include="sdk\inc\memsafe.h" />
     <ClInclude Include="sdk\inc\RefCountedObject.h" />
+    <ClInclude Include="sdk\inc\ResultUtils.h" />
     <ClInclude Include="sdk\inc\SimpleArray.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\consoleuimanager.h" />
