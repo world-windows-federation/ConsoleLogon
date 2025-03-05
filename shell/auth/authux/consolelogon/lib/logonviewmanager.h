@@ -3,7 +3,7 @@
 #include "logoninterfaces.h"
 #include "consoleuimanager.h"
 
-class LogonViewManager 
+class LogonViewManager final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
 		, ConsoleUIManager
 		, WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*>
@@ -23,27 +23,27 @@ public:
 	HRESULT RuntimeClassInitialize();
 
 	//~ Begin WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface
-	STDMETHODIMP Invoke(LCPD::ICredential*, IInspectable*) override;
+	STDMETHODIMP Invoke(LCPD::ICredential* sender, IInspectable* args) override;
 	//~ End WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface
 
 	//~ Begin WFC::VectorChangedEventHandler<LCPD::Credential*> Interface
-	STDMETHODIMP Invoke(WFC::IObservableVector<LCPD::Credential*>*, WFC::IVectorChangedEventArgs*) override;
+	STDMETHODIMP Invoke(WFC::IObservableVector<LCPD::Credential*>* sender, WFC::IVectorChangedEventArgs* args) override;
 	//~ End WFC::VectorChangedEventHandler<LCPD::Credential*> Interface
 
 	//~ Begin WFC::VectorChangedEventHandler<IInspectable*> Interface
-	STDMETHODIMP Invoke(WFC::IObservableVector<IInspectable*>*, WFC::IVectorChangedEventArgs*) override;
+	STDMETHODIMP Invoke(WFC::IObservableVector<IInspectable*>* sender, WFC::IVectorChangedEventArgs* args) override;
 	//~ End WFC::VectorChangedEventHandler<IInspectable*> Interface
 
 	//~ Begin WF::ITypedEventHandler<IInspectable*, IInspectable*> Interface
-	STDMETHODIMP Invoke(IInspectable*, IInspectable*) override;
+	STDMETHODIMP Invoke(IInspectable* sender, IInspectable* args) override;
 	//~ End WF::ITypedEventHandler<IInspectable*, IInspectable*> Interface
 
 	//~ Begin WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::BioFeedbackState> Interface
-	STDMETHODIMP Invoke(LCPD::ICredProvDataModel*, LCPD::BioFeedbackState) override;
+	STDMETHODIMP Invoke(LCPD::ICredProvDataModel* sender, LCPD::BioFeedbackState args) override;
 	//~ End WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::BioFeedbackState> Interface
 
 	//~ Begin WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*> Interface
-	STDMETHODIMP Invoke(LCPD::ICredProvDataModel*, LCPD::ICredentialSerialization*) override;
+	STDMETHODIMP Invoke(LCPD::ICredProvDataModel* sender, LCPD::ICredentialSerialization* args) override;
 	//~ End WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*> Interface
 
 	//~ Begin INavigationCallback Interface

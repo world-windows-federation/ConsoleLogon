@@ -831,3 +831,65 @@ struct INotificationDispatcher : public IUnknown
 
 namespace LC = Windows::Internal::UI::Logon::Controller;
 namespace LCPD = Windows::Internal::UI::Logon::CredProvData;
+
+#pragma region "Specializations for templated types"
+// ReSharper disable CppPolymorphicClassWithNonVirtualPublicDestructor
+
+namespace ABI::Windows::Foundation
+{
+	template <>
+	struct __declspec(uuid("125cf70d-ac9b-5238-a2a6-831df1af645b"))
+	ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*>
+		: ITypedEventHandler_impl<
+			  Internal::AggregateType<LCPD::CredProvDataModel*, LCPD::ICredProvDataModel*>
+			, Internal::AggregateType<LCPD::CredentialSerialization*, LCPD::ICredentialSerialization*>
+		>
+	{
+	};
+
+	template <>
+	struct __declspec(uuid("fe8d3c74-46c4-5425-be8f-121f86ded03a"))
+	ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::BioFeedbackState>
+		: ITypedEventHandler_impl<
+			  Internal::AggregateType<LCPD::CredProvDataModel*, LCPD::ICredProvDataModel*>, LCPD::BioFeedbackState
+		>
+	{
+	};
+
+	template <>
+	struct __declspec(uuid("c7e65ce2-fad5-5e3b-9c58-186ca8c1dd57"))
+	ITypedEventHandler<IInspectable*, IInspectable*>
+		: ITypedEventHandler_impl<IInspectable*, IInspectable*>
+	{
+	};
+
+	template <>
+	struct __declspec(uuid("bb2bff59-99c0-5e2c-8dd8-0eb219b6df5e"))
+	ITypedEventHandler<LCPD::Credential*, IInspectable*>
+		: ITypedEventHandler_impl<
+			  Internal::AggregateType<LCPD::Credential*, LCPD::ICredential*>
+			, IInspectable*
+		>
+	{
+	};
+}
+
+namespace ABI::Windows::Foundation::Collections
+{
+	template <>
+	struct __declspec(uuid("b423a801-d35e-56b9-813b-00889536cb98"))
+	VectorChangedEventHandler<IInspectable*>
+		: VectorChangedEventHandler_impl<IInspectable*>
+	{
+	};
+
+	template <>
+	struct __declspec(uuid("a1181e1b-89d9-5148-8b13-c202a0e595f4"))
+	VectorChangedEventHandler<LCPD::Credential*>
+		: VectorChangedEventHandler_impl<LCPD::Credential*>
+	{
+	};
+}
+
+// ReSharper restore CppPolymorphicClassWithNonVirtualPublicDestructor
+#pragma endregion "Specializations for templated types"

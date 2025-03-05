@@ -8,7 +8,8 @@
 
 #include "logoninterfaces.h"
 
-struct INavigationCallback : IUnknown
+MIDL_INTERFACE("04ae9c0f-e0cc-43c8-9d9f-a9ad229c114a")
+INavigationCallback : IUnknown
 {
 	virtual HRESULT STDMETHODCALLTYPE OnNavigation() PURE;
 	virtual HRESULT STDMETHODCALLTYPE ShowComboBox(Windows::Internal::UI::Logon::CredProvData::IComboBoxField*) PURE;

@@ -79,35 +79,34 @@ private:
 	HRESULT Lock(LogonUIRequestReason reason, bool allowDirectUserSwitching, IUnlockTrigger* unlockTrigger);
 
 	template <typename TResult, typename TLambda>
-	HRESULT ConsoleLogon::CancellableAsyncOperationThreadProc(Windows::Internal::AsyncStage stage, HRESULT hr, TResult& result, const TLambda& lambda)
+	HRESULT ConsoleLogon::CancellableAsyncOperationThreadProc(WI::AsyncStage stage, HRESULT hr, TResult& result, const TLambda& lambda)
 	{
-		if (SUCCEEDED(hr) && stage == Windows::Internal::AsyncStage::Execute)
+		if (SUCCEEDED(hr) && stage == WI::AsyncStage::Execute)
 		{
-			Windows::Internal::AsyncDeferral<TResult> deferral = result.GetDeferral(result);
-			RETURN_IF_FAILED(lambda(deferral.GetResult())); // 442
+			RETURN_IF_FAILED(lambda(result)); // 442
 		}
-		else if (stage == Windows::Internal::AsyncStage::Cancel)
+		else if (stage == WI::AsyncStage::Cancel)
 		{
-			Windows::Internal::AsyncDeferral<TResult> deferral = result.GetDeferral(result);
+			WI::AsyncDeferral<TResult> deferral = result.GetDeferral(result);
 			deferral.Complete(S_OK);
 		}
 		return S_OK;
 	}
 
 	template <
-		typename TResult, // Windows::Internal::CMarshaledInterfaceResult<IRequestCredentialsData>,
+		typename TResult, // WI::CMarshaledInterfaceResult<IRequestCredentialsData>,
 		typename TResultRaw, // RequestCredentialsData*
-		typename THandler, // Windows::Internal::ComTaskPoolHandler
+		typename THandler, // WI::ComTaskPoolHandler
 		typename TLambda // <lambda_3785fc05d0c47cf9a9ab843267e7d6bb>
 	>
 	HRESULT ConsoleLogon::MakeCancellableAsyncOperation(THandler&& handler, IAsyncOperation<TResultRaw>** ppOperation, const TLambda& lambda)
 	{
 		*ppOperation = nullptr;
 		ComPtr<ConsoleLogon> thisRef = this;
-		HRESULT hr = Windows::Internal::MakeAsyncHelper<
+		HRESULT hr = WI::MakeAsyncHelper<
 			IAsyncOperation<TResultRaw>,
 			IAsyncOperationCompletedHandler<TResultRaw>,
-			Windows::Internal::INilDelegate,
+			WI::INilDelegate,
 			TResult,
 			THandler&,
 			AsyncOptions<>
@@ -116,7 +115,7 @@ private:
 			handler,
 			L"Windows.Foundation.IAsyncOperation`1<Windows.Internal.UI.Logon.Controller.RequestCredentialsData>", // TODO Don't hardcode this
 			BaseTrust,
-			Windows::Internal::MakeOperationStagedLambda<TResult>([this, thisRef, lambda](Windows::Internal::AsyncStage stage, HRESULT hr, TResult& result) -> HRESULT
+			WI::MakeOperationStagedLambda<TResult>([this, thisRef, lambda](WI::AsyncStage stage, HRESULT hr, TResult& result) -> HRESULT
 			{
 				return CancellableAsyncOperationThreadProc<TResult, TLambda>(stage, hr, result, lambda);
 			})
@@ -127,18 +126,18 @@ private:
 
 	template <
 		typename TOptions, // AsyncCausalityOptions<&unsigned short const * const DisplayStatusAction,&struct _GUID const GUID_CAUSALITY_WINDOWS_PLATFORM_ID,2>
-		typename THandler, // Windows::Internal::ComTaskPoolHandler
+		typename THandler, // WI::ComTaskPoolHandler
 		typename TLambda // _lambda_fe7b513293bb3593300cd8367b69ca74_
 	>
 	HRESULT ConsoleLogon::MakeCancellableAsyncAction(THandler&& handler, IAsyncAction** ppAction, const TLambda& lambda)
 	{
 		*ppAction = nullptr;
 		ComPtr<ConsoleLogon> thisRef = this;
-		HRESULT hr = Windows::Internal::MakeAsyncHelper<
+		HRESULT hr = WI::MakeAsyncHelper<
 			IAsyncAction,
 			IAsyncActionCompletedHandler,
-			Windows::Internal::INilDelegate,
-			Windows::Internal::CNoResult,
+			WI::INilDelegate,
+			WI::CNoResult,
 			THandler&,
 			TOptions
 		>(
@@ -146,9 +145,9 @@ private:
 			handler,
 			L"Windows.Foundation.IAsyncAction",
 			BaseTrust,
-			Windows::Internal::MakeOperationStagedLambda<Windows::Internal::CNoResult>([this, thisRef, lambda](Windows::Internal::AsyncStage stage, HRESULT hr, Windows::Internal::CNoResult& result) -> HRESULT
+			WI::MakeOperationStagedLambda<WI::CNoResult>([this, thisRef, lambda](WI::AsyncStage stage, HRESULT hr, WI::CNoResult& result) -> HRESULT
 			{
-				return CancellableAsyncOperationThreadProc<Windows::Internal::CNoResult, TLambda>(stage, hr, result, lambda);
+				return CancellableAsyncOperationThreadProc<WI::CNoResult, TLambda>(stage, hr, result, lambda);
 			})
 		);
 		RETURN_IF_FAILED(hr); // 475
@@ -254,12 +253,12 @@ HRESULT ConsoleLogon::RequestCredentialsAsync(
 
 	ComPtr<ConsoleLogon> asyncReference = this;
 	ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
-	HRESULT hr = MakeCancellableAsyncOperation<Windows::Internal::CMarshaledInterfaceResult<IRequestCredentialsData>, RequestCredentialsData*>(
-		Windows::Internal::ComTaskPoolHandler(Windows::Internal::TaskApartment::Any, Windows::Internal::TaskOptions::SyncNesting),
+	HRESULT hr = MakeCancellableAsyncOperation<WI::CMarshaledInterfaceResult<IRequestCredentialsData>, RequestCredentialsData*>(
+		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
 		ppOperation,
-		[asyncReference, this, =](Windows::Internal::CMarshaledInterfaceResult<IRequestCredentialsData>& result) -> HRESULT
+		[asyncReference, this, =](WI::CMarshaledInterfaceResult<IRequestCredentialsData>& result) -> HRESULT
 		{
-			RETURN_IF_FAILED(viewManager->RequestCredentials(reason, flags, result)); // 156
+			RETURN_IF_FAILED(viewManager->RequestCredentials(reason, flags, result.GetDeferral(result))); // 156
 			return S_OK;
 		}
 	);
@@ -290,14 +289,14 @@ HRESULT ConsoleLogon::ReportCredentialsAsync(
 	RETURN_IF_FAILED(userSidRef->Set(userSid)); // 178
 
 	ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
-	HRESULT hr = MakeCancellableAsyncOperation<Windows::Internal::CMarshaledInterfaceResult<IReportCredentialsData>, ReportCredentialsData*>(
-		Windows::Internal::ComTaskPoolHandler(Windows::Internal::TaskApartment::Any, Windows::Internal::TaskOptions::SyncNesting),
+	HRESULT hr = MakeCancellableAsyncOperation<WI::CMarshaledInterfaceResult<IReportCredentialsData>, ReportCredentialsData*>(
+		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
 		ppOperation,
-		[=](Windows::Internal::CMarshaledInterfaceResult<IReportCredentialsData>& result) -> HRESULT
+		[=](WI::CMarshaledInterfaceResult<IReportCredentialsData>& result) -> HRESULT
 		{
 			HRESULT hrInner = viewManager->ReportResult(
 				reason, ntsStatus, ntsSubStatus, samCompatibleUserNameRef->Get(), displayNameRef->Get(),
-				userSidRef->Get(), result);
+				userSidRef->Get(), result.GetDeferral(result));
 			RETURN_IF_FAILED(hrInner); // 189
 			return S_OK;
 		}
@@ -328,12 +327,13 @@ HRESULT ConsoleLogon::DisplayMessageAsync(
 	}
 
 	ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
-	HRESULT hr = MakeCancellableAsyncOperation<Windows::Internal::CMarshaledInterfaceResult<IMessageDisplayResult>, MessageDisplayResult*>(
-		Windows::Internal::ComTaskPoolHandler(Windows::Internal::TaskApartment::Any, Windows::Internal::TaskOptions::SyncNesting),
+	HRESULT hr = MakeCancellableAsyncOperation<WI::CMarshaledInterfaceResult<IMessageDisplayResult>, MessageDisplayResult*>(
+		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
 		ppOperation,
-		[=](Windows::Internal::CMarshaledInterfaceResult<IMessageDisplayResult>& result) -> HRESULT
+		[=](WI::CMarshaledInterfaceResult<IMessageDisplayResult>& result) -> HRESULT
 		{
-			RETURN_IF_FAILED(viewManager->DisplayMessage(messageMode, messageBoxFlags, captionRef->Get(), messageRef->Get(), result)); // 224
+			RETURN_IF_FAILED(viewManager->DisplayMessage(
+				messageMode, messageBoxFlags, captionRef->Get(), messageRef->Get(), result.GetDeferral(result))); // 224
 			return S_OK;
 		}
 	);
@@ -365,12 +365,14 @@ HRESULT ConsoleLogon::DisplayCredentialErrorAsync(
 	}
 
 	ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
-	HRESULT hr = MakeCancellableAsyncOperation<Windows::Internal::CMarshaledInterfaceResult<IMessageDisplayResult>, MessageDisplayResult*>(
-		Windows::Internal::ComTaskPoolHandler(Windows::Internal::TaskApartment::Any, Windows::Internal::TaskOptions::SyncNesting),
+	HRESULT hr = MakeCancellableAsyncOperation<WI::CMarshaledInterfaceResult<IMessageDisplayResult>, MessageDisplayResult*>(
+		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
 		ppOperation,
-		[=](Windows::Internal::CMarshaledInterfaceResult<IMessageDisplayResult>& result) -> HRESULT
+		[=](WI::CMarshaledInterfaceResult<IMessageDisplayResult>& result) -> HRESULT
 		{
-			RETURN_IF_FAILED(viewManager->DisplayCredentialError(ntsStatus, ntsSubstatus, messageBoxFlags, captionRef->Get(), messageRef->Get(), result)); // 259
+			RETURN_IF_FAILED(viewManager->DisplayCredentialError(
+				ntsStatus, ntsSubstatus, messageBoxFlags, captionRef->Get(), messageRef->Get(),
+				result.GetDeferral(result))); // 259
 			return S_OK;
 		}
 	);
@@ -396,11 +398,11 @@ HRESULT ConsoleLogon::DisplayStatusAsync(LogonUIState state, HSTRING status, IAs
 
 	ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
 	HRESULT hr = MakeCancellableAsyncAction<AsyncCausalityOptions<DisplayStatusAction>>(
-		Windows::Internal::ComTaskPoolHandler(Windows::Internal::TaskApartment::Any, Windows::Internal::TaskOptions::SyncNesting),
+		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
 		ppAction,
-		[=](Windows::Internal::CNoResult& result) -> HRESULT
+		[=](WI::CNoResult& result) -> HRESULT
 		{
-			RETURN_IF_FAILED(viewManager->DisplayStatus(state, statusRef->Get(), result)); // 288
+			RETURN_IF_FAILED(viewManager->DisplayStatus(state, statusRef->Get(), result.GetDeferral(result))); // 288
 			return S_OK;
 		}
 	);
@@ -415,9 +417,9 @@ HRESULT ConsoleLogon::TriggerLogonAnimationAsync(IAsyncAction** ppAction)
 	*ppAction = nullptr;
 
 	HRESULT hr = MakeCancellableAsyncAction<AsyncCausalityOptions<LogonAnimationAction>>(
-		Windows::Internal::ComTaskPoolHandler(Windows::Internal::TaskApartment::Any, Windows::Internal::TaskOptions::SyncNesting),
+		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
 		ppAction,
-		[=](Windows::Internal::CNoResult& result) -> HRESULT
+		[=](WI::CNoResult& result) -> HRESULT
 	{
 		return S_OK;
 	});
@@ -445,6 +447,23 @@ HRESULT ConsoleLogon::ClearUIState(HSTRING statusMessage)
 
 HRESULT ConsoleLogon::ShowSecurityOptionsAsync(LogonUISecurityOptions options, IAsyncOperation<LogonUISecurityOptionsResult*>** ppOperation)
 {
+	*ppOperation = nullptr;
+
+	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
+	RETURN_IF_FAILED(CheckUIStarted()); // 375
+
+	ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
+	HRESULT hr = MakeCancellableAsyncOperation<WI::CMarshaledInterfaceResult<ILogonUISecurityOptionsResult>, LogonUISecurityOptionsResult*>(
+		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
+		ppOperation,
+		[=](WI::CMarshaledInterfaceResult<ILogonUISecurityOptionsResult>& result) -> HRESULT
+		{
+			RETURN_IF_FAILED(viewManager->ShowSecurityOptions(options, result.GetDeferral(result))); // 386
+			return S_OK;
+		}
+	);
+	RETURN_IF_FAILED(hr); // 386
+	return S_OK;
 }
 
 HRESULT ConsoleLogon::get_WindowContainer(IInspectable** value)
