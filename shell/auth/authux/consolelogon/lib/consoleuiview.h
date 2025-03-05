@@ -150,12 +150,12 @@ struct IConsoleUIView : IUnknown
 {
 	virtual HRESULT STDMETHODCALLTYPE Advise(INavigationCallback*) PURE;
 	virtual HRESULT STDMETHODCALLTYPE Unadvise() PURE;
-	virtual HRESULT STDMETHODCALLTYPE AppendControl(unsigned int, IConsoleUIControl*, IUnknown**) PURE;
+	virtual HRESULT STDMETHODCALLTYPE AppendControl(UINT, IConsoleUIControl*, IUnknown**) PURE;
 	virtual HRESULT STDMETHODCALLTYPE WriteOutput(IUnknown*, const PCHAR_INFO, COORD, PSMALL_RECT) PURE;
-	virtual HRESULT STDMETHODCALLTYPE GetColorAttributes(unsigned short*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE ResizeControl(IUnknown*, unsigned int) PURE;
+	virtual HRESULT STDMETHODCALLTYPE GetColorAttributes(WORD*) PURE;
+	virtual HRESULT STDMETHODCALLTYPE ResizeControl(IUnknown*, UINT) PURE;
 	virtual HRESULT STDMETHODCALLTYPE RemoveAll() PURE;
-	virtual HRESULT STDMETHODCALLTYPE GetConsoleWidth(unsigned int*) PURE;
+	virtual HRESULT STDMETHODCALLTYPE GetConsoleWidth(UINT*) PURE;
 	virtual HRESULT STDMETHODCALLTYPE SetCursorPos(IUnknown*, COORD, bool) PURE;
 };
 

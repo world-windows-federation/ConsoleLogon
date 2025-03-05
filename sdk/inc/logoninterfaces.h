@@ -141,8 +141,11 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_Size(UserTileImageSize*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_TilePath(HSTRING*) PURE;
 		};
+
 		class User;
-		struct IUser : public IInspectable
+
+		MIDL_INTERFACE("837c3232-b75b-4f12-bf4c-d85f57d3882f")
+		IUser : public IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_IsLoggedIn(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsBuiltInGuest(unsigned char*) PURE;
@@ -638,7 +641,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE IsUserSwitchingAllowed(LogonUIRequestReason, BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE CancelUserSwitch() PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsLoggedOnUserSidPresent(BOOLEAN*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_LangID(WCHAR*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_LangID(LANGID*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_UserSid(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_UserSid(HSTRING) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_CaretWidth(int*) PURE;
