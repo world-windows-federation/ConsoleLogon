@@ -101,8 +101,7 @@ HRESULT ConsoleUIView::GetColorAttributes(unsigned int* pAttributes)
 	*pAttributes = NULL;
 
 	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
-	HRESULT hr = GetConsoleScreenBufferInfo(m_screenBuffer.get(), &consoleInfo);
-	RETURN_IF_FAILED(hr);
+	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &consoleInfo));
 	*pAttributes = consoleInfo.wAttributes;
 	return S_OK;
 }
@@ -122,14 +121,12 @@ HRESULT ConsoleUIView::RemoveAll()
 	}
 
 	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
-	HRESULT hr = GetConsoleScreenBufferInfo(m_screenBuffer.get(), &consoleInfo);
-	RETURN_IF_FAILED(hr);
+	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &consoleInfo));
 
 	DWORD numWritten;
 	COORD origin;
 	origin.X = 0;
-	hr = FillConsoleOutputCharacterW(m_screenBuffer.get(), 0x20u, consoleInfo.dwSize.X * consoleInfo.dwSize.Y, origin, &numWritten);
-	RETURN_IF_FAILED(hr);
+	RETURN_IF_WIN32_BOOL_FALSE(FillConsoleOutputCharacterW(m_screenBuffer.get(), 0x20u, consoleInfo.dwSize.X * consoleInfo.dwSize.Y, origin, &numWritten));
 
 	return S_OK;
 }
@@ -139,8 +136,7 @@ HRESULT ConsoleUIView::GetConsoleWidth(unsigned int* pWidth)
 	*pWidth = NULL;
 
 	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
-	HRESULT hr = GetConsoleScreenBufferInfo(m_screenBuffer.get(), &consoleInfo);
-	RETURN_IF_FAILED(hr);
+	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &consoleInfo));
 	*pWidth = consoleInfo.dwSize.X;
 	return S_OK;
 }
@@ -209,7 +205,7 @@ HRESULT ConsoleUIView::InitializeFocus()
 	cursorInfo.bVisible = 0;
 	cursorInfo.dwSize = 4;
 
-	RETURN_IF_FAILED(SetConsoleCursorInfo(m_screenBuffer.get(), &cursorInfo));
+	RETURN_IF_WIN32_BOOL_FALSE(SetConsoleCursorInfo(m_screenBuffer.get(), &cursorInfo));
 
 	int counter = 0;
 	UINT celem = m_controlTable._celem;
@@ -250,6 +246,7 @@ HRESULT ConsoleUIView::ShiftVisuals(unsigned int startIndex, int shiftDistance)
 
 	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
 	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &screenBufferInfo));
+
 	SMALL_RECT scrollRect;
 	scrollRect.Left = 0;
 	scrollRect.Bottom = height;
