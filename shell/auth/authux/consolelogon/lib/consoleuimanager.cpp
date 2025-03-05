@@ -9,6 +9,7 @@
 #include "logoninterfaces.h"
 #include "consoleuimanager.h"
 #include "RefCountedObject.h"
+#include "ResultUtils.h"
 
 ConsoleUIManager::ConsoleUIManager()
     : m_continueProcessingInput(true)
@@ -18,6 +19,9 @@ ConsoleUIManager::ConsoleUIManager()
 
 HRESULT ConsoleUIManager::Initialize()
 {
+    // m_UIThreadQuitEvent = nullptr; // @MOD Don't need this line
+    m_UIThreadQuitEvent.reset(CreateEventExW(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_ALL_ACCESS));
+    return m_UIThreadQuitEvent ? S_OK : ResultFromKnownLastError();
 }
 
 HRESULT ConsoleUIManager::StartUI()
@@ -107,6 +111,7 @@ DWORD ConsoleUIManager::s_UIThreadHostStartThreadProc(void* parameter)
     pThis->UIThreadHostStartThreadProc();
 }
 
+//todo: from wiktor, i left this to amr since it touches async stuff
 HRESULT ConsoleUIManager::UIThreadHostStartThreadProc()
 {
 }
@@ -124,6 +129,7 @@ DWORD ConsoleUIManager::s_UIThreadHostThreadProc(void* parameter)
     return hr;
 }
 
+//todo: from wiktor, i left this to amr since it touches async stuff
 DWORD ConsoleUIManager::UIThreadHostThreadProc()
 {
 }
