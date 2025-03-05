@@ -5,11 +5,12 @@
 
 class ConsoleUIView
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-		IConsoleUIView,
-		IConsoleUIViewInternal>
+	IConsoleUIView,
+	IConsoleUIViewInternal>
 {
 public:
 	ConsoleUIView();
+	~ConsoleUIView();
 	HRESULT Initialize();
 	HRESULT Advise(INavigationCallback*);
 	HRESULT Unadvise();
@@ -25,9 +26,10 @@ public:
 	HRESULT InitializeFocus();
 
 protected:
-	HRESULT v_OnKeyInput(PKEY_EVENT_RECORD, int*);
-	void v_Unadvise();
-	int GetFocusIndex();
+	virtual HRESULT v_OnKeyInput(PKEY_EVENT_RECORD, int*) PURE;
+	virtual void v_Unadvise() PURE;
+	virtual int GetFocusIndex() PURE;
+
 	Microsoft::WRL::ComPtr<INavigationCallback> m_navigationCallback;
 
 private:
@@ -42,6 +44,11 @@ private:
 ConsoleUIView::ConsoleUIView()
 {
 	this->m_focusIndex = -1;
+}
+
+ConsoleUIView::~ConsoleUIView()
+{
+
 }
 
 HRESULT ConsoleUIView::Initialize()
@@ -60,7 +67,7 @@ HRESULT ConsoleUIView::Advise(INavigationCallback* callback)
 
 HRESULT ConsoleUIView::Unadvise()
 {
-	// TODO
+	this->v_Unadvise();
 	m_navigationCallback.Reset();
 }
 
@@ -113,7 +120,6 @@ HRESULT ConsoleUIView::RemoveAll()
 	{
 		m_controlTable._parray[i].Reset();
 	}
-	// theres some CTSimpleArray stuff here
 
 	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
 	HRESULT hr = GetConsoleScreenBufferInfo(m_screenBuffer.get(), &consoleInfo);
@@ -152,25 +158,148 @@ HRESULT ConsoleUIView::GetScreenBuffer(void** pScreenBuffer)
 	return S_OK;
 }
 
-HRESULT ConsoleUIView::HandleKeyInput(PKEY_EVENT_RECORD)
+HRESULT ConsoleUIView::HandleKeyInput(PKEY_EVENT_RECORD keyEvent)
 {
-	// TODO
-	return E_NOTIMPL;
+	int keyHandled = 0;
+	if (m_focusIndex < 0)
+	{
+		HRESULT hr = this->v_OnKeyInput(keyEvent, &keyHandled);
+		RETURN_IF_FAILED(hr);
+	}
+	else
+	{
+		IControlHandle* ptr = m_controlTable._parray[m_focusIndex].Get();
+		HRESULT hr = ptr->HandleKeyInput(keyEvent, &keyHandled);
+		RETURN_IF_FAILED(hr);
+	}
+	if (!keyHandled)
+	{
+		switch (keyEvent->wVirtualKeyCode)
+		{
+		case VK_TAB:
+		{
+			if ((keyEvent->dwControlKeyState & 0x10) != 0)
+			{
+				RETURN_IF_FAILED(this->MoveFocusToPrevious());
+			}
+			else
+			{
+				RETURN_IF_FAILED(this->MoveFocusToNext());
+			}
+		}
+		break;
+		case VK_UP:
+		{
+			RETURN_IF_FAILED(this->MoveFocusToPrevious());
+		}
+		break;
+		case VK_DOWN:
+		{
+			RETURN_IF_FAILED(this->MoveFocusToNext());
+		}
+		break;
+		}
+	}
+	return S_OK;
 }
 
 HRESULT ConsoleUIView::InitializeFocus()
 {
-	return E_NOTIMPL;
+	CONSOLE_CURSOR_INFO cursorInfo;
+	cursorInfo.bVisible = 0;
+	cursorInfo.dwSize = 4;
+
+	RETURN_IF_FAILED(SetConsoleCursorInfo(m_screenBuffer.get(), &cursorInfo));
+
+	int counter = 0;
+	UINT celem = m_controlTable._celem;
+	if (celem)
+	{
+		while (this->m_focusIndex < 0)
+		{
+			IControlHandle* ptr = m_controlTable._parray[counter].Get();
+			if (ptr->IsFocusable() && ptr->GetSize())
+			{
+				m_focusIndex = counter;
+				RETURN_IF_FAILED(ptr->SetFocus(TRUE));
+			}
+			if (++counter >= celem)
+			{
+				return 0;
+			}
+		}
+	}
+	return S_OK;
 }
 
-HRESULT ConsoleUIView::ShiftVisuals(unsigned int, int)
+HRESULT ConsoleUIView::ShiftVisuals(unsigned int startIndex, int shiftDistance)
 {
-	return E_NOTIMPL;
+	if (!shiftDistance) return S_OK;
+
+	UINT celem = this->m_controlTable._celem;
+	IControlHandle* ptr = m_controlTable._parray[startIndex].Get();
+	UINT counter = startIndex;
+	UINT destinationCoord = ptr->GetOffsetFromRoot();
+
+	IControlHandle* lastControl = m_controlTable._parray[celem - 1].Get();
+	if (lastControl)
+	{
+		lastControl->AddRef();
+	}
+	UINT height = lastControl->GetSize() + lastControl->GetOffsetFromRoot();
+
+	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
+	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &screenBufferInfo));
+	SMALL_RECT scrollRect;
+	scrollRect.Left = 0;
+	scrollRect.Bottom = height;
+	scrollRect.Right = screenBufferInfo.dwSize.X - 1;
+	scrollRect.Top = destinationCoord;
+
+	SMALL_RECT clipRect = scrollRect;
+	if (shiftDistance <= 0)
+	{
+		clipRect.Top = shiftDistance + scrollRect.Top;
+	}
+	else
+	{
+		clipRect.Bottom = shiftDistance + scrollRect.Bottom;
+	}
+
+	CHAR_INFO fillCharacter;
+	fillCharacter.Attributes = 0;
+	fillCharacter.Char.UnicodeChar = 32;
+
+	COORD destinationCoordinatea;
+	destinationCoordinatea.X = 0;
+	destinationCoordinatea.Y = shiftDistance + destinationCoord;
+
+	RETURN_IF_WIN32_BOOL_FALSE(ScrollConsoleScreenBufferW(
+		m_screenBuffer.get(),
+		&scrollRect,
+		&clipRect,
+		destinationCoordinatea,
+		&fillCharacter));
+
+	while (TRUE)
+	{
+		if (counter >= celem)
+		{
+			return S_OK;
+		}
+		UINT offset = m_controlTable._parray[counter].Get()->GetOffsetFromRoot();
+		HRESULT hr = m_controlTable._parray[counter].Get()->UpdateOffsetFromRoot(shiftDistance + offset);
+		RETURN_IF_FAILED(hr);
+		++counter;
+	}
+	// not sure
+	return HRESULT_FROM_WIN32(GetLastError());
+
 }
 
 HRESULT ConsoleUIView::MoveFocusToNext()
 {
-	return E_NOTIMPL;
+
 }
 
 HRESULT ConsoleUIView::MoveFocusToPrevious()
