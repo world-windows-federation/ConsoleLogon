@@ -62,32 +62,66 @@ HRESULT ConsoleUIManager::StopUI()
     return S_OK;
 }
 
-HRESULT ConsoleUIManager::SetActiveView(IConsoleUIView*)
+HRESULT ConsoleUIManager::SetActiveView(IConsoleUIView* view)
 {
+    Microsoft::WRL::ComPtr<IConsoleUIViewInternal> newView;
+    void* screenBuffer = nullptr;
+    
+    HRESULT hr = view->QueryInterface(IID_PPV_ARGS(&newView));
+    RETURN_IF_FAILED(hr); // 105
+    
+    hr = newView->GetScreenBuffer(&screenBuffer);
+    RETURN_IF_FAILED(hr); // 108
+    
+    RETURN_IF_WIN32_BOOL_FALSE(SetConsoleActiveScreenBuffer(screenBuffer)); // 110
+    RETURN_IF_FAILED(hr = newView->InitializeFocus()); // 111
+
+    m_activeView = newView;
+
+    return S_OK;
 }
 
 HRESULT ConsoleUIManager::EnsureUIStarted()
 {
+    RETURN_HR_IF(E_ABORT, !m_Dispatcher.Get());
+    return S_OK;
 }
 
-HRESULT ConsoleUIManager::HandleIncomingInput(INPUT_RECORD)
+//TODO: double check this has been done correctly
+HRESULT ConsoleUIManager::HandleIncomingInput(INPUT_RECORD input)
 {
+    if (input.EventType == KEY_EVENT && (m_activeView.Get() && input.Event.KeyEvent.bKeyDown))
+        RETURN_IF_FAILED(HandleKeyboardInput(input.Event.KeyEvent)); // 129
 }
 
-HRESULT ConsoleUIManager::HandleKeyboardInput(KEY_EVENT_RECORD)
+HRESULT ConsoleUIManager::HandleKeyboardInput(KEY_EVENT_RECORD keyRecord)
 {
+    RETURN_IF_FAILED(m_activeView->HandleKeyInput(&keyRecord)); // 147
+    return S_OK;
 }
 
-DWORD ConsoleUIManager::s_UIThreadHostStartThreadProc(void*)
+DWORD ConsoleUIManager::s_UIThreadHostStartThreadProc(void* parameter)
 {
+    auto pThis = static_cast<ConsoleUIManager*>(parameter);
+    pThis->AddRef();
+    pThis->UIThreadHostStartThreadProc();
 }
 
 HRESULT ConsoleUIManager::UIThreadHostStartThreadProc()
 {
 }
 
-DWORD ConsoleUIManager::s_UIThreadHostThreadProc(void*)
+DWORD ConsoleUIManager::s_UIThreadHostThreadProc(void* parameter)
 {
+    auto pThis = static_cast<ConsoleUIManager*>(parameter);
+
+    HRESULT hr = S_OK;
+    if (SUCCEEDED(pThis->m_UIThreadInitResult))
+    {
+        hr = pThis->UIThreadHostThreadProc();
+    }
+    pThis->Release();
+    return hr;
 }
 
 DWORD ConsoleUIManager::UIThreadHostThreadProc()

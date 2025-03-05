@@ -159,7 +159,8 @@ struct IConsoleUIView : IUnknown
 	virtual HRESULT STDMETHODCALLTYPE SetCursorPos(IUnknown*, COORD, bool) PURE;
 };
 
-struct IConsoleUIViewInternal : IUnknown
+MIDL_INTERFACE("8224683b-9ca1-478d-82c2-f833b5a3e254")
+IConsoleUIViewInternal : IUnknown
 {
 	virtual HRESULT STDMETHODCALLTYPE GetScreenBuffer(void**) PURE;
 	virtual HRESULT STDMETHODCALLTYPE HandleKeyInput(PKEY_EVENT_RECORD) PURE;
