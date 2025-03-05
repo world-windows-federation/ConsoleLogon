@@ -10,7 +10,7 @@ class ControlBase
 	: public Microsoft::WRL::Implements<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, IConsoleUIControl>
 {
 public:
-	HRESULT Initialize(bool isFocusable, unsigned int height, IConsoleUIView* view);
+	HRESULT Initialize(BOOL isFocusable, unsigned int height, IConsoleUIView* view);
 	STDMETHODIMP_(BOOL) IsFocusable() override;
 	STDMETHODIMP OnFocusChange(BOOL hasFocus) override;
 	STDMETHODIMP HandleKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;

@@ -27,7 +27,7 @@ STDMETHODIMP ControlBase::Unadvise()
 	return S_OK;
 }
 
-HRESULT ControlBase::Initialize(bool isFocusable, unsigned int height, IConsoleUIView* view)
+HRESULT ControlBase::Initialize(BOOL isFocusable, unsigned int height, IConsoleUIView* view)
 {
     m_isFocusable = isFocusable;
     m_outputHandle.Reset();
