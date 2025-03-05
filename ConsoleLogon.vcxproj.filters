@@ -30,6 +30,9 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\controlhandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\controlbase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h">
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shell\auth\authux\consolelogon\lib\controlhandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\controlbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
