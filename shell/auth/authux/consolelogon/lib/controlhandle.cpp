@@ -1,37 +1,7 @@
 #include "controlhandle.h"
-#include "consoleuiview.h"
 #include <wil\resource.h>
 
 using namespace Microsoft::WRL;
-
-class ControlHandle
-	: public RuntimeClass<RuntimeClassFlags<ClassicCom>
-		, IControlHandle
-	>
-{
-public:
-	ControlHandle();
-	~ControlHandle();
-
-	//~ Begin IControlHandle Interface
-	STDMETHODIMP RuntimeClassInitialize(UINT, UINT, UINT, IConsoleUIControl*);
-	STDMETHODIMP_(UINT) GetOffsetFromRoot();
-	STDMETHODIMP UpdateOffsetFromRoot(UINT);
-	STDMETHODIMP_(UINT) GetSize();
-	STDMETHODIMP SetSize(UINT);
-	STDMETHODIMP_(INT) IsFocusable();
-	STDMETHODIMP SetFocus(INT);
-	STDMETHODIMP_(UINT) GetIndexInTable();
-	STDMETHODIMP HandleKeyInput(PKEY_EVENT_RECORD, PINT);
-	STDMETHODIMP Destroy();
-	//~ End IControlHandle Interface
-
-private:
-	UINT m_offsetFromRoot;
-	UINT m_size;
-	UINT m_index;
-	ComPtr<IConsoleUIControl> m_controlCallback;
-};
 
 ControlHandle::ControlHandle()
 	: m_offsetFromRoot(0), 

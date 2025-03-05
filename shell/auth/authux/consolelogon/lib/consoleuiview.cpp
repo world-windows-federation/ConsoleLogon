@@ -84,27 +84,57 @@ HRESULT ConsoleUIView::Unadvise()
 
 HRESULT ConsoleUIView::AppendControl(UINT height, IConsoleUIControl* control, IUnknown** ppControlHandle)
 {
-	// TODO
-	// needs ControlHandle
-	ComPtr<IControlHandle> controlHandle;
-	ComPtr<IControlHandle> lastControl;
 	*ppControlHandle = NULL;
-	IControlHandle* ptr;
+
+	ComPtr<ControlHandle> controlHandle;
 
 	size_t celem = m_controlTable._celem;
 	if (celem)
 	{
-		ptr = m_controlTable._parray[celem - 1].Get();
-		lastControl = ptr;
+		ComPtr<IControlHandle> lastControl = m_controlTable[celem - 1].Get();
+		UINT offset = lastControl->GetOffsetFromRoot() + lastControl->GetSize();
 
+		RETURN_IF_FAILED(MakeAndInitialize<ControlHandle>(&controlHandle, offset, height, celem, control)); //58
 	}
+	else
+	{
+		RETURN_IF_FAILED(MakeAndInitialize<ControlHandle>(&controlHandle, 0, height, 0, control)); // 51
+	}
+	RETURN_IF_FAILED(m_controlTable.Add(controlHandle)); // 61
+
+	RETURN_IF_FAILED(controlHandle.CopyTo(ppControlHandle)); // 63
+	return S_OK;
 }
 
-HRESULT ConsoleUIView::WriteOutput(IUnknown*, PCHAR_INFO, COORD, PSMALL_RECT)
+HRESULT ConsoleUIView::WriteOutput(IUnknown* handle, PCHAR_INFO data, COORD dataSize, PSMALL_RECT writeRegion)
 {
 	// TODO
 	// needs ControlHandle
-	return E_NOTIMPL;
+	Microsoft::WRL::ComPtr<IControlHandle> controlHandle;
+	RETURN_IF_FAILED(handle->QueryInterface(IID_PPV_ARGS(&controlHandle))); // 71
+
+	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
+	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &screenBufferInfo)); // 74
+
+	
+	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Top < 0) || (writeRegion->Bottom >= controlHandle->GetSize()))); // 77
+	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Left < 0 ) || (writeRegion->Right >= screenBufferInfo.dwSize.X))); // 78
+	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Top > writeRegion->Bottom)|| (writeRegion->Left > writeRegion->Right))); // 79
+
+	SMALL_RECT actualWriteRect;
+	actualWriteRect.Top = writeRegion->Top + controlHandle->GetOffsetFromRoot();
+	actualWriteRect.Left = writeRegion->Left;
+	actualWriteRect.Bottom = writeRegion->Bottom + controlHandle->GetOffsetFromRoot();
+	actualWriteRect.Right = writeRegion->Right;
+
+	RETURN_IF_WIN32_BOOL_FALSE(WriteConsoleOutputW(m_screenBuffer.get(), data, dataSize, (COORD)0, &actualWriteRect)); // 96
+	
+	writeRegion->Top = actualWriteRect.Top - controlHandle->GetOffsetFromRoot();
+	writeRegion->Left = actualWriteRect.Left;
+	writeRegion->Right = actualWriteRect.Right;
+	writeRegion->Bottom = actualWriteRect.Bottom - controlHandle->GetOffsetFromRoot();
+
+	return S_OK;
 }
 
 HRESULT ConsoleUIView::GetColorAttributes(WORD* pAttributes)
