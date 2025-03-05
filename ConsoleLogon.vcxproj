@@ -147,6 +147,7 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consolelogon.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consoleuimanager.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consoleuiview.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\controlhandle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
