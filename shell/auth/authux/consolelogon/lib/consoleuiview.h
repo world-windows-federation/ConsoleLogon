@@ -22,6 +22,13 @@ struct IConsoleUIControl : IUnknown
 	virtual HRESULT STDMETHODCALLTYPE Unadvise() PURE;
 };
 
+// Belongs to internal inputswitchserver.h
+DEFINE_GUID(CLSID_InputSwitchControl,
+	0xb9bc2a50,
+	0x43c3, 0x41aa, 0xa0, 0x86,
+	0x5d, 0xb1, 0x4e, 0x18, 0x4b, 0xae
+);
+
 typedef enum __MIDL___MIDL_itf_inputswitchserver_0000_0000_0001
 {
 	ISCT_IDL_DESKTOP,
@@ -35,7 +42,25 @@ typedef enum __MIDL___MIDL_itf_inputswitchserver_0000_0000_0001
 
 typedef struct __MIDL___MIDL_itf_inputswitchserver_0000_0000_0002
 {
-	int dummy; // We don't need its contents
+	DWORD hkl;
+	WCHAR* pszShortLanguageName;
+	WCHAR* pszLanguageName;
+	WCHAR* pszShortLayoutName;
+	WCHAR* pszLayoutName;
+	BOOL fShortLayoutNameIsDifferentiator;
+	BOOL fIme;
+	BOOL fDesktopIncompatibleIme;
+	BOOL fImmersiveIncompatibleIme;
+// #if TASKBAR_FOR >= TASKBAR_FOR_22621
+	// BYTE gap[8];
+// #endif
+	WCHAR* pszBcp47;
+	WCHAR* pszFontFaceName;
+	int nFontSizeAdjustment;
+	int nFontBaselineAdjustment;
+	BOOL fFontVertical;
+	WCHAR* pszImeIconFileName;
+	int nImeIconIndex;
 } INPUT_SWITCH_IDL_PROFILE_DATA;
 
 typedef struct __MIDL___MIDL_itf_inputswitchserver_0000_0000_0003
@@ -80,36 +105,45 @@ typedef enum __MIDL___MIDL_itf_inputswitchserver_0000_0000_0008
 	INPUT_SWITCH_IDL_CFOM_IMMERSIVE,
 } INPUT_SWITCH_IDL_CFOM;
 
-
-struct IInputSwitchCallback : public IUnknown
-{
-	virtual HRESULT STDMETHODCALLTYPE OnUpdateProfile(struct INPUT_SWITCH_IDL_PROFILE_DATA*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE OnUpdateTsfFloatingFlags(unsigned long) PURE;
-	virtual HRESULT STDMETHODCALLTYPE OnProfileCountChange(unsigned int, int) PURE;
-	virtual HRESULT STDMETHODCALLTYPE OnShowHide(int, int, int) PURE;
-	virtual HRESULT STDMETHODCALLTYPE OnImeModeItemUpdate(struct INPUT_SWITCH_IDL_IME_MODE_ITEM_DATA*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE OnModalitySelected(enum INPUT_SWITCH_IDL_MODALITY) PURE;
-	virtual HRESULT STDMETHODCALLTYPE OnContextFlagsChange(unsigned long) PURE;
-	virtual HRESULT STDMETHODCALLTYPE OnTouchKeyboardManualInvoke() PURE;
-};
+interface IInputSwitchCallback;
 
 MIDL_INTERFACE("b9bc2a50-43c3-41aa-a082-5db14e184bae")
-IInputSwitchControl : public IUnknown
+IInputSwitchControl : IUnknown
 {
-	virtual HRESULT STDMETHODCALLTYPE Init(INPUT_SWITCH_IDL_CLIENT_TYPE) PURE;
-	virtual HRESULT STDMETHODCALLTYPE SetCallback(IInputSwitchCallback*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE ShowInputSwitch(struct tagRECT*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE GetProfileCount(unsigned int*, int*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE GetCurrentProfile(INPUT_SWITCH_IDL_PROFILE_DATA*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE RegisterHotkeys() PURE;
-	virtual HRESULT STDMETHODCALLTYPE ClickImeModeItem(INPUT_SWITCH_IDL_IME_CLICK_TYPE, struct tagPOINT, struct tagRECT*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE ForceHide() PURE;
-	virtual HRESULT STDMETHODCALLTYPE ShowTouchKeyboardInputSwitch(struct tagRECT*, INPUT_SWITCH_IDL_ALIGNMENT, int, unsigned long, INPUT_SWITCH_IDL_MODALITY) PURE;
-	virtual HRESULT STDMETHODCALLTYPE GetContextFlags(unsigned long*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE SetContextOverrideMode(INPUT_SWITCH_IDL_CFOM) PURE;
-	virtual HRESULT STDMETHODCALLTYPE GetCurrentImeModeItem(INPUT_SWITCH_IDL_IME_MODE_ITEM_DATA*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE ActivateInputProfile(wchar_t*) PURE;
+	virtual HRESULT STDMETHODCALLTYPE Init(INPUT_SWITCH_IDL_CLIENT_TYPE) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetCallback(IInputSwitchCallback*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE ShowInputSwitch(const RECT*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetProfileCount(UINT*, BOOL*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetCurrentProfile(INPUT_SWITCH_IDL_PROFILE_DATA*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE RegisterHotkeys() = 0;
+	virtual HRESULT STDMETHODCALLTYPE ClickImeModeItem(INPUT_SWITCH_IDL_IME_CLICK_TYPE, POINT, const RECT*) = 0;
+// #if TASKBAR_FOR >= TASKBAR_FOR_22621
+	// virtual HRESULT STDMETHODCALLTYPE ClickImeModeItemWithAnchor(INPUT_SWITCH_IDL_IME_CLICK_TYPE, IUnknown*) = 0;
+// #endif
+	virtual HRESULT STDMETHODCALLTYPE ForceHide() = 0;
+	virtual HRESULT STDMETHODCALLTYPE ShowTouchKeyboardInputSwitch(const RECT*, INPUT_SWITCH_IDL_ALIGNMENT, int, DWORD, INPUT_SWITCH_IDL_MODALITY) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetContextFlags(DWORD*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetContextOverrideMode(INPUT_SWITCH_IDL_CFOM) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetCurrentImeModeItem(INPUT_SWITCH_IDL_IME_MODE_ITEM_DATA*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE ActivateInputProfile(const WCHAR*) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetUserSid(const WCHAR*) = 0;
 };
+
+MIDL_INTERFACE("b9bc2a50-43c3-41aa-a083-5db14e184bae")
+IInputSwitchCallback : IUnknown
+{
+	virtual HRESULT STDMETHODCALLTYPE OnUpdateProfile(const INPUT_SWITCH_IDL_PROFILE_DATA* pData) = 0;
+	virtual HRESULT STDMETHODCALLTYPE OnUpdateTsfFloatingFlags(DWORD dwFlags) = 0;
+	virtual HRESULT STDMETHODCALLTYPE OnProfileCountChange(UINT nCount, BOOL bCertifiedImePresent) = 0;
+	virtual HRESULT STDMETHODCALLTYPE OnShowHide(BOOL bShown, BOOL a3, BOOL a4) = 0;
+	virtual HRESULT STDMETHODCALLTYPE OnImeModeItemUpdate(const INPUT_SWITCH_IDL_IME_MODE_ITEM_DATA* pData) = 0;
+	virtual HRESULT STDMETHODCALLTYPE OnModalitySelected(INPUT_SWITCH_IDL_MODALITY a2) = 0;
+	virtual HRESULT STDMETHODCALLTYPE OnContextFlagsChange(DWORD dwFlags) = 0;
+	virtual HRESULT STDMETHODCALLTYPE OnTouchKeyboardManualInvoke() = 0;
+};
+
+extern "C" inline const IID IID_IInputSwitchCallback = __uuidof(IInputSwitchCallback);
+// End internal inputswitchserver.h
 
 struct IConsoleUIView : IUnknown
 {
@@ -121,7 +155,7 @@ struct IConsoleUIView : IUnknown
 	virtual HRESULT STDMETHODCALLTYPE ResizeControl(IUnknown*, unsigned int) PURE;
 	virtual HRESULT STDMETHODCALLTYPE RemoveAll() PURE;
 	virtual HRESULT STDMETHODCALLTYPE GetConsoleWidth(unsigned int*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE SetCursorPos(IUnknown*, struct COORD, bool) PURE;
+	virtual HRESULT STDMETHODCALLTYPE SetCursorPos(IUnknown*, COORD, bool) PURE;
 };
 
 struct IConsoleUIViewInternal : IUnknown
