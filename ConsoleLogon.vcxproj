@@ -161,6 +161,7 @@
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\consoleuimanager.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\consoleuiview.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\controlhandle.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\logonviewmanager.h" />
   </ItemGroup>
   <ItemGroup>
