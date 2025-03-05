@@ -571,7 +571,8 @@ namespace Windows::Internal::UI::Logon
 			//	void Shutdown();
 		};
 
-		struct ICredentialGroup : public IInspectable
+		MIDL_INTERFACE("ba6e72f5-f47d-4aad-8bb6-1bba3a750e9f")
+		ICredentialGroup : public IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Credentials(WF::Collections::IObservableVector<Credential*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedCredential(ICredential**) PURE;

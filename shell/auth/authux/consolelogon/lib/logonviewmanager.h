@@ -48,7 +48,7 @@ public:
 
 	//~ Begin INavigationCallback Interface
 	STDMETHODIMP OnNavigation() override;
-	STDMETHODIMP ShowComboBox(LCPD::IComboBoxField*) override;
+	STDMETHODIMP ShowComboBox(LCPD::IComboBoxField* dataSource) override;
 	//~ End INavigationCallback Interface
 
 	HRESULT SetContext(IInspectable*, LC::IUserSettingManager*, LC::IRedirectionManager*, LCPD::IDisplayStateProvider*, LC::IBioFeedbackListener*);
@@ -63,7 +63,10 @@ public:
 	HRESULT Cleanup(WI::AsyncDeferral<WI::CNoResult>);
 
 private:
-	HRESULT SetContextUIThread(IInspectable*, LC::IUserSettingManager*, LC::IRedirectionManager*, LCPD::IDisplayStateProvider*, LC::IBioFeedbackListener*);
+	HRESULT SetContextUIThread(
+		IInspectable* autoLogonManager, LC::IUserSettingManager* userSettingManager,
+		LC::IRedirectionManager* redirectionManager, LCPD::IDisplayStateProvider* displayStateProvider,
+		LC::IBioFeedbackListener* bioFeedbackListener);
 	HRESULT LockUIThread(LC::LogonUIRequestReason, BOOLEAN, LC::IUnlockTrigger*);
 	HRESULT RequestCredentialsUIThread(LC::LogonUIRequestReason, LC::LogonUIFlags, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>>);
 	HRESULT ReportResultUIThread(LC::LogonUIRequestReason, NTSTATUS, NTSTATUS, HSTRING, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>>);
@@ -84,7 +87,7 @@ private:
 	HRESULT StartCredProvsIfNecessary(LC::LogonUIRequestReason, BOOLEAN);
 	HRESULT OnCredProvInitComplete();
 
-	enum LogonView
+	enum class LogonView
 	{
 		None = 0,
 		UserSelection = 1,
