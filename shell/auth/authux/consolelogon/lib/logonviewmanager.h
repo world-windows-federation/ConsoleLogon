@@ -1,63 +1,89 @@
 #pragma once
+#include "InternalAsync.h"
 #include "logoninterfaces.h"
 #include "consoleuimanager.h"
 
 class LogonViewManager 
-	: public 
-		Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>, 
-		ConsoleUIManager, 
-		ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::CredProvDataModel*, 
-		Windows::Internal::UI::Logon::CredProvData::CredentialSerialization*>, 
-		ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::CredProvDataModel*, 
-		Windows::Internal::UI::Logon::CredProvData::BioFeedbackState>, 
-		ABI::Windows::Foundation::ITypedEventHandler<IInspectable*, IInspectable*>, ABI::Windows::Foundation::Collections::VectorChangedEventHandler<IInspectable*>,
-		ABI::Windows::Foundation::Collections::VectorChangedEventHandler<Windows::Internal::UI::Logon::CredProvData::Credential*>,
-		ABI::Windows::Foundation::ITypedEventHandler<Windows::Internal::UI::Logon::CredProvData::Credential*, IInspectable*>,
-		INavigationCallback, 
-		Microsoft::WRL::FtmBase>
+	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
+		, ConsoleUIManager
+		, WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*>
+		, WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::BioFeedbackState>
+		, WF::ITypedEventHandler<IInspectable*, IInspectable*>
+		, WFC::VectorChangedEventHandler<IInspectable*>
+		, WFC::VectorChangedEventHandler<LCPD::Credential*>
+		, WF::ITypedEventHandler<LCPD::Credential*, IInspectable*>
+		, INavigationCallback
+		, Microsoft::WRL::FtmBase
+	>
 {
 public:
 	LogonViewManager();
+
+	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize();
-	HRESULT Invoke(Windows::Internal::UI::Logon::CredProvData::ICredential*, IInspectable*);
-	HRESULT Invoke(ABI::Windows::Foundation::Collections::IObservableVector<Windows::Internal::UI::Logon::CredProvData::Credential*>*, ABI::Windows::Foundation::Collections::IVectorChangedEventArgs*);
-	HRESULT Invoke(ABI::Windows::Foundation::Collections::IObservableVector<IInspectable*>*, ABI::Windows::Foundation::Collections::IVectorChangedEventArgs*);
-	HRESULT Invoke(IInspectable*, IInspectable*);
-	HRESULT Invoke(Windows::Internal::UI::Logon::CredProvData::ICredProvDataModel*, Windows::Internal::UI::Logon::CredProvData::BioFeedbackState);
-	HRESULT Invoke(Windows::Internal::UI::Logon::CredProvData::ICredProvDataModel*, Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization*);
-	HRESULT OnNavigation();
-	HRESULT ShowComboBox(Windows::Internal::UI::Logon::CredProvData::IComboBoxField*);
-	HRESULT SetContext(IInspectable*, Windows::Internal::UI::Logon::Controller::IUserSettingManager*, Windows::Internal::UI::Logon::Controller::IRedirectionManager*, Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider*, Windows::Internal::UI::Logon::Controller::IBioFeedbackListener*);
-	HRESULT Lock(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, unsigned char, Windows::Internal::UI::Logon::Controller::IUnlockTrigger*);
-	HRESULT RequestCredentials(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, Windows::Internal::UI::Logon::Controller::LogonUIFlags, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IRequestCredentialsData> >);
-	HRESULT ReportResult(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, LONG, LONG, HSTRING, HSTRING, HSTRING, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IReportCredentialsData> >);
+
+	//~ Begin WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface
+	STDMETHODIMP Invoke(LCPD::ICredential*, IInspectable*) override;
+	//~ End WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface
+
+	//~ Begin WFC::VectorChangedEventHandler<LCPD::Credential*> Interface
+	STDMETHODIMP Invoke(WFC::IObservableVector<LCPD::Credential*>*, WFC::IVectorChangedEventArgs*) override;
+	//~ End WFC::VectorChangedEventHandler<LCPD::Credential*> Interface
+
+	//~ Begin WFC::VectorChangedEventHandler<IInspectable*> Interface
+	STDMETHODIMP Invoke(WFC::IObservableVector<IInspectable*>*, WFC::IVectorChangedEventArgs*) override;
+	//~ End WFC::VectorChangedEventHandler<IInspectable*> Interface
+
+	//~ Begin WF::ITypedEventHandler<IInspectable*, IInspectable*> Interface
+	STDMETHODIMP Invoke(IInspectable*, IInspectable*) override;
+	//~ End WF::ITypedEventHandler<IInspectable*, IInspectable*> Interface
+
+	//~ Begin WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::BioFeedbackState> Interface
+	STDMETHODIMP Invoke(LCPD::ICredProvDataModel*, LCPD::BioFeedbackState) override;
+	//~ End WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::BioFeedbackState> Interface
+
+	//~ Begin WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*> Interface
+	STDMETHODIMP Invoke(LCPD::ICredProvDataModel*, LCPD::ICredentialSerialization*) override;
+	//~ End WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*> Interface
+
+	//~ Begin INavigationCallback Interface
+	STDMETHODIMP OnNavigation() override;
+	STDMETHODIMP ShowComboBox(LCPD::IComboBoxField*) override;
+	//~ End INavigationCallback Interface
+
+	HRESULT SetContext(IInspectable*, LC::IUserSettingManager*, LC::IRedirectionManager*, LCPD::IDisplayStateProvider*, LC::IBioFeedbackListener*);
+	HRESULT Lock(LC::LogonUIRequestReason, BOOLEAN, LC::IUnlockTrigger*);
+	HRESULT RequestCredentials(LC::LogonUIRequestReason, LC::LogonUIFlags, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>>);
+	HRESULT ReportResult(LC::LogonUIRequestReason, NTSTATUS, NTSTATUS, HSTRING, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>>);
 	HRESULT ClearCredentialState();
-	HRESULT DisplayStatus(Windows::Internal::UI::Logon::Controller::LogonUIState, HSTRING, Windows::Internal::AsyncDeferral<Windows::Internal::CNoResult>);
-	HRESULT DisplayMessage(Windows::Internal::UI::Logon::Controller::LogonMessageMode, UINT, HSTRING, HSTRING, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IMessageDisplayResult> >);
-	HRESULT DisplayCredentialError(LONG, LONG, UINT, HSTRING, HSTRING, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IMessageDisplayResult> >);
-	HRESULT ShowSecurityOptions(Windows::Internal::UI::Logon::Controller::LogonUISecurityOptions, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::ILogonUISecurityOptionsResult> >);
-	HRESULT Cleanup(Windows::Internal::AsyncDeferral<Windows::Internal::CNoResult>);
+	HRESULT DisplayStatus(LC::LogonUIState, HSTRING, WI::AsyncDeferral<WI::CNoResult>);
+	HRESULT DisplayMessage(LC::LogonMessageMode, UINT, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
+	HRESULT DisplayCredentialError(NTSTATUS, NTSTATUS, UINT, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
+	HRESULT ShowSecurityOptions(LC::LogonUISecurityOptions, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>>);
+	HRESULT Cleanup(WI::AsyncDeferral<WI::CNoResult>);
+
 private:
-	HRESULT SetContextUIThread(IInspectable*, Windows::Internal::UI::Logon::Controller::IUserSettingManager*, Windows::Internal::UI::Logon::Controller::IRedirectionManager*, Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider*, Windows::Internal::UI::Logon::Controller::IBioFeedbackListener*);
-	HRESULT LockUIThread(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, unsigned char, Windows::Internal::UI::Logon::Controller::IUnlockTrigger*);
-	HRESULT RequestCredentialsUIThread(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, Windows::Internal::UI::Logon::Controller::LogonUIFlags, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IRequestCredentialsData> >);
-	HRESULT ReportResultUIThread(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, LONG, LONG, HSTRING, HSTRING, HSTRING, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IReportCredentialsData> >);
-	HRESULT ShowSecurityOptionsUIThread(Windows::Internal::UI::Logon::Controller::LogonUISecurityOptions, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::ILogonUISecurityOptionsResult> >);
-	HRESULT DisplayStatusUIThread(Windows::Internal::UI::Logon::Controller::LogonUIState, HSTRING, Windows::Internal::AsyncDeferral<Windows::Internal::CNoResult>);
-	HRESULT DisplayMessageUIThread(Windows::Internal::UI::Logon::Controller::LogonMessageMode, UINT, HSTRING, HSTRING, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IMessageDisplayResult> >);
-	HRESULT DisplayCredentialErrorUIThread(LONG, LONG, UINT, HSTRING, HSTRING, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IMessageDisplayResult> >);
+	HRESULT SetContextUIThread(IInspectable*, LC::IUserSettingManager*, LC::IRedirectionManager*, LCPD::IDisplayStateProvider*, LC::IBioFeedbackListener*);
+	HRESULT LockUIThread(LC::LogonUIRequestReason, BOOLEAN, LC::IUnlockTrigger*);
+	HRESULT RequestCredentialsUIThread(LC::LogonUIRequestReason, LC::LogonUIFlags, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>>);
+	HRESULT ReportResultUIThread(LC::LogonUIRequestReason, NTSTATUS, NTSTATUS, HSTRING, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>>);
+	HRESULT ShowSecurityOptionsUIThread(LC::LogonUISecurityOptions, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>>);
+	HRESULT DisplayStatusUIThread(LC::LogonUIState, HSTRING, WI::AsyncDeferral<WI::CNoResult>);
+	HRESULT DisplayMessageUIThread(LC::LogonMessageMode, UINT, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
+	HRESULT DisplayCredentialErrorUIThread(NTSTATUS, NTSTATUS, UINT, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
 	HRESULT ClearCredentialStateUIThread();
-	HRESULT CleanupUIThread(Windows::Internal::AsyncDeferral<Windows::Internal::CNoResult>);
+	HRESULT CleanupUIThread(WI::AsyncDeferral<WI::CNoResult>);
 	HRESULT ShowCredentialView();
 	HRESULT ShowUserSelection();
-	HRESULT ShowCredProvSelection(Windows::Internal::UI::Logon::CredProvData::ICredentialGroup*, HSTRING);
-	HRESULT ShowSelectedCredentialView(Windows::Internal::UI::Logon::CredProvData::ICredential*, HSTRING);
+	HRESULT ShowCredProvSelection(LCPD::ICredentialGroup*, HSTRING);
+	HRESULT ShowSelectedCredentialView(LCPD::ICredential*, HSTRING);
 	HRESULT ShowStatusView(HSTRING);
-	HRESULT ShowMessageView(HSTRING, HSTRING, UINT, Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IMessageDisplayResult> >);
+	HRESULT ShowMessageView(HSTRING, HSTRING, UINT, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
 	HRESULT ShowSerializationFailedView(HSTRING, HSTRING);
 	HRESULT DestroyCurrentView();
-	HRESULT StartCredProvsIfNecessary(Windows::Internal::UI::Logon::Controller::LogonUIRequestReason, unsigned char);
+	HRESULT StartCredProvsIfNecessary(LC::LogonUIRequestReason, BOOLEAN);
 	HRESULT OnCredProvInitComplete();
+
 	enum LogonView
 	{
 		None = 0,
@@ -69,18 +95,18 @@ private:
 		ComboBox = 6,
 		Locked = 7,
 		SecurityOptions = 8,
-		SerializationFailed = 9
+		SerializationFailed = 9,
 	};
 
-	LogonViewManager::LogonView m_currentViewType;
+	LogonView m_currentViewType;
 	Microsoft::WRL::ComPtr<IConsoleUIView> m_currentView;
 	Microsoft::WRL::ComPtr<IInspectable> m_autoLogonManager;
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::Controller::IUserSettingManager> m_userSettingManager;
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::Controller::IRedirectionManager> m_redirectionManager;
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::CredProvData::IDisplayStateProvider> m_displayStateProvider;
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::Controller::IBioFeedbackListener> m_bioFeedbackListener;
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::CredProvData::ICredProvDataModel> m_credProvDataModel;
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::CredProvData::ICredentialGroup> m_selectedGroup;
+	Microsoft::WRL::ComPtr<LC::IUserSettingManager> m_userSettingManager;
+	Microsoft::WRL::ComPtr<LC::IRedirectionManager> m_redirectionManager;
+	Microsoft::WRL::ComPtr<LCPD::IDisplayStateProvider> m_displayStateProvider;
+	Microsoft::WRL::ComPtr<LC::IBioFeedbackListener> m_bioFeedbackListener;
+	Microsoft::WRL::ComPtr<LCPD::ICredProvDataModel> m_credProvDataModel;
+	Microsoft::WRL::ComPtr<LCPD::ICredentialGroup> m_selectedGroup;
 	EventRegistrationToken m_serializationCompleteToken;
 	EventRegistrationToken m_bioFeedbackStateChangeToken;
 	EventRegistrationToken m_usersChangedToken;
@@ -90,10 +116,10 @@ private:
 	bool m_isCredentialResetRequired;
 	bool m_credProvInitialized;
 	bool m_showCredentialViewOnInitComplete;
-	Windows::Internal::UI::Logon::Controller::LogonUIRequestReason m_currentReason;
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::Controller::IUnlockTrigger> m_unlockTrigger;
-	wistd::unique_ptr<Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IRequestCredentialsData> >, wistd::default_delete<Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<Windows::Internal::UI::Logon::Controller::IRequestCredentialsData> > > > m_requestCredentialsComplete;
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::CredProvData::IReportResultInfo> m_lastReportResultInfo;
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::CredProvData::ICredentialSerialization> m_cachedSerialization;
+	LC::LogonUIRequestReason m_currentReason;
+	Microsoft::WRL::ComPtr<LC::IUnlockTrigger> m_unlockTrigger;
+	wistd::unique_ptr<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>>> m_requestCredentialsComplete;
+	Microsoft::WRL::ComPtr<LCPD::IReportResultInfo> m_lastReportResultInfo;
+	Microsoft::WRL::ComPtr<LCPD::ICredentialSerialization> m_cachedSerialization;
 	Microsoft::WRL::ComPtr<IInputSwitchControl> m_inputSwitchControl;
 };

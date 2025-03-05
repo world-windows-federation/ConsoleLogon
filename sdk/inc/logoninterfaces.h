@@ -13,6 +13,8 @@
 #include <windows.storage.streams.h>
 
 namespace WF = ABI::Windows::Foundation;
+namespace WFC = ABI::Windows::Foundation::Collections;
+namespace WI = Windows::Internal;
 
 namespace Windows::Internal::UI::Logon
 {
@@ -826,3 +828,6 @@ struct INotificationDispatcher : public IUnknown
 	virtual void STDMETHODCALLTYPE StartProcessingNotifications() PURE;
 	virtual void STDMETHODCALLTYPE StopProcessingNotifications() PURE;
 };
+
+namespace LC = Windows::Internal::UI::Logon::Controller;
+namespace LCPD = Windows::Internal::UI::Logon::CredProvData;
