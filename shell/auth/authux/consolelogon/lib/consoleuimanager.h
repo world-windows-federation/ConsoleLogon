@@ -17,7 +17,7 @@ public:
 	HRESULT StopUI();
 
 protected:
-	~ConsoleUIManager();
+	~ConsoleUIManager() = default;
 
 	HRESULT SetActiveView(IConsoleUIView*);
 	HRESULT EnsureUIStarted();
