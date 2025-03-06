@@ -134,7 +134,7 @@ namespace Windows::Internal::UI::Logon
 			UserTileImageSize_ExtraSmall = 2
 		};
 
-		struct IUserTileImage : public IInspectable
+		struct IUserTileImage : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_TileStream(ABI::Windows::Storage::Streams::IRandomAccessStream**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_TileStreamType(TileStreamType*) PURE;
@@ -145,7 +145,7 @@ namespace Windows::Internal::UI::Logon
 		class User;
 
 		MIDL_INTERFACE("837c3232-b75b-4f12-bf4c-d85f57d3882f")
-		IUser : public IInspectable
+		IUser : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_IsLoggedIn(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsBuiltInGuest(unsigned char*) PURE;
@@ -250,7 +250,7 @@ namespace Windows::Internal::UI::Logon
 			CredentialFieldChangeKind_MaxLength = 8
 		};
 
-		struct ICredentialField : public IInspectable
+		struct ICredentialField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Label(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInSelectedTile(unsigned char*) PURE;
@@ -279,7 +279,7 @@ namespace Windows::Internal::UI::Logon
 			ConnectionStatus_ConnectionFailed = 3
 		};
 
-		struct ISerializationProgressInfo : public IInspectable
+		struct ISerializationProgressInfo : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Status(ConnectionStatus*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(HSTRING*) PURE;
@@ -294,11 +294,14 @@ namespace Windows::Internal::UI::Logon
 			class StatusMessage
 			{
 			};
-		private:
+
 			SerializationProgressInfo();
 		};
+
 		class Credential;
-		struct ICredential : public IInspectable
+
+		MIDL_INTERFACE("a450753a-7095-4042-9ce1-d2847167ee58")
+		ICredential : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Fields(WF::Collections::IVectorView<ICredentialField*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LogoImageField(ICredentialField**) PURE;
@@ -421,7 +424,7 @@ namespace Windows::Internal::UI::Logon
 			CredentialSerialization();
 		};
 
-		struct IReportResultInfo : public IInspectable
+		struct IReportResultInfo : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_ProviderCLSID(GUID*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_StatusCode(long*) PURE;
@@ -450,8 +453,10 @@ namespace Windows::Internal::UI::Logon
 		public:
 			ReportResultInfo();
 		};
+
 		class CredProvDataModel;
-		struct ICredProvDataModel : public IInspectable
+
+		struct ICredProvDataModel : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(CredProvScenario, unsigned short, SelectionMode, WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE InitializeWithContextAsync(CredProvScenario, unsigned short, SelectionMode, UINT, unsigned char, IInspectable*, GUID, ABI::Windows::Storage::Streams::IBuffer*, WF::IAsyncAction**) PURE;
@@ -571,8 +576,40 @@ namespace Windows::Internal::UI::Logon
 			//	void Shutdown();
 		};
 
+		struct IDispatchEvent : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE Dispatch() PURE;
+		};
+
+		struct IUIThreadEventDispatcher : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE DispatchEvent(IDispatchEvent*) PURE;
+		};
+
+		enum OptionalDependencyKind
+		{
+			OptionalDependencyKind_AutoLogonManager = 0,
+			OptionalDependencyKind_WindowContainer = 1,
+			OptionalDependencyKind_DefaultSelector = 2,
+			OptionalDependencyKind_DisplayState = 3,
+			OptionalDependencyKind_ViewGeneratedCredentialField = 4,
+			OptionalDependencyKind_TelemetryData = 5,
+			OptionalDependencyKind_UserTileImage = 6,
+		};
+
+		struct IOptionalDependencyProvider : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE GetOptionalDependency(OptionalDependencyKind, IInspectable**) PURE;
+		};
+
+		MIDL_INTERFACE("4b869909-e780-424e-ae03-210fe46f4527")
+		ICredProvDataModelFactory : IInspectable
+		{
+			virtual HRESULT CreateCredProvDataModel(IUIThreadEventDispatcher*, IOptionalDependencyProvider*, ICredProvDataModel**) PURE;
+		};
+
 		MIDL_INTERFACE("ba6e72f5-f47d-4aad-8bb6-1bba3a750e9f")
-		ICredentialGroup : public IInspectable
+		ICredentialGroup : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Credentials(WF::Collections::IObservableVector<Credential*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedCredential(ICredential**) PURE;
@@ -838,16 +875,18 @@ namespace Windows::Internal::UI::Logon
 	}
 }
 
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_CredProvData_CredProvDataModel[] = L"Windows.Internal.UI.Logon.CredProvData.CredProvDataModel";
+
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_RequestCredentialsData[] = L"Windows.Internal.UI.Logon.Controller.RequestCredentialsData";
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ReportCredentialsData[] = L"Windows.Internal.UI.Logon.Controller.ReportCredentialsData";
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_MessageDisplayResult[] = L"Windows.Internal.UI.Logon.Controller.MessageDisplayResult";
 
-struct IDispatchNotification : public IUnknown
+struct IDispatchNotification : IUnknown
 {
 	virtual void STDMETHODCALLTYPE Dispatch() PURE;
 };
 
-struct INotificationDispatcher : public IUnknown
+struct INotificationDispatcher : IUnknown
 {
 	virtual HRESULT STDMETHODCALLTYPE QueueNotification(IDispatchNotification*) PURE;
 	virtual void STDMETHODCALLTYPE StartProcessingNotifications() PURE;

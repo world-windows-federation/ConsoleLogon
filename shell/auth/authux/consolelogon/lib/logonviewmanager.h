@@ -104,15 +104,15 @@ private:
 	HRESULT CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> completion);
 	HRESULT ShowCredentialView();
 	HRESULT ShowUserSelection();
-	HRESULT ShowCredProvSelection(LCPD::ICredentialGroup*, HSTRING);
-	HRESULT ShowSelectedCredentialView(LCPD::ICredential*, HSTRING);
-	HRESULT ShowStatusView(HSTRING);
+	HRESULT ShowCredProvSelection(LCPD::ICredentialGroup* group, HSTRING userName);
+	HRESULT ShowSelectedCredentialView(LCPD::ICredential* credential, HSTRING userName);
+	HRESULT ShowStatusView(HSTRING status);
 	HRESULT ShowMessageView(
 		HSTRING caption, HSTRING message, UINT messageBoxFlags,
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
-	HRESULT ShowSerializationFailedView(HSTRING, HSTRING);
+	HRESULT ShowSerializationFailedView(HSTRING caption, HSTRING message);
 	HRESULT DestroyCurrentView();
-	HRESULT StartCredProvsIfNecessary(LC::LogonUIRequestReason, BOOLEAN);
+	HRESULT StartCredProvsIfNecessary(LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching);
 	HRESULT OnCredProvInitComplete();
 
 	enum class LogonView

@@ -174,7 +174,7 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, LCPD::ICreden
 					{
 						b = false;
 						RETURN_IF_FAILED(m_redirectionManager->OnBeginPainting()); // 132
-						RETURN_IF_FAILED(ShowSerializationFailedView(Wrappers::HStringReference(caption.Get()).Get(), statusMessage.Get())); // 133
+						RETURN_IF_FAILED(ShowSerializationFailedView(nullptr, statusMessage.Get())); // 133
 					}
 				}
 				else
@@ -679,28 +679,34 @@ HRESULT LogonViewManager::RequestCredentialsUIThread(
 	return S_OK;
 }
 
-template <typename TDelegateInterface, typename TActionInterface, typename TLambda>
-HRESULT StartOperationAndThen(TActionInterface* action, TLambda&& lambda)
+template <typename TDelegateInterface, typename TOperation, typename TFunc>
+HRESULT StartOperationAndThen(TOperation* pOperation, TFunc&& func)
 {
-	ComPtr<TDelegateInterface> callback = Callback<TDelegateInterface>([lambda](TActionInterface* asyncInfo, AsyncStatus asyncStatus)
+	ComPtr<TDelegateInterface> spCallback = Callback<TDelegateInterface>([func](TOperation* pOperation, AsyncStatus status)
 	{
-		HRESULT errorCode = S_OK;
-		if (asyncStatus != AsyncStatus::Completed)
+		HRESULT hr = S_OK;
+		if (status != AsyncStatus::Completed)
 		{
 			ComPtr<IAsyncInfo> spAsyncInfo;
-			errorCode = asyncInfo->QueryInterface(IID_PPV_ARGS(&spAsyncInfo));
-			if (SUCCEEDED(errorCode))
-				spAsyncInfo->get_ErrorCode(&errorCode);
+			hr = pOperation->QueryInterface(IID_PPV_ARGS(&spAsyncInfo));
+			if (SUCCEEDED(hr))
+			{
+				spAsyncInfo->get_ErrorCode(&hr);
+			}
 		}
-		lambda(errorCode);
+		func(hr);
 		return S_OK;
 	});
 
 	HRESULT hr;
-	if (callback.Get())
-		hr = action->put_Completed(callback.Get());
+	if (spCallback.Get())
+	{
+		hr = pOperation->put_Completed(spCallback.Get());
+	}
 	else
+	{
 		hr = E_OUTOFMEMORY;
+	}
 
 	return hr;
 }
@@ -899,8 +905,342 @@ HRESULT LogonViewManager::CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> compl
 	return S_OK;
 }
 
+HRESULT LogonViewManager::ShowCredentialView()
+{
+	if (m_credentialsChangedToken.value)
+	{
+		ComPtr<WFC::IObservableVector<LCPD::Credential*>> credentials;
+		RETURN_IF_FAILED(m_selectedGroup->get_Credentials(&credentials)); // 852
+		RETURN_IF_FAILED(credentials->remove_VectorChanged(m_credentialsChangedToken)); // 853
+		m_credentialsChangedToken.value = 0;
+	}
+
+	if (m_selectedCredentialChangedToken.value)
+	{
+		RETURN_IF_FAILED(m_selectedGroup->remove_SelectedCredentialChanged(m_selectedCredentialChangedToken)); // 859
+		m_selectedCredentialChangedToken.value = 0;
+	}
+
+	ComPtr<IInspectable> selectedUserOrV1;
+	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 864
+	if (selectedUserOrV1.Get())
+	{
+		ComPtr<LCPD::IUser> selectedUser;
+		ComPtr<LCPD::ICredential> selectedCredential;
+		Wrappers::HString userName;
+
+		if (SUCCEEDED(selectedUserOrV1.As(&selectedUser)))
+		{
+			RETURN_IF_FAILED(selectedUser->get_DisplayName(userName.ReleaseAndGetAddressOf())); // 873
+
+			RETURN_IF_FAILED(selectedUser.As(&m_selectedGroup)); // 875
+
+			ComPtr<WFC::IObservableVector<LCPD::Credential*>> credentials;
+			RETURN_IF_FAILED(m_selectedGroup->get_Credentials(&credentials)); // 878
+			RETURN_IF_FAILED(credentials->add_VectorChanged(this, &m_credentialsChangedToken)); // 879
+
+			RETURN_IF_FAILED(m_selectedGroup->add_SelectedCredentialChanged(this, &m_selectedCredentialChangedToken)); // 881
+
+			RETURN_IF_FAILED(m_selectedGroup->get_SelectedCredential(&selectedCredential)); // 883
+		}
+		else
+		{
+			m_selectedGroup.Reset();
+
+			RETURN_IF_FAILED(selectedUserOrV1.As(&selectedCredential)); // 889
+			RETURN_IF_FAILED(selectedCredential->get_LogoLabel(userName.ReleaseAndGetAddressOf())); // 890
+
+			if (!userName.Get())
+			{
+				CoTaskMemNativeString defaultV1Label;
+				RETURN_IF_FAILED(defaultV1Label.Initialize(HINST_THISCOMPONENT, 105)); // 895
+				RETURN_IF_FAILED(defaultV1Label.Get() ? userName.Set(defaultV1Label.Get()) : E_POINTER); // 896
+			}
+		}
+
+		if (selectedCredential.Get())
+		{
+			RETURN_IF_FAILED(ShowSelectedCredentialView(selectedCredential.Get(), userName.Get())); // 902
+		}
+		else
+		{
+			RETURN_IF_FAILED(ShowCredProvSelection(m_selectedGroup.Get(), userName.Get())); // 906
+		}
+	}
+	else
+	{
+		RETURN_IF_FAILED(ShowUserSelection()); // 911
+	}
+
+	return S_OK;
+}
+
+HRESULT LogonViewManager::ShowUserSelection()
+{
+	RETURN_IF_FAILED(DestroyCurrentView()); // 918
+
+	ComPtr<UserSelectionView> userSelectionView;
+	RETURN_IF_FAILED(MakeAndInitialize<UserSelectionView>(&userSelectionView, m_credProvDataModel.Get())); // 921
+
+	RETURN_IF_FAILED(userSelectionView->UserSelectionView::Advise(this)); // 923
+
+	RETURN_IF_FAILED(SetActiveView(userSelectionView.Get())); // 925
+
+	m_currentView.Swap(userSelectionView.Get());
+	m_currentViewType = LogonView::UserSelection;
+	return S_OK;
+}
+
+HRESULT LogonViewManager::ShowCredProvSelection(LCPD::ICredentialGroup* group, HSTRING userName)
+{
+	RETURN_IF_FAILED(DestroyCurrentView()); // 935
+
+	ComPtr<CredProvSelectionView> credProvSelectionView;
+	RETURN_IF_FAILED(MakeAndInitialize<CredProvSelectionView>(&credProvSelectionView, group, userName)); // 938
+
+	RETURN_IF_FAILED(credProvSelectionView->CredProvSelectionView::Advise(this)); // 940
+
+	RETURN_IF_FAILED(SetActiveView(credProvSelectionView.Get())); // 942
+
+	m_currentView.Swap(credProvSelectionView.Get());
+	m_currentViewType = LogonView::CredProvSelection;
+	return S_OK;
+}
+
+HRESULT LogonViewManager::ShowSelectedCredentialView(LCPD::ICredential* credential, HSTRING userName)
+{
+	RETURN_IF_FAILED(DestroyCurrentView()); // 952
+
+	ComPtr<SelectedCredentialView> selectedCredentialView;
+	RETURN_IF_FAILED(MakeAndInitialize<SelectedCredentialView>(&selectedCredentialView, credential, userName)); // 955
+
+	RETURN_IF_FAILED(selectedCredentialView->SelectedCredentialView::Advise(this)); // 957
+
+	RETURN_IF_FAILED(SetActiveView(selectedCredentialView.Get())); // 959
+
+	m_currentView.Swap(selectedCredentialView.Get());
+	m_currentViewType = LogonView::SelectedCredential;
+	return S_OK;
+}
+
+HRESULT LogonViewManager::ShowStatusView(HSTRING status)
+{
+	RETURN_IF_FAILED(DestroyCurrentView()); // 969
+
+	ComPtr<LCPD::IUser> selectedUser;
+	if (m_credProvDataModel.Get())
+	{
+		ComPtr<IInspectable> selectedUserOrV1;
+		RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 975
+
+		if (selectedUserOrV1.Get())
+		{
+			selectedUserOrV1.As(&selectedUser);
+		}
+	}
+
+	ComPtr<StatusView> statusView;
+	RETURN_IF_FAILED(MakeAndInitialize<StatusView>(&statusView, status, selectedUser.Get())); // 983
+
+	RETURN_IF_FAILED(statusView->StatusView::Advise(this)); // 985
+
+	RETURN_IF_FAILED(SetActiveView(statusView.Get())); // 987
+
+	m_currentView.Swap(statusView.Get());
+	m_currentViewType = LogonView::Status;
+	return S_OK;
+}
+
 HRESULT LogonViewManager::ShowMessageView(
 	HSTRING caption, HSTRING message, UINT messageBoxFlags,
 	WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion)
 {
+	RETURN_IF_FAILED(DestroyCurrentView()); // 997
+	ComPtr<LCPD::IUser> selectedUser;
+	if (m_credProvDataModel.Get())
+	{
+		ComPtr<IInspectable> selectedUserOrV1;
+		RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 1002
+		if (selectedUserOrV1.Get())
+		{
+			selectedUserOrV1.As(&selectedUser);
+		}
+	}
+
+	ComPtr<MessageView> messageView;
+	RETURN_IF_FAILED(MakeAndInitialize<MessageView>(&messageView, caption, message, messageBoxFlags, completion, selectedUser.Get())); // 1010
+
+	RETURN_IF_FAILED(messageView->MessageView::Advise(this)); // 1012
+
+	RETURN_IF_FAILED(SetActiveView(messageView.Get())); // 1014
+
+	m_currentView.Swap(messageView);
+	m_currentViewType = LogonView::Message;
+	return S_OK;
+}
+
+// ComPtr<LCPD::IUser> selectedUser;
+// ComPtr<IInspectable> selectedUserOrV1;
+HRESULT LogonViewManager::ShowSerializationFailedView(HSTRING caption, HSTRING message)
+{
+	RETURN_IF_FAILED(DestroyCurrentView()); // 1024
+
+	ComPtr<LCPD::IUser> selectedUser;
+	if (m_credProvDataModel.Get())
+	{
+		ComPtr<IInspectable> selectedUserOrV1;
+		RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 1029
+		if (selectedUserOrV1.Get())
+		{
+			selectedUserOrV1.As(&selectedUser);
+		}
+	}
+
+	ComPtr<SerializationFailedView> serializationFailedView;
+	RETURN_IF_FAILED(MakeAndInitialize<SerializationFailedView>(&serializationFailedView, caption, message, selectedUser.Get())); // 1037
+
+	RETURN_IF_FAILED(serializationFailedView->SerializationFailedView::Advise(this)); // 1039
+
+	RETURN_IF_FAILED(SetActiveView(serializationFailedView.Get())); // 1041
+
+	m_currentView.Swap(serializationFailedView.Get());
+	m_currentViewType = LogonView::SerializationFailed;
+	return S_OK;
+}
+
+HRESULT LogonViewManager::DestroyCurrentView()
+{
+	if (m_currentView.Get())
+	{
+		RETURN_IF_FAILED(m_currentView->Unadvise()); // 1053
+		RETURN_IF_FAILED(m_currentView->RemoveAll()); // 1054
+		m_currentView.Reset();
+	}
+
+	return S_OK;
+}
+
+HRESULT LogonViewManager::StartCredProvsIfNecessary(LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching)
+{
+	LCPD::CredProvScenario scenario = LCPD::CredProvScenario_Logon;
+	if (reason == LC::LogonUIRequestReason_LogonUIUnlock)
+	{
+		scenario = allowDirectUserSwitching ? LCPD::CredProvScenario_Logon : LCPD::CredProvScenario_Unlock;
+	}
+	else if (reason == LC::LogonUIRequestReason_LogonUIChange)
+	{
+		scenario = LCPD::CredProvScenario_ChangePassword;
+	}
+
+	if (m_credProvDataModel.Get())
+	{
+		if (m_isCredentialResetRequired)
+		{
+			ComPtr<WF::IAsyncAction> resetAction;
+			RETURN_IF_FAILED(m_credProvDataModel->ResetAsync(scenario, &resetAction)); // 1124
+			m_credProvInitialized = false;
+
+			ComPtr<LogonViewManager> thisRef = this;
+
+			HRESULT hr = StartOperationAndThen<WF::IAsyncActionCompletedHandler>(resetAction.Get(), [thisRef, this](HRESULT hrAction, WF::IAsyncAction* asyncOp) -> HRESULT
+			{
+				UNREFERENCED_PARAMETER(thisRef);
+				auto completeOnFailure = wil::scope_exit([this]() -> void
+				{
+					if (m_requestCredentialsComplete)
+						m_requestCredentialsComplete->Complete(E_UNEXPECTED);
+				});
+
+				if (SUCCEEDED(hrAction))
+				{
+					m_credProvInitialized = true;
+					hrAction = ShowCredentialView();
+				}
+
+				RETURN_IF_FAILED(hrAction); // 1147
+				m_isCredentialResetRequired = false;
+				completeOnFailure.release();
+				return S_OK;
+			});
+			RETURN_IF_FAILED(hr); // 1147
+		}
+		else if (m_credProvInitialized)
+		{
+			if (m_showCredentialViewOnInitComplete)
+			{
+				RETURN_IF_FAILED(ShowCredentialView()); // 1153
+			}
+
+			ComPtr<LCPD::IUser> selectedUser;
+			RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUser(&selectedUser)); // 1157
+
+			if (selectedUser.Get())
+			{
+				ComPtr<LCPD::ICredentialGroup> selectedCredentialGroup;
+				RETURN_IF_FAILED(selectedUser.As(&selectedCredentialGroup)); // 1166
+				RETURN_IF_FAILED(selectedCredentialGroup->RefreshSelection()); // 1167
+			}
+		}
+
+		return S_OK;
+	}
+
+	ComPtr<LCPD::IUIThreadEventDispatcher> eventDispatcher;
+	RETURN_IF_FAILED(MakeAndInitialize<EventDispatcher>(&eventDispatcher, m_Dispatcher.Get())); // 1081
+
+	ComPtr<LCPD::IOptionalDependencyProvider> optionalDependencyProvider;
+	RETURN_IF_FAILED(MakeAndInitialize<OptionalDependencyProvider>(&optionalDependencyProvider, reason, m_autoLogonManager.Get(), m_userSettingManager.Get(), m_displayStateProvider.Get())); // 1084
+
+	ComPtr<LCPD::ITelemetryDataProvider> telemetryProvider;
+	RETURN_IF_FAILED(m_userSettingManager->get_TelemetryDataProvider(&telemetryProvider)); // 1087;
+
+	ComPtr<LCPD::ICredProvDataModelFactory> credProvDataModelFactory;
+	RETURN_IF_FAILED(WF::GetActivationFactory(Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_CredProvData_CredProvDataModel).Get(), &credProvDataModelFactory)); // 1090
+	RETURN_IF_FAILED(credProvDataModelFactory->CreateCredProvDataModel(eventDispatcher.Get(), optionalDependencyProvider.Get(), &m_credProvDataModel)); // 1091
+
+	RETURN_IF_FAILED(m_credProvDataModel->add_SerializationComplete(this, &m_serializationCompleteToken)); // 1093
+	RETURN_IF_FAILED(m_credProvDataModel->add_BioFeedbackStateChange(this, &m_bioFeedbackStateChangeToken)); // 1094
+
+	ComPtr<WF::IAsyncAction> initAction;
+	LANGID langID = 0;
+	RETURN_IF_FAILED(m_userSettingManager->get_LangID(&langID)); // 1098
+	RETURN_IF_FAILED(m_credProvDataModel->InitializeAsync(scenario, langID, LCPD::SelectionMode_UserAndV1Aggregate, &initAction)); // 1099
+
+	ComPtr<LogonViewManager> thisRef = this;
+
+	HRESULT hr = StartOperationAndThen<WF::IAsyncActionCompletedHandler>(initAction.Get(), [thisRef, this](HRESULT hrAction, WF::IAsyncAction* asyncOp) -> HRESULT
+	{
+		UNREFERENCED_PARAMETER(thisRef);
+		auto completeOnFailure = wil::scope_exit([this]() -> void
+		{
+			if (m_requestCredentialsComplete)
+				m_requestCredentialsComplete->Complete(E_UNEXPECTED);
+		});
+
+		if (SUCCEEDED(hrAction))
+		{
+			m_credProvInitialized = true;
+			hrAction = OnCredProvInitComplete();
+		}
+
+		RETURN_IF_FAILED(hrAction); // 1119
+		completeOnFailure.release();
+		return S_OK;
+	});
+	RETURN_IF_FAILED(hr); // 1119
+	return S_OK;
+}
+
+HRESULT LogonViewManager::OnCredProvInitComplete()
+{
+	ComPtr<WFC::IObservableVector<IInspectable*>> usersAndV1Creds;
+	RETURN_IF_FAILED(m_credProvDataModel->get_UsersAndV1Credentials(&usersAndV1Creds)); // 1177
+	RETURN_IF_FAILED(usersAndV1Creds->add_VectorChanged(this, &m_usersChangedToken)); // 1178
+	RETURN_IF_FAILED(m_credProvDataModel->add_SelectedUserOrV1CredentialChanged(this, &m_selectedUserChangeToken)); // 1179
+	if (m_showCredentialViewOnInitComplete)
+	{
+		RETURN_IF_FAILED(ShowCredentialView()); // 1182
+	}
+
+	return S_OK;
 }
