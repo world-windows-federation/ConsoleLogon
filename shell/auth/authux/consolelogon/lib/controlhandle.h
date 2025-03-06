@@ -33,8 +33,9 @@ public:
 	ControlHandle();
 	~ControlHandle();
 
-	//~ Begin IControlHandle Interface
 	STDMETHODIMP RuntimeClassInitialize(UINT, UINT, UINT, IConsoleUIControl*);
+
+	//~ Begin IControlHandle Interface
 	STDMETHODIMP_(UINT) GetOffsetFromRoot();
 	STDMETHODIMP UpdateOffsetFromRoot(UINT);
 	STDMETHODIMP_(UINT) GetSize();
