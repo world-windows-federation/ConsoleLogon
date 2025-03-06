@@ -4,3 +4,6 @@ root = true
 indent_style = tab
 indent_size = tab
 end_of_line = crlf
+
+[*.{h,c,cpp}]
+insert_final_newline = true
