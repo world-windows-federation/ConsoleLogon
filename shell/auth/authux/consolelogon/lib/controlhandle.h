@@ -26,7 +26,7 @@ IControlHandle : public IUnknown
 
 class ControlHandle
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>
-	, IControlHandle
+		, IControlHandle
 	>
 {
 public:

@@ -20,13 +20,13 @@ public:
 	//~ Begin IConsoleUIView Interface
 	STDMETHODIMP Advise(INavigationCallback*) override;
 	STDMETHODIMP Unadvise() override;
-	STDMETHODIMP AppendControl(UINT, IConsoleUIControl*, IUnknown**) override;
-	STDMETHODIMP WriteOutput(IUnknown*, PCHAR_INFO, COORD, PSMALL_RECT) override;
+	STDMETHODIMP AppendControl(UINT height, IConsoleUIControl* control, IUnknown** ppControlHandle) override;
+	STDMETHODIMP WriteOutput(IUnknown* handle, PCHAR_INFO data, COORD dataSize, PSMALL_RECT writeRegion) override;
 	STDMETHODIMP GetColorAttributes(WORD* pAttributes) override;
-	STDMETHODIMP ResizeControl(IUnknown*, UINT) override;
+	STDMETHODIMP ResizeControl(IUnknown* handle, UINT newHeight) override;
 	STDMETHODIMP RemoveAll() override;
 	STDMETHODIMP GetConsoleWidth(UINT* pWidth) override;
-	STDMETHODIMP SetCursorPos(IUnknown*, COORD, bool) override;
+	STDMETHODIMP SetCursorPos(IUnknown* handle, COORD position, bool isVisible) override;
 	//~ End IConsoleUIView Interface
 
 	//~ Begin IConsoleUIViewInternal Interface
@@ -36,14 +36,14 @@ public:
 	//~ End IConsoleUIViewInternal Interface
 
 protected:
-	virtual HRESULT v_OnKeyInput(PKEY_EVENT_RECORD, int*) PURE;
+	virtual HRESULT v_OnKeyInput(PKEY_EVENT_RECORD keyEvent, BOOL* keyHandled) PURE;
 	virtual void v_Unadvise() PURE;
 	virtual int GetFocusIndex() PURE;
 
 	ComPtr<INavigationCallback> m_navigationCallback;
 
 private:
-	HRESULT ShiftVisuals(UINT, int);
+	HRESULT ShiftVisuals(UINT startIndex, int shiftDistance);
 	HRESULT MoveFocusToNext();
 	HRESULT MoveFocusToPrevious();
 
@@ -84,22 +84,22 @@ HRESULT ConsoleUIView::Unadvise()
 
 HRESULT ConsoleUIView::AppendControl(UINT height, IConsoleUIControl* control, IUnknown** ppControlHandle)
 {
-	*ppControlHandle = NULL;
+	*ppControlHandle = nullptr;
 
 	ComPtr<ControlHandle> controlHandle;
 
-	size_t celem = m_controlTable._celem;
-	if (celem)
-	{
-		ComPtr<IControlHandle> lastControl = m_controlTable[celem - 1];
-		UINT offset = lastControl->GetOffsetFromRoot() + lastControl->GetSize();
-
-		RETURN_IF_FAILED(MakeAndInitialize<ControlHandle>(&controlHandle, offset, height, celem, control)); //58
-	}
-	else
+	if (!m_controlTable._celem)
 	{
 		RETURN_IF_FAILED(MakeAndInitialize<ControlHandle>(&controlHandle, 0, height, 0, control)); // 51
 	}
+	else
+	{
+		ComPtr<IControlHandle> lastControl = m_controlTable[m_controlTable._celem - 1];
+		UINT startingOffset = lastControl->GetOffsetFromRoot() + lastControl->GetSize();
+
+		RETURN_IF_FAILED(MakeAndInitialize<ControlHandle>(&controlHandle, startingOffset, height, m_controlTable._celem, control)); // 58
+	}
+
 	RETURN_IF_FAILED(m_controlTable.Add(controlHandle)); // 61
 
 	RETURN_IF_FAILED(controlHandle.CopyTo(ppControlHandle)); // 63
@@ -114,21 +114,21 @@ HRESULT ConsoleUIView::WriteOutput(IUnknown* handle, PCHAR_INFO data, COORD data
 	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
 	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &screenBufferInfo)); // 74
 
-	
+
 	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Top < 0) || (writeRegion->Bottom >= controlHandle->GetSize()))); // 77
 	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Left < 0 ) || (writeRegion->Right >= screenBufferInfo.dwSize.X))); // 78
 	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Top > writeRegion->Bottom)|| (writeRegion->Left > writeRegion->Right))); // 79
 
 	SMALL_RECT actualWriteRect;
-	actualWriteRect.Top = writeRegion->Top + controlHandle->GetOffsetFromRoot();
 	actualWriteRect.Left = writeRegion->Left;
-	actualWriteRect.Bottom = writeRegion->Bottom + controlHandle->GetOffsetFromRoot();
+	actualWriteRect.Top = writeRegion->Top + controlHandle->GetOffsetFromRoot();
 	actualWriteRect.Right = writeRegion->Right;
+	actualWriteRect.Bottom = writeRegion->Bottom + controlHandle->GetOffsetFromRoot();
 
 	RETURN_IF_WIN32_BOOL_FALSE(WriteConsoleOutputW(m_screenBuffer.get(), data, dataSize, (COORD)0, &actualWriteRect)); // 96
-	
-	writeRegion->Top = actualWriteRect.Top - controlHandle->GetOffsetFromRoot();
+
 	writeRegion->Left = actualWriteRect.Left;
+	writeRegion->Top = actualWriteRect.Top - controlHandle->GetOffsetFromRoot();
 	writeRegion->Right = actualWriteRect.Right;
 	writeRegion->Bottom = actualWriteRect.Bottom - controlHandle->GetOffsetFromRoot();
 
@@ -150,9 +150,9 @@ HRESULT ConsoleUIView::ResizeControl(IUnknown* handle, UINT newHeight)
 	ComPtr<IControlHandle> controlHandle;
 	RETURN_IF_FAILED(handle->QueryInterface(IID_PPV_ARGS(&controlHandle))); // 120
 
-	UINT shiftDistance = controlHandle->GetSize();
-	UINT index = controlHandle->GetIndexInTable();
-	RETURN_IF_FAILED(ShiftVisuals(index +1, shiftDistance)); // 126
+	UINT oldHeight = controlHandle->GetSize();
+	UINT shiftDistance = newHeight - oldHeight;
+	RETURN_IF_FAILED(ShiftVisuals(controlHandle->GetIndexInTable() + 1, shiftDistance)); // 126
 
 	RETURN_IF_FAILED(controlHandle->SetSize(newHeight)); // 127
 
@@ -201,14 +201,14 @@ HRESULT ConsoleUIView::SetCursorPos(IUnknown* handle, COORD position, bool isVis
 	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
 	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &screenBufferInfo)); // 174
 
-	RETURN_HR_IF(E_INVALIDARG, ( (position.Y < 0) || (position.Y >= controlHandle->GetSize()) )); // 177
-	RETURN_HR_IF(E_INVALIDARG, ( (position.X < 0) || (position.X >= screenBufferInfo.dwSize.X) )); // 178
-	RETURN_HR_IF(E_ACCESSDENIED, (m_focusIndex != controlHandle->GetIndexInTable())); // 179
+	RETURN_HR_IF(E_INVALIDARG, (position.Y < 0) || (position.Y >= controlHandle->GetSize())); // 177
+	RETURN_HR_IF(E_INVALIDARG, (position.X < 0) || (position.X >= screenBufferInfo.dwSize.X)); // 178
+	RETURN_HR_IF(E_ACCESSDENIED, m_focusIndex != controlHandle->GetIndexInTable()); // 179
 
 	CONSOLE_CURSOR_INFO cursorInfo;
 	cursorInfo.dwSize = 4;
 	cursorInfo.bVisible = isVisible;
-	RETURN_IF_WIN32_BOOL_FALSE(SetConsoleCursorInfo(m_screenBuffer.get(), &cursorInfo)); //184
+	RETURN_IF_WIN32_BOOL_FALSE(SetConsoleCursorInfo(m_screenBuffer.get(), &cursorInfo)); // 184
 
 	COORD actualPosition = position;
 	actualPosition.Y += controlHandle->GetOffsetFromRoot();
