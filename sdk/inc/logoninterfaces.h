@@ -740,33 +740,6 @@ namespace Windows::Internal::UI::Logon
 
 		class RequestCredentialsData : public IRequestCredentialsData
 		{
-
-		};
-
-		enum LogonUICredProvResponse
-		{
-			LogonUICredProvResponse_LogonUIResponseDefault = 0,
-			LogonUICredProvResponse_LogonUIResponseRetry = 1,
-			LogonUICredProvResponse_LogonUIResponseAbort = 2,
-		};
-
-		struct IReportCredentialsData : IInspectable
-		{
-			virtual HRESULT STDMETHODCALLTYPE get_Message(HSTRING*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_Response(LogonUICredProvResponse*) PURE;
-		};
-
-		class ReportCredentialsData : public IReportCredentialsData
-		{
-		};
-
-		struct IMessageDisplayResult : IInspectable
-		{
-			virtual HRESULT STDMETHODCALLTYPE get_ResultCode(UINT*) PURE;
-		};
-
-		class MessageDisplayResult : public IMessageDisplayResult
-		{
 		};
 
 		enum LogonUIShutdownChoice
@@ -787,6 +760,50 @@ namespace Windows::Internal::UI::Logon
 		};
 
 		DEFINE_ENUM_FLAG_OPERATORS(LogonUIShutdownChoice);
+
+		MIDL_INTERFACE("49931e22-78c2-41af-83de-4e02876bdb3c")
+		IRequestCredentialsDataFactory : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE CreateRequestCredentialsData(CredProvData::ICredentialSerialization*, LogonUIShutdownChoice, IRequestCredentialsData**) PURE;
+		};
+
+		enum LogonUICredProvResponse
+		{
+			LogonUICredProvResponse_LogonUIResponseDefault = 0,
+			LogonUICredProvResponse_LogonUIResponseRetry = 1,
+			LogonUICredProvResponse_LogonUIResponseAbort = 2,
+		};
+
+		struct IReportCredentialsData : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_Message(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Response(LogonUICredProvResponse*) PURE;
+		};
+
+		class ReportCredentialsData : public IReportCredentialsData
+		{
+		};
+
+		MIDL_INTERFACE("2e6a5994-4adf-4e53-80ea-106294d15f73")
+		IReportCredentialsDataFactory : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE CreateReportCredentialsData(LogonUICredProvResponse, HSTRING, IReportCredentialsData**) PURE;
+		};
+
+		struct IMessageDisplayResult : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_ResultCode(UINT*) PURE;
+		};
+
+		class MessageDisplayResult : public IMessageDisplayResult
+		{
+		};
+
+		MIDL_INTERFACE("a95d3ab1-c7b8-43a3-935d-26f432e72e0f")
+		IMessageDisplayResultFactory : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE CreateMessageDisplayResult(UINT, IMessageDisplayResult**) PURE;
+		};
 
 		struct ILogonUISecurityOptionsResult : IInspectable
 		{
@@ -820,6 +837,10 @@ namespace Windows::Internal::UI::Logon
 		};
 	}
 }
+
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_RequestCredentialsData[] = L"Windows.Internal.UI.Logon.Controller.RequestCredentialsData";
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ReportCredentialsData[] = L"Windows.Internal.UI.Logon.Controller.ReportCredentialsData";
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_MessageDisplayResult[] = L"Windows.Internal.UI.Logon.Controller.MessageDisplayResult";
 
 struct IDispatchNotification : public IUnknown
 {
@@ -873,6 +894,24 @@ namespace ABI::Windows::Foundation
 		: ITypedEventHandler_impl<
 			  Internal::AggregateType<LCPD::Credential*, LCPD::ICredential*>
 			, IInspectable*
+		>
+	{
+	};
+
+	template <>
+	struct
+	IAsyncOperation<LCPD::ReportResultInfo*>
+		: IAsyncOperation_impl<
+			  Internal::AggregateType<LCPD::ReportResultInfo*, LCPD::IReportResultInfo*>
+		>
+	{
+	};
+
+	template <>
+	struct __declspec(uuid("ab2e40b5-1d90-529c-a514-45d6219c2f75"))
+	IAsyncOperationCompletedHandler<LCPD::ReportResultInfo*>
+		: IAsyncOperationCompletedHandler_impl<
+			  Internal::AggregateType<LCPD::ReportResultInfo*, LCPD::IReportResultInfo*>
 		>
 	{
 	};

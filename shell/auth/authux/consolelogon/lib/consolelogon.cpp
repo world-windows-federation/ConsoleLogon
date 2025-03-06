@@ -160,11 +160,11 @@ private:
 	ComPtr<LogonViewManager> m_consoleUIManager;
 };
 
-extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Internal_UI_Logon_Controller_ConsoleLogonUX[] = L"Windows.Internal.UI.Logon.Controller.ConsoleLogonUX";
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX[] = L"Windows.Internal.UI.Logon.Controller.ConsoleLogonUX";
 
 const WCHAR* ConsoleLogon::InternalGetRuntimeClassName()
 {
-	return RuntimeClass_Internal_UI_Logon_Controller_ConsoleLogonUX;
+	return RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX;
 }
 
 TrustLevel ConsoleLogon::InternalGetTrustLevel()
@@ -175,7 +175,7 @@ TrustLevel ConsoleLogon::InternalGetTrustLevel()
 HRESULT ConsoleLogon::GetRuntimeClassName(HSTRING* runtimeName)
 {
 	*runtimeName = nullptr;
-	return WindowsCreateString(RuntimeClass_Internal_UI_Logon_Controller_ConsoleLogonUX, wcslen(RuntimeClass_Internal_UI_Logon_Controller_ConsoleLogonUX), runtimeName);
+	return WindowsCreateString(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX, wcslen(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX), runtimeName);
 }
 
 HRESULT ConsoleLogon::GetTrustLevel(TrustLevel* trustLevel)

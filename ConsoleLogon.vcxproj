@@ -149,6 +149,7 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consoleuiview.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\controlbase.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\controlhandle.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\logonviewmanager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="sdk\inc\logoninterfaces.h" />
     <ClInclude Include="sdk\inc\MarshaledInterface.h" />
     <ClInclude Include="sdk\inc\memsafe.h" />
+    <ClInclude Include="sdk\inc\NativeString.h" />
     <ClInclude Include="sdk\inc\RefCountedObject.h" />
     <ClInclude Include="sdk\inc\ResultUtils.h" />
     <ClInclude Include="sdk\inc\SimpleArray.h" />

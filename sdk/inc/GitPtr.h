@@ -10,11 +10,11 @@ public:
     {
     }
 
-    GitPtrSupportsAgile(const GitPtrSupportsAgile&) = delete;
-    GitPtrSupportsAgile(GitPtrSupportsAgile&&) noexcept = delete;
+    GitPtrSupportsAgile(const GitPtrSupportsAgile&) = default;
+    GitPtrSupportsAgile(GitPtrSupportsAgile&&) noexcept = default;
 
-    GitPtrSupportsAgile& operator=(const GitPtrSupportsAgile&) = delete;
-    GitPtrSupportsAgile& operator=(GitPtrSupportsAgile&&) noexcept = delete;
+    GitPtrSupportsAgile& operator=(const GitPtrSupportsAgile&) = default;
+    GitPtrSupportsAgile& operator=(GitPtrSupportsAgile&&) noexcept = default;
 
     template <typename TInterface>
     HRESULT Initialize(TInterface* ptr)

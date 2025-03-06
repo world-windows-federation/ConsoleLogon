@@ -51,37 +51,65 @@ public:
 	STDMETHODIMP ShowComboBox(LCPD::IComboBoxField* dataSource) override;
 	//~ End INavigationCallback Interface
 
-	HRESULT SetContext(IInspectable*, LC::IUserSettingManager*, LC::IRedirectionManager*, LCPD::IDisplayStateProvider*, LC::IBioFeedbackListener*);
-	HRESULT Lock(LC::LogonUIRequestReason, BOOLEAN, LC::IUnlockTrigger*);
-	HRESULT RequestCredentials(LC::LogonUIRequestReason, LC::LogonUIFlags, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>>);
-	HRESULT ReportResult(LC::LogonUIRequestReason, NTSTATUS, NTSTATUS, HSTRING, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>>);
+	HRESULT SetContext(
+		IInspectable* autoLogonManager, LC::IUserSettingManager* userSettingManager,
+		LC::IRedirectionManager* redirectionManager, LCPD::IDisplayStateProvider* displayStateProvider,
+		LC::IBioFeedbackListener* bioFeedbackListener);
+	HRESULT Lock(LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, LC::IUnlockTrigger* unlockTrigger);
+	HRESULT RequestCredentials(
+		LC::LogonUIRequestReason reason, LC::LogonUIFlags flags,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> completion);
+	HRESULT ReportResult(
+		LC::LogonUIRequestReason reason, NTSTATUS ntStatus, NTSTATUS ntSubStatus, HSTRING samCompatibleUserName,
+		HSTRING displayName, HSTRING userSid,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>> completion);
 	HRESULT ClearCredentialState();
-	HRESULT DisplayStatus(LC::LogonUIState, HSTRING, WI::AsyncDeferral<WI::CNoResult>);
-	HRESULT DisplayMessage(LC::LogonMessageMode, UINT, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
-	HRESULT DisplayCredentialError(NTSTATUS, NTSTATUS, UINT, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
-	HRESULT ShowSecurityOptions(LC::LogonUISecurityOptions, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>>);
-	HRESULT Cleanup(WI::AsyncDeferral<WI::CNoResult>);
+	HRESULT DisplayStatus(LC::LogonUIState state, HSTRING status, WI::AsyncDeferral<WI::CNoResult> completion);
+	HRESULT DisplayMessage(
+		LC::LogonMessageMode messageMode, UINT messageBoxFlags, HSTRING caption, HSTRING message,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
+	HRESULT DisplayCredentialError(
+		NTSTATUS ntsStatus, NTSTATUS ntsSubStatus, UINT messageBoxFlags, HSTRING caption, HSTRING message,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
+	HRESULT ShowSecurityOptions(
+		LC::LogonUISecurityOptions options,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);
+	HRESULT Cleanup(WI::AsyncDeferral<WI::CNoResult> completion);
 
 private:
 	HRESULT SetContextUIThread(
 		IInspectable* autoLogonManager, LC::IUserSettingManager* userSettingManager,
 		LC::IRedirectionManager* redirectionManager, LCPD::IDisplayStateProvider* displayStateProvider,
 		LC::IBioFeedbackListener* bioFeedbackListener);
-	HRESULT LockUIThread(LC::LogonUIRequestReason, BOOLEAN, LC::IUnlockTrigger*);
-	HRESULT RequestCredentialsUIThread(LC::LogonUIRequestReason, LC::LogonUIFlags, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>>);
-	HRESULT ReportResultUIThread(LC::LogonUIRequestReason, NTSTATUS, NTSTATUS, HSTRING, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>>);
-	HRESULT ShowSecurityOptionsUIThread(LC::LogonUISecurityOptions, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>>);
-	HRESULT DisplayStatusUIThread(LC::LogonUIState, HSTRING, WI::AsyncDeferral<WI::CNoResult>);
-	HRESULT DisplayMessageUIThread(LC::LogonMessageMode, UINT, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
-	HRESULT DisplayCredentialErrorUIThread(NTSTATUS, NTSTATUS, UINT, HSTRING, HSTRING, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
+	HRESULT LockUIThread(
+		LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, LC::IUnlockTrigger* unlockTrigger);
+	HRESULT RequestCredentialsUIThread(
+		LC::LogonUIRequestReason reason, LC::LogonUIFlags flags,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> completion);
+	HRESULT ReportResultUIThread(
+		LC::LogonUIRequestReason reason, NTSTATUS ntStatus, NTSTATUS ntSubStatus, HSTRING samCompatibleUserName,
+		HSTRING displayName, HSTRING userSid,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>> completion);
+	HRESULT ShowSecurityOptionsUIThread(
+		LC::LogonUISecurityOptions options,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);
+	HRESULT DisplayStatusUIThread(LC::LogonUIState state, HSTRING status, WI::AsyncDeferral<WI::CNoResult> completion);
+	HRESULT DisplayMessageUIThread(
+		LC::LogonMessageMode messageMode, UINT messageBoxFlags, HSTRING caption, HSTRING message,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
+	HRESULT DisplayCredentialErrorUIThread(
+		NTSTATUS ntsStatus, NTSTATUS ntsSubStatus, UINT messageBoxFlags, HSTRING caption, HSTRING message,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
 	HRESULT ClearCredentialStateUIThread();
-	HRESULT CleanupUIThread(WI::AsyncDeferral<WI::CNoResult>);
+	HRESULT CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> completion);
 	HRESULT ShowCredentialView();
 	HRESULT ShowUserSelection();
 	HRESULT ShowCredProvSelection(LCPD::ICredentialGroup*, HSTRING);
 	HRESULT ShowSelectedCredentialView(LCPD::ICredential*, HSTRING);
 	HRESULT ShowStatusView(HSTRING);
-	HRESULT ShowMessageView(HSTRING, HSTRING, UINT, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>);
+	HRESULT ShowMessageView(
+		HSTRING caption, HSTRING message, UINT messageBoxFlags,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
 	HRESULT ShowSerializationFailedView(HSTRING, HSTRING);
 	HRESULT DestroyCurrentView();
 	HRESULT StartCredProvsIfNecessary(LC::LogonUIRequestReason, BOOLEAN);
