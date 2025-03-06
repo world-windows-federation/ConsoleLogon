@@ -33,6 +33,12 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\controlbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\basictextcontrol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\logonviewmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h">
@@ -84,6 +90,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shell\auth\authux\consolelogon\lib\controlbase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\inc\NativeString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\basictextcontrol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,6 +6,11 @@
 #include "consoleuiview.h"
 #include "logoninterfaces.h"
 
+struct IQueryFocus : public IUnknown
+{
+	BOOL HasFocus();
+};
+
 class ControlBase
 	: public Microsoft::WRL::Implements<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, IConsoleUIControl>
 {
