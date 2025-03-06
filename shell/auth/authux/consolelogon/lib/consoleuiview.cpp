@@ -108,9 +108,7 @@ HRESULT ConsoleUIView::AppendControl(UINT height, IConsoleUIControl* control, IU
 
 HRESULT ConsoleUIView::WriteOutput(IUnknown* handle, PCHAR_INFO data, COORD dataSize, PSMALL_RECT writeRegion)
 {
-	// TODO
-	// needs ControlHandle
-	Microsoft::WRL::ComPtr<IControlHandle> controlHandle;
+	ComPtr<IControlHandle> controlHandle;
 	RETURN_IF_FAILED(handle->QueryInterface(IID_PPV_ARGS(&controlHandle))); // 71
 
 	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
@@ -147,11 +145,18 @@ HRESULT ConsoleUIView::GetColorAttributes(WORD* pAttributes)
 	return S_OK;
 }
 
-HRESULT ConsoleUIView::ResizeControl(IUnknown*, UINT)
+HRESULT ConsoleUIView::ResizeControl(IUnknown* handle, UINT newHeight)
 {
-	// TODO
-	// needs ControlHandle
-	return E_NOTIMPL;
+	ComPtr<IControlHandle> controlHandle;
+	RETURN_IF_FAILED(handle->QueryInterface(IID_PPV_ARGS(&controlHandle))); // 120
+
+	UINT shiftDistance = controlHandle->GetSize();
+	UINT index = controlHandle->GetIndexInTable();
+	RETURN_IF_FAILED(ShiftVisuals(index +1, shiftDistance)); // 126
+
+	RETURN_IF_FAILED(controlHandle->SetSize(newHeight)); // 127
+
+	return S_OK;
 }
 
 HRESULT ConsoleUIView::RemoveAll()
@@ -188,11 +193,28 @@ HRESULT ConsoleUIView::GetConsoleWidth(UINT* pWidth)
 	return S_OK;
 }
 
-HRESULT ConsoleUIView::SetCursorPos(IUnknown*, COORD, bool)
+HRESULT ConsoleUIView::SetCursorPos(IUnknown* handle, COORD position, bool isVisible)
 {
-	// TODO
-	// needs ControlHandle
-	return E_NOTIMPL;
+	ComPtr<IControlHandle> controlHandle;
+	RETURN_IF_FAILED(handle->QueryInterface(IID_PPV_ARGS(&controlHandle))); // 171
+
+	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
+	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &screenBufferInfo)); // 174
+
+	RETURN_HR_IF(E_INVALIDARG, ( (position.Y < 0) || (position.Y >= controlHandle->GetSize()) )); // 177
+	RETURN_HR_IF(E_INVALIDARG, ( (position.X < 0) || (position.X >= screenBufferInfo.dwSize.X) )); // 178
+	RETURN_HR_IF(E_ACCESSDENIED, (m_focusIndex != controlHandle->GetIndexInTable())); // 179
+
+	CONSOLE_CURSOR_INFO cursorInfo;
+	cursorInfo.dwSize = 4;
+	cursorInfo.bVisible = isVisible;
+	RETURN_IF_WIN32_BOOL_FALSE(SetConsoleCursorInfo(m_screenBuffer.get(), &cursorInfo)); //184
+
+	COORD actualPosition = position;
+	actualPosition.Y += controlHandle->GetOffsetFromRoot();
+	RETURN_IF_WIN32_BOOL_FALSE(SetConsoleCursorPosition(m_screenBuffer.get(), actualPosition)); // 188
+
+	return S_OK;
 }
 
 HRESULT ConsoleUIView::GetScreenBuffer(void** pScreenBuffer)
