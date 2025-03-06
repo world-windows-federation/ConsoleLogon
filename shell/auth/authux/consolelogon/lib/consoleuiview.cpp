@@ -91,7 +91,7 @@ HRESULT ConsoleUIView::AppendControl(UINT height, IConsoleUIControl* control, IU
 	size_t celem = m_controlTable._celem;
 	if (celem)
 	{
-		ComPtr<IControlHandle> lastControl = m_controlTable[celem - 1].Get();
+		ComPtr<IControlHandle> lastControl = m_controlTable[celem - 1];
 		UINT offset = lastControl->GetOffsetFromRoot() + lastControl->GetSize();
 
 		RETURN_IF_FAILED(MakeAndInitialize<ControlHandle>(&controlHandle, offset, height, celem, control)); //58
@@ -294,7 +294,7 @@ HRESULT ConsoleUIView::ShiftVisuals(UINT startIndex, int shiftDistance)
 	size_t controlTableSize = m_controlTable.GetSize();
 	UINT topOfRegionToShift = m_controlTable[startIndex]->GetOffsetFromRoot();
 
-	ComPtr<IControlHandle> lastControl = m_controlTable[controlTableSize - 1].Get();
+	ComPtr<IControlHandle> lastControl = m_controlTable[controlTableSize - 1];
 	UINT bottomOfRegionToShift = lastControl->GetOffsetFromRoot() + lastControl->GetSize();
 
 	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;

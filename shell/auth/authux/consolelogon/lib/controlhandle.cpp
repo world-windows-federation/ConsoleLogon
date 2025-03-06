@@ -48,7 +48,7 @@ HRESULT ControlHandle::SetSize(UINT size)
 
 INT ControlHandle::IsFocusable()
 {
-	int isfocusable = m_controlCallback.Get()->IsFocusable();
+	int isfocusable = m_controlCallback->IsFocusable();
 	if (isfocusable)
 		return m_size != 0;
 
@@ -57,7 +57,7 @@ INT ControlHandle::IsFocusable()
 
 HRESULT ControlHandle::SetFocus(INT hasFocus)
 {
-	return m_controlCallback.Get()->OnFocusChange(hasFocus);
+	return m_controlCallback->OnFocusChange(hasFocus);
 }
 
 UINT ControlHandle::GetIndexInTable()
@@ -68,11 +68,11 @@ UINT ControlHandle::GetIndexInTable()
 HRESULT ControlHandle::HandleKeyInput(PKEY_EVENT_RECORD keyEvent, PINT wasHandled)
 {
 	*wasHandled = 0;
-	return m_controlCallback.Get()->HandleKeyInput(keyEvent, wasHandled);
+	return m_controlCallback->HandleKeyInput(keyEvent, wasHandled);
 }
 
 HRESULT ControlHandle::Destroy()
 {
-	 RETURN_IF_FAILED(m_controlCallback.Get()->Unadvise());
+	 RETURN_IF_FAILED(m_controlCallback->Unadvise());
 	 return S_OK;
 }
