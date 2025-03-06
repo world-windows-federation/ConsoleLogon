@@ -16,8 +16,8 @@ public:
 	BasicTextControl();
 	~BasicTextControl();
 
-	STDMETHODIMP RuntimeClassInitialize(IConsoleUIView*, PWCHAR, bool);
-	STDMETHODIMP RuntimeClassInitialize(IConsoleUIView*, UINT);
+	STDMETHODIMP RuntimeClassInitialize(IConsoleUIView* view, PWCHAR dataSource, bool acceptFocus);
+	STDMETHODIMP RuntimeClassInitialize(IConsoleUIView* view, UINT stringResourceId);
 
 	//~ Begin IQueryFocus
 	STDMETHODIMP_(BOOL) HasFocus();

@@ -5,53 +5,6 @@
 
 using namespace Microsoft::WRL;
 
-class ConsoleUIView
-	: public RuntimeClass<RuntimeClassFlags<ClassicCom>
-		, IConsoleUIView
-		, IConsoleUIViewInternal
-	>
-{
-public:
-	ConsoleUIView();
-	~ConsoleUIView() override;
-
-	HRESULT Initialize();
-
-	//~ Begin IConsoleUIView Interface
-	STDMETHODIMP Advise(INavigationCallback*) override;
-	STDMETHODIMP Unadvise() override;
-	STDMETHODIMP AppendControl(UINT height, IConsoleUIControl* control, IUnknown** ppControlHandle) override;
-	STDMETHODIMP WriteOutput(IUnknown* handle, PCHAR_INFO data, COORD dataSize, PSMALL_RECT writeRegion) override;
-	STDMETHODIMP GetColorAttributes(WORD* pAttributes) override;
-	STDMETHODIMP ResizeControl(IUnknown* handle, UINT newHeight) override;
-	STDMETHODIMP RemoveAll() override;
-	STDMETHODIMP GetConsoleWidth(UINT* pWidth) override;
-	STDMETHODIMP SetCursorPos(IUnknown* handle, COORD position, bool isVisible) override;
-	//~ End IConsoleUIView Interface
-
-	//~ Begin IConsoleUIViewInternal Interface
-	STDMETHODIMP GetScreenBuffer(void** pScreenBuffer) override;
-	STDMETHODIMP HandleKeyInput(PKEY_EVENT_RECORD keyEvent) override;
-	STDMETHODIMP InitializeFocus() override;
-	//~ End IConsoleUIViewInternal Interface
-
-protected:
-	virtual HRESULT v_OnKeyInput(PKEY_EVENT_RECORD keyEvent, BOOL* keyHandled) PURE;
-	virtual void v_Unadvise() PURE;
-	virtual int GetFocusIndex() PURE;
-
-	ComPtr<INavigationCallback> m_navigationCallback;
-
-private:
-	HRESULT ShiftVisuals(UINT startIndex, int shiftDistance);
-	HRESULT MoveFocusToNext();
-	HRESULT MoveFocusToPrevious();
-
-	wil::unique_handle m_screenBuffer;
-	CCoSimpleArray<ComPtr<IControlHandle>> m_controlTable;
-	int m_focusIndex;
-};
-
 ConsoleUIView::ConsoleUIView()
 	: m_focusIndex(-1)
 {

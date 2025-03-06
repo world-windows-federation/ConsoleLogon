@@ -1,12 +1,15 @@
 #pragma once
 #include <windows.h>
 #include <Windows.Foundation.h>
+#include <wil/resource.h>
 #include <wrl\wrappers\corewrappers.h>
 #include <wrl\event.h>
 #include <wrl\implements.h>
 #include <wrl\client.h>
 
+#include "controlhandle.h"
 #include "logoninterfaces.h"
+#include "SimpleArray.h"
 
 MIDL_INTERFACE("04ae9c0f-e0cc-43c8-9d9f-a9ad229c114a")
 INavigationCallback : IUnknown
@@ -165,4 +168,51 @@ IConsoleUIViewInternal : IUnknown
 	virtual HRESULT STDMETHODCALLTYPE GetScreenBuffer(void**) PURE;
 	virtual HRESULT STDMETHODCALLTYPE HandleKeyInput(PKEY_EVENT_RECORD) PURE;
 	virtual HRESULT STDMETHODCALLTYPE InitializeFocus() PURE;
+};
+
+class ConsoleUIView
+	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>
+		, IConsoleUIView
+		, IConsoleUIViewInternal
+	>
+{
+public:
+	ConsoleUIView();
+	~ConsoleUIView() override;
+
+	HRESULT Initialize();
+
+	//~ Begin IConsoleUIView Interface
+	STDMETHODIMP Advise(INavigationCallback*) override;
+	STDMETHODIMP Unadvise() override;
+	STDMETHODIMP AppendControl(UINT height, IConsoleUIControl* control, IUnknown** ppControlHandle) override;
+	STDMETHODIMP WriteOutput(IUnknown* handle, PCHAR_INFO data, COORD dataSize, PSMALL_RECT writeRegion) override;
+	STDMETHODIMP GetColorAttributes(WORD* pAttributes) override;
+	STDMETHODIMP ResizeControl(IUnknown* handle, UINT newHeight) override;
+	STDMETHODIMP RemoveAll() override;
+	STDMETHODIMP GetConsoleWidth(UINT* pWidth) override;
+	STDMETHODIMP SetCursorPos(IUnknown* handle, COORD position, bool isVisible) override;
+	//~ End IConsoleUIView Interface
+
+	//~ Begin IConsoleUIViewInternal Interface
+	STDMETHODIMP GetScreenBuffer(void** pScreenBuffer) override;
+	STDMETHODIMP HandleKeyInput(PKEY_EVENT_RECORD keyEvent) override;
+	STDMETHODIMP InitializeFocus() override;
+	//~ End IConsoleUIViewInternal Interface
+
+protected:
+	virtual HRESULT v_OnKeyInput(PKEY_EVENT_RECORD keyEvent, BOOL* keyHandled) PURE;
+	virtual void v_Unadvise() PURE;
+	virtual int GetFocusIndex() PURE;
+
+	Microsoft::WRL::ComPtr<INavigationCallback> m_navigationCallback;
+
+private:
+	HRESULT ShiftVisuals(UINT startIndex, int shiftDistance);
+	HRESULT MoveFocusToNext();
+	HRESULT MoveFocusToPrevious();
+
+	wil::unique_handle m_screenBuffer;
+	CCoSimpleArray<Microsoft::WRL::ComPtr<IControlHandle>> m_controlTable;
+	int m_focusIndex;
 };

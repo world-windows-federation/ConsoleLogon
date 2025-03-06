@@ -12,6 +12,11 @@
 #include <windows.foundation.numerics.h>
 #include <windows.storage.streams.h>
 
+namespace Windows::Internal
+{
+	
+}
+
 namespace WF = ABI::Windows::Foundation;
 namespace WFC = ABI::Windows::Foundation::Collections;
 namespace WI = Windows::Internal;

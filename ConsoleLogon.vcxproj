@@ -151,7 +151,9 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consoleuiview.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\controlbase.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\controlhandle.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\lockedview.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\logonviewmanager.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\statusview.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -169,11 +171,31 @@
     <ClInclude Include="sdk\inc\SimpleArray.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\basictextcontrol.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\checkboxcontrol.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\comboboxcontrol.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\comboboxselectionview.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\commandlinkcontrol.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\controlbase.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\consoleuimanager.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\consoleuiview.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\controlhandle.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\credentialfieldcontrolbase.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\credprovselectionview.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\editcontrol.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\lockedview.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\lib\logonviewmanager.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\messageoptioncontrol.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\messageview.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\optionaldependencyprovider.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\securityoptioncontrol.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\securityoptionsview.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\selectableuserorcredentialcontrol.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\selectedcredentialview.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\serializationfailedoptioncontrol.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\serializationfailedview.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\statictextcontrol.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\statusview.h" />
+    <ClInclude Include="shell\auth\authux\consolelogon\lib\userselectionview.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="shell\auth\authux\consolelogon\dll\consolelogon.rc" />
