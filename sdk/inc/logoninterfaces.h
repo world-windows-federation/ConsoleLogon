@@ -881,18 +881,6 @@ extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ReportCredentialsData[] = L"Windows.Internal.UI.Logon.Controller.ReportCredentialsData";
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_MessageDisplayResult[] = L"Windows.Internal.UI.Logon.Controller.MessageDisplayResult";
 
-struct IDispatchNotification : IUnknown
-{
-	virtual void STDMETHODCALLTYPE Dispatch() PURE;
-};
-
-struct INotificationDispatcher : IUnknown
-{
-	virtual HRESULT STDMETHODCALLTYPE QueueNotification(IDispatchNotification*) PURE;
-	virtual void STDMETHODCALLTYPE StartProcessingNotifications() PURE;
-	virtual void STDMETHODCALLTYPE StopProcessingNotifications() PURE;
-};
-
 namespace LC = Windows::Internal::UI::Logon::Controller;
 namespace LCPD = Windows::Internal::UI::Logon::CredProvData;
 
