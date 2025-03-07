@@ -1,8 +1,4 @@
-#include "pch.h"
-
 #include "NotificationDispatcher.h"
-
-#include <wil/result_macros.h>
 
 #include "ResultUtils.h"
 
@@ -17,9 +13,8 @@ HWND SHCreateWorkerWindowW(WNDPROC wndProc, HWND hWndParent, DWORD dwExStyle, DW
 		HMODULE h = GetModuleHandleW(L"shcore.dll");
 		if (h)
 			fn = (SHCreateWorkerWindowW_t)GetProcAddress(h, MAKEINTRESOURCEA(188));
-		FAIL_FAST_IF_NULL(fn);
 	}
-	return fn(wndProc, hWndParent, dwExStyle, dwStyle, hMenu, wnd_extra);
+	return fn ? fn(wndProc, hWndParent, dwExStyle, dwStyle, hMenu, wnd_extra) : (SetLastError(ERROR_PROC_NOT_FOUND), nullptr);
 }
 
 CNotificationDispatcherBase::CNotificationDispatcherBase()

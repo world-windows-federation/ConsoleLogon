@@ -1,12 +1,6 @@
 #pragma once
-#include <windows.h>
-#include <Windows.Foundation.h>
-#include <wrl\wrappers\corewrappers.h>
-#include <wrl\event.h>
-#include <wrl\implements.h>
-#include <wrl\client.h>
 
-#include <consoleuiview.h>
+#include "pch.h"
 
 MIDL_INTERFACE("f4c33f16-f5a6-4c7e-afe7-29c3df6ad04b")
 IControlHandle : IUnknown
@@ -20,6 +14,15 @@ IControlHandle : IUnknown
 	virtual UINT STDMETHODCALLTYPE GetIndexInTable() PURE;
 	virtual HRESULT STDMETHODCALLTYPE HandleKeyInput(const KEY_EVENT_RECORD*, BOOL*) PURE;
 	virtual HRESULT STDMETHODCALLTYPE Destroy() PURE;
+};
+
+MIDL_INTERFACE("ea10301e-c96d-4dec-a880-ddea9e9550ee")
+IConsoleUIControl : IUnknown
+{
+	virtual BOOL STDMETHODCALLTYPE IsFocusable() PURE;
+	virtual HRESULT STDMETHODCALLTYPE OnFocusChange(BOOL) PURE;
+	virtual HRESULT STDMETHODCALLTYPE HandleKeyInput(const KEY_EVENT_RECORD*, BOOL*) PURE;
+	virtual HRESULT STDMETHODCALLTYPE Unadvise() PURE;
 };
 
 class ControlHandle

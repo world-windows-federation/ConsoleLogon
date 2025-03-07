@@ -1,5 +1,6 @@
+#include "pch.h"
+
 #include "controlhandle.h"
-#include <wil\resource.h>
 
 using namespace Microsoft::WRL;
 

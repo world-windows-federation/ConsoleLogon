@@ -1,13 +1,6 @@
 #include "pch.h"
 
-#include <wrl/implements.h>
-#include <wrl/module.h>
-#include <wrl/wrappers/corewrappers.h>
-
-#include "InternalAsync.h"
-#include "logoninterfaces.h"
 #include "logonviewmanager.h"
-#include "RefCountedObject.h"
 
 using namespace Microsoft::WRL;
 
@@ -79,7 +72,7 @@ private:
 	HRESULT Lock(LogonUIRequestReason reason, bool allowDirectUserSwitching, IUnlockTrigger* unlockTrigger);
 
 	template <typename TResult, typename TLambda>
-	HRESULT ConsoleLogon::CancellableAsyncOperationThreadProc(WI::AsyncStage stage, HRESULT hr, TResult& result, const TLambda& lambda)
+	HRESULT CancellableAsyncOperationThreadProc(WI::AsyncStage stage, HRESULT hr, TResult& result, const TLambda& lambda)
 	{
 		if (SUCCEEDED(hr) && stage == WI::AsyncStage::Execute)
 		{
@@ -99,7 +92,7 @@ private:
 		typename THandler, // WI::ComTaskPoolHandler
 		typename TLambda // <lambda_3785fc05d0c47cf9a9ab843267e7d6bb>
 	>
-	HRESULT ConsoleLogon::MakeCancellableAsyncOperation(THandler&& handler, IAsyncOperation<TResultRaw>** ppOperation, const TLambda& lambda)
+	HRESULT MakeCancellableAsyncOperation(THandler&& handler, IAsyncOperation<TResultRaw>** ppOperation, const TLambda& lambda)
 	{
 		*ppOperation = nullptr;
 		ComPtr<ConsoleLogon> thisRef = this;
@@ -130,7 +123,7 @@ private:
 		typename THandler, // WI::ComTaskPoolHandler
 		typename TLambda // _lambda_fe7b513293bb3593300cd8367b69ca74_
 	>
-	HRESULT ConsoleLogon::MakeCancellableAsyncAction(THandler&& handler, IAsyncAction** ppAction, const TLambda& lambda)
+	HRESULT MakeCancellableAsyncAction(THandler&& handler, IAsyncAction** ppAction, const TLambda& lambda)
 	{
 		*ppAction = nullptr;
 		ComPtr<ConsoleLogon> thisRef = this;
@@ -175,7 +168,7 @@ TrustLevel ConsoleLogon::InternalGetTrustLevel()
 HRESULT ConsoleLogon::GetRuntimeClassName(HSTRING* runtimeName)
 {
 	*runtimeName = nullptr;
-	return WindowsCreateString(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX, wcslen(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX), runtimeName);
+	return WindowsCreateString(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX, (UINT32)wcslen(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX), runtimeName);
 }
 
 HRESULT ConsoleLogon::GetTrustLevel(TrustLevel* trustLevel)
@@ -258,7 +251,7 @@ HRESULT ConsoleLogon::RequestCredentialsAsync(
 	HRESULT hr = MakeCancellableAsyncOperation<WI::CMarshaledInterfaceResult<IRequestCredentialsData>, RequestCredentialsData*>(
 		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
 		ppOperation,
-		[asyncReference, this, =](WI::CMarshaledInterfaceResult<IRequestCredentialsData>& result) -> HRESULT
+		[asyncReference, this, viewManager, reason, flags](WI::CMarshaledInterfaceResult<IRequestCredentialsData>& result) -> HRESULT
 		{
 			UNREFERENCED_PARAMETER(asyncReference);
 			WI::AsyncDeferral<WI::CMarshaledInterfaceResult<IRequestCredentialsData>> deferral = result.GetDeferral(result);
@@ -274,22 +267,18 @@ HRESULT ConsoleLogon::ReportCredentialsAsync(
 	LogonUIRequestReason reason, NTSTATUS ntsStatus, NTSTATUS ntsSubStatus, HSTRING samCompatibleUserName,
 	HSTRING displayName, HSTRING userSid, IAsyncOperation<ReportCredentialsData*>** ppOperation)
 {
-	ComPtr<CRefCountedObject<Wrappers::HString>> samCompatibleUserNameRef;
-	ComPtr<CRefCountedObject<Wrappers::HString>> displayNameRef;
-	ComPtr<CRefCountedObject<Wrappers::HString>> userSidRef;
-
 	*ppOperation = nullptr;
 
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 169
 
-	CreateRefCountedObj<Wrappers::HString>(&samCompatibleUserNameRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> samCompatibleUserNameRef = CreateRefCountedObj<Wrappers::HString>();
 	RETURN_IF_FAILED(samCompatibleUserNameRef->Set(samCompatibleUserName)); // 172
 
-	CreateRefCountedObj<Wrappers::HString>(&displayNameRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> displayNameRef = CreateRefCountedObj<Wrappers::HString>();
 	RETURN_IF_FAILED(displayNameRef->Set(displayName)); // 175
 
-	CreateRefCountedObj<Wrappers::HString>(&userSidRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> userSidRef = CreateRefCountedObj<Wrappers::HString>();
 	RETURN_IF_FAILED(userSidRef->Set(userSid)); // 178
 
 	ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
@@ -318,14 +307,14 @@ HRESULT ConsoleLogon::DisplayMessageAsync(
 
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 201
-	ComPtr<CRefCountedObject<Wrappers::HString>> captionRef;
-	CreateRefCountedObj<Wrappers::HString>(&captionRef);
+
+	ComPtr<CRefCountedObject<Wrappers::HString>> captionRef = CreateRefCountedObj<Wrappers::HString>();
 	if (caption)
 	{
 		RETURN_IF_FAILED(captionRef->Set(caption)); // 206
 	}
-	ComPtr<CRefCountedObject<Wrappers::HString>> messageRef;
-	CreateRefCountedObj<Wrappers::HString>(&messageRef);
+
+	ComPtr<CRefCountedObject<Wrappers::HString>> messageRef = CreateRefCountedObj<Wrappers::HString>();
 	if (message)
 	{
 		RETURN_IF_FAILED(messageRef->Set(message)); // 212
@@ -356,15 +345,13 @@ HRESULT ConsoleLogon::DisplayCredentialErrorAsync(
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 236
 
-	ComPtr<CRefCountedObject<Wrappers::HString>> captionRef;
-	CreateRefCountedObj<Wrappers::HString>(&captionRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> captionRef = CreateRefCountedObj<Wrappers::HString>();
 	if (caption)
 	{
 		RETURN_IF_FAILED(captionRef->Set(caption)); // 241
 	}
 
-	ComPtr<CRefCountedObject<Wrappers::HString>> messageRef;
-	CreateRefCountedObj<Wrappers::HString>(&messageRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> messageRef = CreateRefCountedObj<Wrappers::HString>();
 	if (message)
 	{
 		RETURN_IF_FAILED(messageRef->Set(message)); // 247
@@ -395,8 +382,7 @@ HRESULT ConsoleLogon::DisplayStatusAsync(LogonUIState state, HSTRING status, IAs
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 271
 
-	ComPtr<CRefCountedObject<Wrappers::HString>> statusRef;
-	CreateRefCountedObj<Wrappers::HString>(&statusRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> statusRef = CreateRefCountedObj<Wrappers::HString>();
 	if (status)
 	{
 		RETURN_IF_FAILED(statusRef->Set(status)); // 276
@@ -490,10 +476,11 @@ HRESULT ConsoleLogon::ClearUIState(HSTRING statusMessage)
 
 		RETURN_IF_FAILED(WaitForCompletion<IAsyncActionCompletedHandler>(cleanupAction.Get())); // 343
 
-		ComPtr<CRefCountedObject<Wrappers::HString>> statusRef;
-		CreateRefCountedObj<Wrappers::HString>(&statusRef);
+		ComPtr<CRefCountedObject<Wrappers::HString>> statusRef = CreateRefCountedObj<Wrappers::HString>();
 		if (statusMessage)
+		{
 			RETURN_IF_FAILED(statusRef->Set(statusMessage)); // 348
+		}
 
 		ComPtr<IAsyncAction> displayStatusAction;
 		hr = MakeCancellableAsyncAction<AsyncCausalityOptions<DisplayStatusAction>>(
@@ -601,4 +588,4 @@ HRESULT ConsoleLogon::Lock(LogonUIRequestReason reason, bool allowDirectUserSwit
 	return S_OK;
 }
 
-CoCreatableClass(ConsoleLogon);
+ActivatableClass(ConsoleLogon);

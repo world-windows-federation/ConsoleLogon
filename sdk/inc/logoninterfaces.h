@@ -1,20 +1,13 @@
 #pragma once
 
-#include <windows.h>
-#include <Windows.Foundation.h>
-#include <wrl\wrappers\corewrappers.h>
-#include <wrl\event.h>
-#include <wrl\implements.h>
-#include <wrl\client.h>
+#include "pch.h"
 
-#include <inspectable.h>
 #include <windows.foundation.collections.h>
 #include <windows.foundation.numerics.h>
 #include <windows.storage.streams.h>
 
 namespace Windows::Internal
 {
-	
 }
 
 namespace WF = ABI::Windows::Foundation;
@@ -104,7 +97,7 @@ namespace Windows::Internal::UI::Logon
 
 		struct IComboBoxField : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_Items(WF::Collections::IObservableVector<HSTRING>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Items(WFC::IObservableVector<HSTRING>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedIndex(int*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectedIndex(int) PURE;
 		};
@@ -261,7 +254,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInSelectedTile(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInDeselectedTile(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsHidden(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateFocused(unsigned char*) PURE;;
+			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateFocused(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateDisabled(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateReadOnly(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Kind(CredentialFieldKind*) PURE;
@@ -308,7 +301,7 @@ namespace Windows::Internal::UI::Logon
 		MIDL_INTERFACE("a450753a-7095-4042-9ce1-d2847167ee58")
 		ICredential : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_Fields(WF::Collections::IVectorView<ICredentialField*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Fields(WFC::IVectorView<ICredentialField*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LogoImageField(ICredentialField**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LogoLabel(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonAdjacentID(int*) PURE;
@@ -467,27 +460,27 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE InitializeWithContextAsync(CredProvScenario, unsigned short, SelectionMode, UINT, unsigned char, IInspectable*, GUID, ABI::Windows::Storage::Streams::IBuffer*, WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectionMode(SelectionMode*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectionMode(SelectionMode) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_Users(WF::Collections::IObservableVector<User*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Users(WFC::IObservableVector<User*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedUser(IUser**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectedUser(IUser*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SelectedUserChanged(WF::ITypedEventHandler<User*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SelectedUserChanged(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_PLAPCredentials(WF::Collections::IObservableVector<Credential*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_PLAPCredentials(WFC::IObservableVector<Credential*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedPLAPCredential(ICredential**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectedPLAPCredential(ICredential*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SelectedPLAPCredentialChanged(WF::ITypedEventHandler<Credential*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SelectedPLAPCredentialChanged(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_V1Credentials(WF::Collections::IObservableVector<Credential*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_V1Credentials(WFC::IObservableVector<Credential*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedV1Credential(ICredential**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectedV1Credential(ICredential*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SelectedV1CredentialChanged(WF::ITypedEventHandler<Credential*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SelectedV1CredentialChanged(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_UsersAndV1Credentials(WF::Collections::IObservableVector<IInspectable*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_UsersAndV1Credentials(WFC::IObservableVector<IInspectable*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedUserOrV1Credential(IInspectable**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectedUserOrV1Credential(IInspectable*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SelectedUserOrV1CredentialChanged(WF::ITypedEventHandler<IInspectable*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SelectedUserOrV1CredentialChanged(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_FlatCredentials(WF::Collections::IObservableVector<Credential*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_FlatCredentials(WFC::IObservableVector<Credential*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedFlatCredential(ICredential**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectedFlatCredential(ICredential*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SelectedFlatCredentialChanged(WF::ITypedEventHandler<Credential*, IInspectable*>*, EventRegistrationToken*) PURE;
@@ -616,7 +609,7 @@ namespace Windows::Internal::UI::Logon
 		MIDL_INTERFACE("ba6e72f5-f47d-4aad-8bb6-1bba3a750e9f")
 		ICredentialGroup : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_Credentials(WF::Collections::IObservableVector<Credential*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Credentials(WFC::IObservableVector<Credential*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedCredential(ICredential**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectedCredential(ICredential*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SelectedCredentialChanged(WF::ITypedEventHandler<Credential*, IInspectable*>*, EventRegistrationToken*) PURE;
@@ -951,6 +944,27 @@ namespace ABI::Windows::Foundation
 
 namespace ABI::Windows::Foundation::Collections
 {
+	template <>
+	struct
+	IObservableVector<IInspectable*>
+		: IObservableVector_impl<IInspectable*>
+	{
+	};
+
+	template <>
+	struct
+	IObservableVector<LCPD::Credential*>
+		: IObservableVector_impl<LCPD::Credential*>
+	{
+	};
+
+	template <>
+	struct __declspec(uuid("cb6c396f-4861-5296-b14b-bd90b941a3e0"))
+	VectorChangedEventHandler<HSTRING>
+		: VectorChangedEventHandler_impl<HSTRING>
+	{
+	};
+
 	template <>
 	struct __declspec(uuid("b423a801-d35e-56b9-813b-00889536cb98"))
 	VectorChangedEventHandler<IInspectable*>

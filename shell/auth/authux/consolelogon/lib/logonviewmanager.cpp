@@ -4,8 +4,6 @@
 
 #include <WtsApi32.h>
 
-#include "NativeString.h"
-#include "RefCountedObject.h"
 #include "comboboxselectionview.h"
 #include "credprovselectionview.h"
 #include "lockedview.h"
@@ -359,7 +357,7 @@ HRESULT LogonViewManager::SetContext(
 	wil::unique_event_nothrow setContextCompleteEvent;
 	RETURN_IF_FAILED(setContextCompleteEvent.create(wil::EventOptions::ManualReset)); // 339
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [=, &setContextCompleteEvent]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, autoLogonManagerRef, userSettingManagerRef, redirectionManagerRef, displayStateProviderRef, bioFeedbackListenerRef, &setContextCompleteEvent]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		SetContextUIThread(
@@ -400,7 +398,7 @@ HRESULT LogonViewManager::RequestCredentials(
 
 	ComPtr<LogonViewManager> thisRef = this;
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [=, completion]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, reason, flags, completion]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> deferral = completion;
@@ -414,9 +412,6 @@ HRESULT LogonViewManager::RequestCredentials(
 	return S_OK;
 }
 
-#define REFCOUNT_HSTRING_REF(obj) ComPtr<CRefCountedObject<Wrappers::HString>> obj; \
-	CreateRefCountedObj<Wrappers::HString>(&obj);
-
 HRESULT LogonViewManager::ReportResult(
 	LC::LogonUIRequestReason reason, NTSTATUS ntStatus, NTSTATUS ntSubStatus, HSTRING samCompatibleUserName,
 	HSTRING displayName, HSTRING userSid,
@@ -424,18 +419,18 @@ HRESULT LogonViewManager::ReportResult(
 {
 	RETURN_IF_FAILED(EnsureUIStarted()); // 388
 
-	REFCOUNT_HSTRING_REF(samCompatibleUserNameRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> samCompatibleUserNameRef = CreateRefCountedObj<Wrappers::HString>();
 	RETURN_IF_FAILED(samCompatibleUserNameRef->Set(samCompatibleUserName)); // 391
 
-	REFCOUNT_HSTRING_REF(displayNameRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> displayNameRef = CreateRefCountedObj<Wrappers::HString>();
 	RETURN_IF_FAILED(displayNameRef->Set(displayName)); // 394
 
-	REFCOUNT_HSTRING_REF(userSidRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> userSidRef = CreateRefCountedObj<Wrappers::HString>();
 	RETURN_IF_FAILED(userSidRef->Set(userSid)); // 397
 
 	ComPtr<LogonViewManager> thisRef = this;
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [=, completion]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, reason, ntStatus, ntSubStatus, samCompatibleUserNameRef, displayNameRef, userSidRef, completion]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>> deferral = completion;
@@ -468,7 +463,7 @@ HRESULT LogonViewManager::DisplayStatus(LC::LogonUIState state, HSTRING status, 
 {
 	RETURN_IF_FAILED(EnsureUIStarted()); // 445
 
-	REFCOUNT_HSTRING_REF(statusRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> statusRef = CreateRefCountedObj<Wrappers::HString>();
 
 	if (status)
 	{
@@ -477,7 +472,7 @@ HRESULT LogonViewManager::DisplayStatus(LC::LogonUIState state, HSTRING status, 
 
 	ComPtr<LogonViewManager> thisRef = this;
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [=, completion]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, state, statusRef, completion]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		WI::AsyncDeferral<WI::CNoResult> deferral = completion;
@@ -497,13 +492,13 @@ HRESULT LogonViewManager::DisplayMessage(
 {
 	RETURN_IF_FAILED(EnsureUIStarted()); // 470
 
-	REFCOUNT_HSTRING_REF(captionRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> captionRef = CreateRefCountedObj<Wrappers::HString>();
 	if (caption)
 	{
 		RETURN_IF_FAILED(captionRef->Set(caption)); // 475
 	}
 
-	REFCOUNT_HSTRING_REF(messageRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> messageRef = CreateRefCountedObj<Wrappers::HString>();
 	if (message)
 	{
 		RETURN_IF_FAILED(messageRef->Set(message)); // 481
@@ -511,7 +506,7 @@ HRESULT LogonViewManager::DisplayMessage(
 
 	ComPtr<LogonViewManager> thisRef = this;
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [=, completion]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, messageMode, messageBoxFlags, captionRef, messageRef, completion]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> deferral = completion;
@@ -531,13 +526,13 @@ HRESULT LogonViewManager::DisplayCredentialError(
 {
 	RETURN_IF_FAILED(EnsureUIStarted()); // 500
 
-	REFCOUNT_HSTRING_REF(captionRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> captionRef = CreateRefCountedObj<Wrappers::HString>();
 	if (caption)
 	{
 		RETURN_IF_FAILED(captionRef->Set(caption)); // 505
 	}
 
-	REFCOUNT_HSTRING_REF(messageRef);
+	ComPtr<CRefCountedObject<Wrappers::HString>> messageRef = CreateRefCountedObj<Wrappers::HString>();
 	if (message)
 	{
 		RETURN_IF_FAILED(messageRef->Set(message)); // 511
@@ -545,7 +540,7 @@ HRESULT LogonViewManager::DisplayCredentialError(
 
 	ComPtr<LogonViewManager> thisRef = this;
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [=, completion]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, ntsStatus, ntsSubStatus, messageBoxFlags, captionRef, messageRef, completion]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> deferral = completion;
@@ -567,7 +562,7 @@ HRESULT LogonViewManager::ShowSecurityOptions(
 
 	ComPtr<LogonViewManager> thisRef = this;
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [=, completion]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, options, completion]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> deferral = completion;
@@ -587,7 +582,7 @@ HRESULT LogonViewManager::Cleanup(WI::AsyncDeferral<WI::CNoResult> completion)
 
 	ComPtr<LogonViewManager> thisRef = this;
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [=, completion]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, completion]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		WI::AsyncDeferral<WI::CNoResult> deferral = completion;

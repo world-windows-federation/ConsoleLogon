@@ -2,14 +2,6 @@
 
 #include "consoleuimanager.h"
 
-#include <wrl/wrappers/corewrappers.h>
-#include <wil/token_helpers.h>
-#include <Shlwapi.h>
-
-#include "InternalAsync.h"
-#include "RefCountedObject.h"
-#include "ResultUtils.h"
-
 using namespace Microsoft::WRL;
 
 ConsoleUIManager::ConsoleUIManager()

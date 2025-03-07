@@ -7,3 +7,7 @@ end_of_line = crlf
 
 [*.{h,c,cpp}]
 insert_final_newline = true
+
+[*.vcxproj]
+indent_style = space
+indent_size = 2

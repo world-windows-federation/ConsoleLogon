@@ -1,9 +1,8 @@
 #pragma once
-#include <windows.h>
-#include <Windows.Foundation.h>
+
+#include "pch.h"
 
 #include "consoleuiview.h"
-#include "NativeString.h"
 #include "controlbase.h"
 
 class BasicTextControl
@@ -17,17 +16,17 @@ public:
 	~BasicTextControl() override;
 
 	HRESULT RuntimeClassInitialize(IConsoleUIView* view, UINT stringResourceId);
-	HRESULT RuntimeClassInitialize(IConsoleUIView* view, PWCHAR dataSource, bool acceptFocus);
+	HRESULT RuntimeClassInitialize(IConsoleUIView* view, const WCHAR* dataSource, bool acceptFocus);
 
 	//~ Begin IQueryFocus
 	STDMETHODIMP_(BOOL) HasFocus() override;
 	//~ End IQueryFocus
 
 private:
-	HRESULT v_OnFocusChange(BOOL) override PURE;
-	HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD*, BOOL*) override PURE;
+	HRESULT v_OnFocusChange(BOOL hasFocus) override;
+	HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 
-	STDMETHODIMP Repaint(IConsoleUIView*);
+	STDMETHODIMP Repaint(IConsoleUIView* view);
 
 	UINT m_VisibleControlSize;
 	CoTaskMemNativeString m_dataSource;

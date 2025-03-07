@@ -1,7 +1,6 @@
-﻿#include "lockedview.h"
-#include "controlhandle.h"
-#include "SimpleArray.h"
-#include <wil\resource.h>
+﻿#include "pch.h"
+
+#include "lockedview.h"
 
 #include "basictextcontrol.h"
 
@@ -25,7 +24,7 @@ HRESULT LockedView::RuntimeClassInitialize()
 	return S_OK;
 }
 
-HRESULT LockedView::v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
+HRESULT LockedView::v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
 {
 	*wasHandled = true;
 	RETURN_IF_FAILED(m_navigationCallback->OnNavigation()); // 30

@@ -1,8 +1,4 @@
 #include "pch.h"
-#include <Windows.Foundation.h>
-#include <wrl\wrappers\corewrappers.h>
-#include <wrl\client.h>
-#include <wrl\module.h>
 
 using namespace Microsoft::WRL;
 

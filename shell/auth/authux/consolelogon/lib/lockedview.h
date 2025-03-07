@@ -1,14 +1,11 @@
 ﻿#pragma once
 
-#include <wil/com.h>
-#include <wil/resource.h>
-#include <wil/result_macros.h>
+#include "pch.h"
 
 #include "consoleuiview.h"
-#include "logoninterfaces.h"
 
 class LockedView
-	: public Microsoft::WRL::RuntimeClass<ConsoleUIView>
+	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, ConsoleUIView>
 {
 public:
 	LockedView();
@@ -18,5 +15,5 @@ public:
 	HRESULT RuntimeClassInitialize();
 
 protected:
-	HRESULT v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
+	HRESULT v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 };

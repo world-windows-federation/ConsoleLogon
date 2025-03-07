@@ -78,6 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,6 +97,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -114,6 +116,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -132,6 +135,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,16 +148,39 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="sdk\inc\NotificationDispatcher.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\dll\dllmain.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\lib\basictextcontrol.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\lib\consolelogon.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\lib\consoleuimanager.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\lib\consoleuiview.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\lib\controlbase.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\lib\controlhandle.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\lib\lockedview.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\lib\logonviewmanager.cpp" />
-    <ClCompile Include="shell\auth\authux\consolelogon\lib\statusview.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\dll\dllmain.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\dll\pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\basictextcontrol.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\consolelogon.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\consoleuimanager.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\consoleuiview.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\controlbase.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\controlhandle.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\lockedview.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\logonviewmanager.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\statusview.cpp">
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />

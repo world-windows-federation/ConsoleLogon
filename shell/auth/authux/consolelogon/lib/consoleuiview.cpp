@@ -1,7 +1,8 @@
+#include "pch.h"
+
 #include "consoleuiview.h"
+
 #include "controlhandle.h"
-#include "SimpleArray.h"
-#include <wil\resource.h>
 
 using namespace Microsoft::WRL;
 
@@ -50,7 +51,7 @@ HRESULT ConsoleUIView::AppendControl(UINT height, IConsoleUIControl* control, IU
 		ComPtr<IControlHandle> lastControl = m_controlTable[m_controlTable._celem - 1];
 		UINT startingOffset = lastControl->GetOffsetFromRoot() + lastControl->GetSize();
 
-		RETURN_IF_FAILED(MakeAndInitialize<ControlHandle>(&controlHandle, startingOffset, height, m_controlTable._celem, control)); // 58
+		RETURN_IF_FAILED(MakeAndInitialize<ControlHandle>(&controlHandle, startingOffset, height, (UINT)m_controlTable._celem, control)); // 58
 	}
 
 	RETURN_IF_FAILED(m_controlTable.Add(controlHandle)); // 61
@@ -68,8 +69,8 @@ HRESULT ConsoleUIView::WriteOutput(IUnknown* handle, PCHAR_INFO data, COORD data
 	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &screenBufferInfo)); // 74
 
 
-	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Top < 0) || (writeRegion->Bottom >= controlHandle->GetSize()))); // 77
-	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Left < 0 ) || (writeRegion->Right >= screenBufferInfo.dwSize.X))); // 78
+	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Top < 0) || (writeRegion->Bottom >= (SHORT)controlHandle->GetSize()))); // 77
+	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Left < 0 ) || (writeRegion->Right >= (SHORT)screenBufferInfo.dwSize.X))); // 78
 	RETURN_HR_IF(E_INVALIDARG, ((writeRegion->Top > writeRegion->Bottom)|| (writeRegion->Left > writeRegion->Right))); // 79
 
 	SMALL_RECT actualWriteRect;
@@ -116,7 +117,7 @@ HRESULT ConsoleUIView::RemoveAll()
 {
 	for (size_t i = 0; i < m_controlTable.GetCapacity(); ++i)
 	{
-		LOG_IF_FAILED(m_controlTable[i].Reset()); // 136
+		RETURN_IF_FAILED(m_controlTable[i]->Destroy()); // 136
 	}
 
 	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
@@ -154,7 +155,7 @@ HRESULT ConsoleUIView::SetCursorPos(IUnknown* handle, COORD position, bool isVis
 	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
 	RETURN_IF_WIN32_BOOL_FALSE(GetConsoleScreenBufferInfo(m_screenBuffer.get(), &screenBufferInfo)); // 174
 
-	RETURN_HR_IF(E_INVALIDARG, (position.Y < 0) || (position.Y >= controlHandle->GetSize())); // 177
+	RETURN_HR_IF(E_INVALIDARG, (position.Y < 0) || (position.Y >= (SHORT)controlHandle->GetSize())); // 177
 	RETURN_HR_IF(E_INVALIDARG, (position.X < 0) || (position.X >= screenBufferInfo.dwSize.X)); // 178
 	RETURN_HR_IF(E_ACCESSDENIED, m_focusIndex != controlHandle->GetIndexInTable()); // 179
 
@@ -231,7 +232,7 @@ HRESULT ConsoleUIView::InitializeFocus()
 	{
 		if (m_controlTable[i]->IsFocusable() && m_controlTable[i]->GetSize())
 		{
-			m_focusIndex = i;
+			m_focusIndex = (int)i;
 			RETURN_IF_FAILED(m_controlTable[i]->SetFocus(TRUE)); // 255
 		}
 	}
@@ -302,7 +303,7 @@ HRESULT ConsoleUIView::MoveFocusToNext()
 	int oldFocusIndex = m_focusIndex;
 
 	int i = oldFocusIndex;
-	size_t controlTableSize = m_controlTable._celem;
+	int controlTableSize = (int)m_controlTable._celem;
 	while ((i = (i + 1) % controlTableSize) != oldFocusIndex)
 	{
 		if (m_controlTable[i]->IsFocusable())
@@ -342,7 +343,7 @@ HRESULT ConsoleUIView::MoveFocusToPrevious()
 	int oldFocusIndex = m_focusIndex;
 
 	int i = oldFocusIndex;
-	size_t controlTableSize = m_controlTable._celem;
+	int controlTableSize = (int)m_controlTable._celem;
 	while ((i = (i > 0 ? i : controlTableSize) - 1) != oldFocusIndex)
 	{
 		if (m_controlTable[i]->IsFocusable())

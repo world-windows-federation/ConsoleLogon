@@ -1,6 +1,7 @@
 #pragma once
-#include "InternalAsync.h"
-#include "logoninterfaces.h"
+
+#include "pch.h"
+
 #include "consoleuimanager.h"
 
 class LogonViewManager final

@@ -1,10 +1,8 @@
-﻿#include "statusview.h"
+﻿#include "pch.h"
 
-#include <wil\resource.h>
+#include "statusview.h"
 
-#include "SimpleArray.h"
 #include "basictextcontrol.h"
-#include "controlhandle.h"
 
 using namespace Microsoft::WRL;
 
@@ -30,12 +28,12 @@ HRESULT StatusView::RuntimeClassInitialize(HSTRING status, LCPD::IUser* selected
 	}
 
 	ComPtr<BasicTextControl> statusControl;
-	RETURN_IF_FAILED(MakeAndInitialize<BasicTextControl>(&statusControl, WindowsGetStringRawBuffer(status, nullptr), false)); // 31
+	RETURN_IF_FAILED(MakeAndInitialize<BasicTextControl>(&statusControl, this, WindowsGetStringRawBuffer(status, nullptr), false)); // 31
 
 	return S_OK;
 }
 
-HRESULT StatusView::v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
+HRESULT StatusView::v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
 {
 	*wasHandled = false;
 	return S_OK;

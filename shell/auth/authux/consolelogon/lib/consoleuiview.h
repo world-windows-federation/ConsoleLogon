@@ -1,30 +1,14 @@
 #pragma once
-#include <windows.h>
-#include <Windows.Foundation.h>
-#include <wil/resource.h>
-#include <wrl\wrappers\corewrappers.h>
-#include <wrl\event.h>
-#include <wrl\implements.h>
-#include <wrl\client.h>
+
+#include "pch.h"
 
 #include "controlhandle.h"
-#include "logoninterfaces.h"
-#include "SimpleArray.h"
 
 MIDL_INTERFACE("04ae9c0f-e0cc-43c8-9d9f-a9ad229c114a")
 INavigationCallback : IUnknown
 {
 	virtual HRESULT STDMETHODCALLTYPE OnNavigation() PURE;
 	virtual HRESULT STDMETHODCALLTYPE ShowComboBox(Windows::Internal::UI::Logon::CredProvData::IComboBoxField*) PURE;
-};
-
-MIDL_INTERFACE("ea10301e-c96d-4dec-a880-ddea9e9550ee")
-IConsoleUIControl : IUnknown
-{
-	virtual int STDMETHODCALLTYPE IsFocusable() PURE;
-	virtual HRESULT STDMETHODCALLTYPE OnFocusChange(BOOL) PURE;
-	virtual HRESULT STDMETHODCALLTYPE HandleKeyInput(const KEY_EVENT_RECORD*, BOOL*) PURE;
-	virtual HRESULT STDMETHODCALLTYPE Unadvise() PURE;
 };
 
 // Belongs to internal inputswitchserver.h
@@ -173,14 +157,14 @@ IConsoleUIViewInternal : IUnknown
 };
 
 class ConsoleUIView
-	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>
+	: public Microsoft::WRL::Implements<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom> // @MOD This is not RuntimeClass but rather Implements
 		, IConsoleUIView
 		, IConsoleUIViewInternal
 	>
 {
 public:
 	ConsoleUIView();
-	~ConsoleUIView() override;
+	~ConsoleUIView()/* override*/;
 
 	HRESULT Initialize();
 
@@ -203,7 +187,7 @@ public:
 	//~ End IConsoleUIViewInternal Interface
 
 protected:
-	virtual HRESULT v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* keyHandled) PURE;
+	virtual HRESULT v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* keyHandled) PURE;
 	virtual void v_Unadvise() PURE;
 	virtual int GetFocusIndex() PURE;
 

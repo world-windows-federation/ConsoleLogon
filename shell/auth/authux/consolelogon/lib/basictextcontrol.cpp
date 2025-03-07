@@ -1,6 +1,8 @@
-#include "basictextcontrol.h"
 #include "pch.h"
-#include <wil\resource.h>
+
+#include "basictextcontrol.h"
+
+#include <wil/resource.h>
 
 BasicTextControl::BasicTextControl()
 	: m_VisibleControlSize(0)
@@ -14,7 +16,7 @@ BasicTextControl::~BasicTextControl()
 {
 }
 
-HRESULT BasicTextControl::RuntimeClassInitialize(IConsoleUIView* view, PWCHAR dataSource, bool acceptFocus)
+HRESULT BasicTextControl::RuntimeClassInitialize(IConsoleUIView* view, const WCHAR* dataSource, bool acceptFocus)
 {
 	m_acceptFocus = acceptFocus;
 	RETURN_IF_FAILED(m_dataSource.Initialize(dataSource)); // 21
@@ -36,24 +38,47 @@ BOOL BasicTextControl::HasFocus()
 	return m_VisibleControlSize;
 }
 
+HRESULT BasicTextControl::v_OnFocusChange(BOOL hasFocus)
+{
+	if (m_acceptFocus)
+	{
+		m_hasFocus = hasFocus != 0;
+		RETURN_IF_FAILED(Repaint(m_view.Get())); // 73
+	}
+	else
+	{
+		RETURN_HR(E_NOTIMPL); // 78
+	}
+
+	return S_OK;
+}
+
+HRESULT BasicTextControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
+{
+	*wasHandled = FALSE;
+	return S_OK;
+}
+
 HRESULT BasicTextControl::Repaint(IConsoleUIView* view)
 {
-	UINT length = m_dataSource.GetCount();
+	UINT contentLength = (UINT)m_dataSource.GetCount();
+
 	UINT consoleWidth;
 	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 47
 
-	UINT height = length / consoleWidth + 1;
+	UINT controlSize = contentLength / consoleWidth + 1;
 	if (!m_isInitialized)
 	{
-		RETURN_IF_FAILED(this->Initialize(m_acceptFocus, height, view)); // 53
+		RETURN_IF_FAILED(Initialize(m_acceptFocus, controlSize, view)); // 53
 		m_isInitialized = true;
 	}
-	if (height != m_VisibleControlSize)
-	{
-		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(), height)); // 59
-	}
-	m_VisibleControlSize = height;
 
-	RETURN_IF_FAILED(this->PaintArea(m_dataSource.Get(), length, (ColorScheme)m_hasFocus, consoleWidth, m_VisibleControlSize)); // 63
+	if (controlSize != m_VisibleControlSize)
+	{
+		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(), controlSize)); // 59
+	}
+	m_VisibleControlSize = controlSize;
+
+	RETURN_IF_FAILED(PaintArea(m_dataSource.Get(), contentLength, (ColorScheme)m_hasFocus, consoleWidth, m_VisibleControlSize)); // 63
 	return S_OK;
 }

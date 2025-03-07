@@ -1,10 +1,8 @@
 #pragma once
 
-#include <wil/com.h>
-#include <wil/resource.h>
-#include <wil/result_macros.h>
+#include "pch.h"
+
 #include "consoleuiview.h"
-#include "logoninterfaces.h"
 
 MIDL_INTERFACE("12af1a6b-0e79-4ad6-b317-436d849b1c11")
 IQueryFocus : IUnknown

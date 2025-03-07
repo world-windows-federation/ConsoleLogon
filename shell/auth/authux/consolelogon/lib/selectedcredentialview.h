@@ -1,13 +1,9 @@
 ﻿#pragma once
 
-#include <wil/com.h>
-#include <wil/resource.h>
-#include <wil/result_macros.h>
+#include "pch.h"
 
 #include "consoleuiview.h"
 #include "controlbase.h"
-#include "InternalAsync.h"
-#include "logoninterfaces.h"
 
 MIDL_INTERFACE("af86e2e0-b12d-4c6a-9c5a-d7aa65101e90")
 IComboBoxSelectCallback : IUnknown
@@ -33,7 +29,7 @@ public:
 	//~ End IComboBoxSelectCallback Interface
 
 protected:
-	HRESULT v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
+	HRESULT v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 
 private:
 	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::CredProvData::ICredential> m_credential;

@@ -1,6 +1,6 @@
 #pragma once
 
-#define BUILD_WINDOWS
+// #define BUILD_WINDOWS
 #include <wrl/async.h>
 #include "GitPtr.h"
 #include "MarshaledInterface.h"
@@ -213,11 +213,11 @@ namespace Windows::Internal
 	class AsyncCallbackBase
 	{
 	public:
-		using TCallback = TCallback;
+		using TCallbackT = TCallback;
 
 		virtual ~AsyncCallbackBase() = default;
 
-		virtual HRESULT Run(AsyncStage stage, HRESULT hr, const TCallback& result) = 0;
+		virtual HRESULT Run(AsyncStage stage, HRESULT hr, TCallback& result) = 0;
 	};
 
 	template <
@@ -227,7 +227,7 @@ namespace Windows::Internal
 	class COperationLambda0 final : public AsyncCallbackBase<TResult>
 	{
 	public:
-		COperationLambda0(const typename TCall::TCallback& call)
+		COperationLambda0(const typename TCall::TLambdaT& call)
 			: _call(call)
 		{
 		}
@@ -248,6 +248,8 @@ namespace Windows::Internal
 	class CCallAsyncLambda
 	{
 	public:
+		using TLambdaT = TLambda;
+
 		CCallAsyncLambda(const TLambda& lambda)
 			: _lambda(lambda)
 		{
@@ -274,6 +276,8 @@ namespace Windows::Internal
 	class CCallAsyncStagedLambda
 	{
 	public:
+		using TLambdaT = TLambda;
+
 		CCallAsyncStagedLambda(const TLambda& lambda)
 			: _lambda(lambda)
 		{
@@ -326,7 +330,7 @@ namespace Windows::Internal
 	{
 		*ppOperation = nullptr;
 
-		HRESULT hr = pCallback ? S_OK : E_OUTOFMEMORY;
+		/*HRESULT hr = pCallback ? S_OK : E_OUTOFMEMORY;
 		if (hr >= 0)
 		{
 			auto spOperation = Microsoft::WRL::Make<AsyncOperation<TOperation, TCompleteHandler, TResult, TTaskPoolHandler, TDelegate, TAsyncOptions>>(handler, pszRuntimeName, trustLevel);
@@ -343,7 +347,7 @@ namespace Windows::Internal
 			}
 			if (pCallback)
 				delete pCallback;
-		}
+		}*/ HRESULT hr = E_NOTIMPL;
 
 		return hr;
 	}

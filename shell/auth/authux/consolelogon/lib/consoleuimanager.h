@@ -1,14 +1,11 @@
 #pragma once
 
-#include <wil/com.h>
-#include <wil/resource.h>
-#include <wil/result_macros.h>
+#include "pch.h"
 
 #include "consoleuiview.h"
-#include "logoninterfaces.h"
 #include "NotificationDispatcher.h"
 
-class ConsoleUIManager 
+class ConsoleUIManager
 	: public Microsoft::WRL::Implements<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>
 		, IUnknown
 	>
