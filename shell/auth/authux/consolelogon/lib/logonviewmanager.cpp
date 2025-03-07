@@ -6,8 +6,10 @@
 
 #include "comboboxselectionview.h"
 #include "credprovselectionview.h"
+#include "EventDispatcher.h"
 #include "lockedview.h"
 #include "messageview.h"
+#include "optionaldependencyprovider.h"
 #include "securityoptionsview.h"
 #include "selectedcredentialview.h"
 #include "serializationfailedview.h"
@@ -307,37 +309,6 @@ HRESULT LogonViewManager::ShowComboBox(LCPD::IComboBoxField* dataSource)
 	m_currentView.Swap(comboBoxView.Get());
 	m_currentViewType = LogonView::ComboBox;
 	return S_OK;
-}
-
-template <typename T>
-class CDispatchNotification final : public RuntimeClass<RuntimeClassFlags<ClassicCom>, IDispatchNotification>
-{
-public:
-	CDispatchNotification(const T& func)
-		: _func(func)
-	{
-	}
-
-	void Dispatch() override
-	{
-		_func();
-	}
-
-private:
-	T _func;
-};
-
-template <typename T>
-HRESULT BeginInvoke(INotificationDispatcher* pDispatcher, const T& func)
-{
-	ComPtr<IDispatchNotification> spDispatchNotification = Make<CDispatchNotification<T>>(func);
-	HRESULT hr = spDispatchNotification.Get() ? S_OK : E_OUTOFMEMORY;
-	if (SUCCEEDED(hr))
-	{
-		hr = pDispatcher->QueueNotification(spDispatchNotification.Get());
-	}
-
-	return hr;
 }
 
 HRESULT LogonViewManager::SetContext(
@@ -698,7 +669,7 @@ HRESULT StartOperationAndThen(TOperation* pOperation, TFunc&& func)
 				spAsyncInfo->get_ErrorCode(&hr);
 			}
 		}
-		func(hr);
+		func(hr, pOperation);
 		return S_OK;
 	});
 
@@ -1016,7 +987,7 @@ HRESULT LogonViewManager::ShowSelectedCredentialView(LCPD::ICredential* credenti
 	RETURN_IF_FAILED(DestroyCurrentView()); // 952
 
 	ComPtr<SelectedCredentialView> selectedCredentialView;
-	RETURN_IF_FAILED(MakeAndInitialize<SelectedCredentialView>(&selectedCredentialView, credential, userName)); // 955
+	RETURN_IF_FAILED(MakeAndInitialize<SelectedCredentialView>(&selectedCredentialView, m_currentReason, credential, userName)); // 955
 
 	RETURN_IF_FAILED(selectedCredentialView->SelectedCredentialView::Advise(this)); // 957
 

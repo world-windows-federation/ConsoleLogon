@@ -188,8 +188,9 @@ public:
 
 protected:
 	virtual HRESULT v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* keyHandled) PURE;
-	virtual void v_Unadvise() PURE;
-	virtual int GetFocusIndex() PURE;
+	virtual void v_Unadvise();
+
+	int GetFocusIndex() const;
 
 	Microsoft::WRL::ComPtr<INavigationCallback> m_navigationCallback;
 

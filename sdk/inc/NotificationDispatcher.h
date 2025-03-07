@@ -92,3 +92,37 @@ FORCEINLINE HRESULT MakeNotificationDispatcher(Microsoft::WRL::Details::ComPtrRe
 {
 	return MakeNotificationDispatcher<T, I>(ppvObject.ReleaseAndGetAddressOf());
 }
+
+template <typename T>
+class CDispatchNotification final
+	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>
+		, IDispatchNotification
+	>
+{
+public:
+	CDispatchNotification(const T& func)
+		: _func(func)
+	{
+	}
+
+	void Dispatch() override
+	{
+		_func();
+	}
+
+private:
+	T _func;
+};
+
+template <typename T>
+HRESULT BeginInvoke(INotificationDispatcher* pDispatcher, const T& func)
+{
+	Microsoft::WRL::ComPtr<IDispatchNotification> spDispatchNotification = Make<CDispatchNotification<T>>(func);
+	HRESULT hr = spDispatchNotification.Get() ? S_OK : E_OUTOFMEMORY;
+	if (SUCCEEDED(hr))
+	{
+		hr = pDispatcher->QueueNotification(spDispatchNotification.Get());
+	}
+
+	return hr;
+}

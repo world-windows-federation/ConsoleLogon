@@ -240,6 +240,15 @@ HRESULT ConsoleUIView::InitializeFocus()
 	return S_OK;
 }
 
+void ConsoleUIView::v_Unadvise()
+{
+}
+
+int ConsoleUIView::GetFocusIndex() const
+{
+	return m_focusIndex;
+}
+
 HRESULT ConsoleUIView::ShiftVisuals(UINT startIndex, int shiftDistance)
 {
 	if (!shiftDistance)

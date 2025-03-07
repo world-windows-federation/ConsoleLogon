@@ -579,7 +579,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE Dispatch() PURE;
 		};
 
-		struct IUIThreadEventDispatcher : IInspectable
+		MIDL_INTERFACE("edc8d4ae-643f-4ebf-b869-b1463e38b829")
+		IUIThreadEventDispatcher : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE DispatchEvent(IDispatchEvent*) PURE;
 		};
@@ -595,7 +596,8 @@ namespace Windows::Internal::UI::Logon
 			OptionalDependencyKind_UserTileImage = 6,
 		};
 
-		struct IOptionalDependencyProvider : IInspectable
+		MIDL_INTERFACE("ef207a42-36ca-4e16-81c0-116cccc45deb")
+		IOptionalDependencyProvider : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE GetOptionalDependency(OptionalDependencyKind, IInspectable**) PURE;
 		};
@@ -618,6 +620,16 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_IsAutoSubmitPending(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_IsAutoSubmitPendingChanged(WF::ITypedEventHandler<ICredentialGroup*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_IsAutoSubmitPendingChanged(EventRegistrationToken) PURE;
+		};
+
+		MIDL_INTERFACE("9a5f2170-ef01-4fe4-83c1-141ae408d40b")
+		ICredProvDefaultSelector : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_UseLastLoggedOnProvider(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_PreferredProviders(WFC::IVectorView<GUID>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ExcludedProviders(WFC::IVectorView<GUID>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_DefaultUserSid(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE AllowAutoSubmitOnSelection(IUser*, BOOLEAN*) PURE;
 		};
 	}
 
@@ -767,7 +779,8 @@ namespace Windows::Internal::UI::Logon
 
 		DEFINE_ENUM_FLAG_OPERATORS(LogonUISecurityOptions);
 
-		struct IRequestCredentialsData : IInspectable
+		MIDL_INTERFACE("3b1f419e-0b45-42b1-a18c-3a2a8e1715db")
+		IRequestCredentialsData : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Credential(CredProvData::ICredentialSerialization**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SaveCredential(BOOLEAN*) PURE;
@@ -809,7 +822,8 @@ namespace Windows::Internal::UI::Logon
 			LogonUICredProvResponse_LogonUIResponseAbort = 2,
 		};
 
-		struct IReportCredentialsData : IInspectable
+		MIDL_INTERFACE("ba2419f9-f552-4e37-9145-3c1673104057")
+		IReportCredentialsData : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Message(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Response(LogonUICredProvResponse*) PURE;
@@ -825,7 +839,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE CreateReportCredentialsData(LogonUICredProvResponse, HSTRING, IReportCredentialsData**) PURE;
 		};
 
-		struct IMessageDisplayResult : IInspectable
+		MIDL_INTERFACE("63ace640-87c6-4bda-ac7c-793c6e16cce1")
+		IMessageDisplayResult : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_ResultCode(UINT*) PURE;
 		};

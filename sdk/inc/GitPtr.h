@@ -24,7 +24,7 @@ public:
         if (ptr)
         {
             Microsoft::WRL::ComPtr<IAgileReference> spAgileReference;
-            hr = RoGetAgileReference(0, __uuidof(ptr), ptr, &spAgileReference);
+            hr = RoGetAgileReference(AGILEREFERENCE_DEFAULT, __uuidof(ptr), ptr, &spAgileReference);
             if (SUCCEEDED(hr))
             {
                 _spAgileReference.Swap(spAgileReference);

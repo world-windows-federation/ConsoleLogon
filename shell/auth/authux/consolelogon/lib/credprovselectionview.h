@@ -12,7 +12,7 @@ public:
 	~CredProvSelectionView() override;
 
 	// ReSharper disable once CppHidingFunction
-	HRESULT RuntimeClassInitialize(LCPD::ICredentialGroup* credentialGroup, HSTRING* userName);
+	HRESULT RuntimeClassInitialize(LCPD::ICredentialGroup* credentialGroup, HSTRING userName);
 
 protected:
 	HRESULT v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
