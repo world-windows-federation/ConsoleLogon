@@ -23,12 +23,13 @@ public:
 	//~ Begin WF::Collections::VectorChangedEventHandler<HSTRING> Interface
 	STDMETHODIMP Invoke(WF::Collections::IObservableVector<HSTRING>* sender, WF::Collections::IVectorChangedEventArgs* args) override;
 	//~ End WF::Collections::VectorChangedEventHandler<HSTRING> Interface
-	
+
 protected:
 	HRESULT v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 	void v_Unadvise() override;
+
 	HRESULT Reset();
-	
+
 private:
 	Microsoft::WRL::ComPtr<LCPD::IComboBoxField> m_dataSource;
 	Microsoft::WRL::ComPtr<WF::Collections::IObservableVector<HSTRING> > m_items;

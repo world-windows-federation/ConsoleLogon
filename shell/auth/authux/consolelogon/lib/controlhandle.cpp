@@ -4,9 +4,9 @@
 using namespace Microsoft::WRL;
 
 ControlHandle::ControlHandle()
-	: m_offsetFromRoot(0), 
-		m_size(0), 
-		m_index(0)
+	: m_offsetFromRoot(0)
+	, m_size(0)
+	, m_index(0)
 {
 }
 
@@ -46,16 +46,12 @@ HRESULT ControlHandle::SetSize(UINT size)
 	return S_OK;
 }
 
-INT ControlHandle::IsFocusable()
+BOOL ControlHandle::IsFocusable()
 {
-	int isfocusable = m_controlCallback->IsFocusable();
-	if (isfocusable)
-		return m_size != 0;
-
-	return S_OK;
+	return m_controlCallback->IsFocusable() && m_size;
 }
 
-HRESULT ControlHandle::SetFocus(INT hasFocus)
+HRESULT ControlHandle::SetFocus(BOOL hasFocus)
 {
 	return m_controlCallback->OnFocusChange(hasFocus);
 }
@@ -65,7 +61,7 @@ UINT ControlHandle::GetIndexInTable()
 	return m_index;
 }
 
-HRESULT ControlHandle::HandleKeyInput(PKEY_EVENT_RECORD keyEvent, PINT wasHandled)
+HRESULT ControlHandle::HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
 {
 	*wasHandled = 0;
 	return m_controlCallback->HandleKeyInput(keyEvent, wasHandled);

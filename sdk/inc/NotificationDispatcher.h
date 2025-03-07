@@ -75,6 +75,8 @@ public:
 template <typename T, typename I>
 FORCEINLINE HRESULT MakeNotificationDispatcher(I** ppDispatcher)
 {
+	*ppDispatcher = nullptr;
+
 	Microsoft::WRL::ComPtr<IUnknown> spUnkDispatcher;
 	HRESULT hr = MakeAndInitialize<T>(&spUnkDispatcher);
 	if (SUCCEEDED(hr))

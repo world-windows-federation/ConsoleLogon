@@ -16,10 +16,10 @@ public:
 
 	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(LCPD::ICredentialGroup* credentialGroup, HSTRING* userName);
-	
+
 protected:
 	HRESULT v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
-	
+
 private:
 	Microsoft::WRL::ComPtr<LCPD::ICredentialGroup> m_credentialGroup;
 };

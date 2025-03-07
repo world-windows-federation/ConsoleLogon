@@ -3,9 +3,10 @@
 #include <wil\resource.h>
 
 BasicTextControl::BasicTextControl()
-	: m_VisibleControlSize(0),
-	m_isInitialized(0),
-	m_hasFocus(0)
+	: m_VisibleControlSize(0)
+	, m_isInitialized(false)
+	, m_acceptFocus(false)
+	, m_hasFocus(false)
 {
 }
 
@@ -21,7 +22,6 @@ HRESULT BasicTextControl::RuntimeClassInitialize(IConsoleUIView* view, PWCHAR da
 	RETURN_IF_FAILED(Repaint(view)); // 23
 	return S_OK;
 }
-
 
 HRESULT BasicTextControl::RuntimeClassInitialize(IConsoleUIView* view, UINT stringResourceId)
 {

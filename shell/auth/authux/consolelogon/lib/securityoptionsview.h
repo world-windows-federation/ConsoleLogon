@@ -16,11 +16,13 @@ public:
 	~SecurityOptionsView() override;
 
 	// ReSharper disable once CppHidingFunction
-	HRESULT RuntimeClassInitialize(LC::LogonUISecurityOptions options, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);
+	HRESULT RuntimeClassInitialize(
+		LC::LogonUISecurityOptions options,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);
 
 protected:
 	HRESULT v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
-	
+
 private:
 	wistd::unique_ptr<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>>> m_completion;
 };

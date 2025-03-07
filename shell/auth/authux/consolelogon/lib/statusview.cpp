@@ -1,9 +1,10 @@
 ﻿#include "statusview.h"
-#include "controlhandle.h"
-#include "SimpleArray.h"
+
 #include <wil\resource.h>
 
+#include "SimpleArray.h"
 #include "basictextcontrol.h"
+#include "controlhandle.h"
 
 using namespace Microsoft::WRL;
 
@@ -15,10 +16,9 @@ StatusView::~StatusView()
 {
 }
 
-HRESULT StatusView::RuntimeClassInitialize(HSTRING status,
-	Windows::Internal::UI::Logon::CredProvData::IUser* selectedUser)
+HRESULT StatusView::RuntimeClassInitialize(HSTRING status, LCPD::IUser* selectedUser)
 {
-	RETURN_IF_FAILED(this->Initialize()); // 19
+	RETURN_IF_FAILED(Initialize()); // 19
 
 	if (selectedUser)
 	{
@@ -26,7 +26,7 @@ HRESULT StatusView::RuntimeClassInitialize(HSTRING status,
 		RETURN_IF_FAILED(selectedUser->get_DisplayName(userName.ReleaseAndGetAddressOf())); // 24
 
 		ComPtr<BasicTextControl> userNameControl;
-		RETURN_IF_FAILED(MakeAndInitialize<BasicTextControl>(&userNameControl, this, userName.GetRawBuffer(0), false)); // 27
+		RETURN_IF_FAILED(MakeAndInitialize<BasicTextControl>(&userNameControl, this, userName.GetRawBuffer(nullptr), false)); // 27
 	}
 
 	ComPtr<BasicTextControl> statusControl;

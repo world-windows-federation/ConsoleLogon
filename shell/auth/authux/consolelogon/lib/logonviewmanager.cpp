@@ -6,15 +6,15 @@
 
 #include "NativeString.h"
 #include "RefCountedObject.h"
-#include "serializationfailedview.h"
-#include "messageview.h"
-#include "statusview.h"
-#include "selectedcredentialview.h"
-#include "credprovselectionview.h"
-#include "userselectionview.h"
-#include "securityoptionsview.h"
-#include "lockedview.h"
 #include "comboboxselectionview.h"
+#include "credprovselectionview.h"
+#include "lockedview.h"
+#include "messageview.h"
+#include "securityoptionsview.h"
+#include "selectedcredentialview.h"
+#include "serializationfailedview.h"
+#include "statusview.h"
+#include "userselectionview.h"
 
 using namespace Microsoft::WRL;
 
@@ -636,7 +636,7 @@ HRESULT LogonViewManager::LockUIThread(
 	m_unlockTrigger = unlockTrigger;
 
 	ComPtr<LockedView> lockView;
-	RETURN_IF_FAILED(Details::MakeAndInitialize<LockedView>(&lockView)); // 578
+	RETURN_IF_FAILED(MakeAndInitialize<LockedView>(&lockView)); // 578
 
 	RETURN_IF_FAILED(lockView->LockedView::Advise(this)); // 580
 

@@ -18,11 +18,12 @@ INavigationCallback : IUnknown
 	virtual HRESULT STDMETHODCALLTYPE ShowComboBox(Windows::Internal::UI::Logon::CredProvData::IComboBoxField*) PURE;
 };
 
-struct IConsoleUIControl : IUnknown
+MIDL_INTERFACE("ea10301e-c96d-4dec-a880-ddea9e9550ee")
+IConsoleUIControl : IUnknown
 {
 	virtual int STDMETHODCALLTYPE IsFocusable() PURE;
-	virtual HRESULT STDMETHODCALLTYPE OnFocusChange(int) PURE;
-	virtual HRESULT STDMETHODCALLTYPE HandleKeyInput(const PKEY_EVENT_RECORD, int*) PURE;
+	virtual HRESULT STDMETHODCALLTYPE OnFocusChange(BOOL) PURE;
+	virtual HRESULT STDMETHODCALLTYPE HandleKeyInput(const KEY_EVENT_RECORD*, BOOL*) PURE;
 	virtual HRESULT STDMETHODCALLTYPE Unadvise() PURE;
 };
 
@@ -149,7 +150,8 @@ IInputSwitchCallback : IUnknown
 extern "C" inline const IID IID_IInputSwitchCallback = __uuidof(IInputSwitchCallback);
 // End internal inputswitchserver.h
 
-struct IConsoleUIView : IUnknown
+MIDL_INTERFACE("d5ac38c1-7c50-4d6d-8392-6d717114084b")
+IConsoleUIView : IUnknown
 {
 	virtual HRESULT STDMETHODCALLTYPE Advise(INavigationCallback*) PURE;
 	virtual HRESULT STDMETHODCALLTYPE Unadvise() PURE;
@@ -166,7 +168,7 @@ MIDL_INTERFACE("8224683b-9ca1-478d-82c2-f833b5a3e254")
 IConsoleUIViewInternal : IUnknown
 {
 	virtual HRESULT STDMETHODCALLTYPE GetScreenBuffer(void**) PURE;
-	virtual HRESULT STDMETHODCALLTYPE HandleKeyInput(PKEY_EVENT_RECORD) PURE;
+	virtual HRESULT STDMETHODCALLTYPE HandleKeyInput(const KEY_EVENT_RECORD*) PURE;
 	virtual HRESULT STDMETHODCALLTYPE InitializeFocus() PURE;
 };
 
@@ -196,12 +198,12 @@ public:
 
 	//~ Begin IConsoleUIViewInternal Interface
 	STDMETHODIMP GetScreenBuffer(void** pScreenBuffer) override;
-	STDMETHODIMP HandleKeyInput(PKEY_EVENT_RECORD keyEvent) override;
+	STDMETHODIMP HandleKeyInput(const KEY_EVENT_RECORD* keyEvent) override;
 	STDMETHODIMP InitializeFocus() override;
 	//~ End IConsoleUIViewInternal Interface
 
 protected:
-	virtual HRESULT v_OnKeyInput(PKEY_EVENT_RECORD keyEvent, BOOL* keyHandled) PURE;
+	virtual HRESULT v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* keyHandled) PURE;
 	virtual void v_Unadvise() PURE;
 	virtual int GetFocusIndex() PURE;
 

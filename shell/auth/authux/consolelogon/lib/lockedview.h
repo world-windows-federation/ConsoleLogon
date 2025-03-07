@@ -16,7 +16,7 @@ public:
 
 	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize();
-	
+
 protected:
 	HRESULT v_OnKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 };

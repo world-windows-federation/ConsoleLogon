@@ -16,8 +16,9 @@ public:
 	~MessageView() override;
 
 	// ReSharper disable once CppHidingFunction
-	HRESULT RuntimeClassInitialize(HSTRING* caption, HSTRING* message, unsigned int messageBoxFlags,
-		Windows::Internal::AsyncDeferral<Windows::Internal::CMarshaledInterfaceResult<LC::IMessageDisplayResult> > completion,
+	HRESULT RuntimeClassInitialize(
+		HSTRING* caption, HSTRING* message, UINT messageBoxFlags,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion,
 		LCPD::IUser* selectedUser);
 
 protected:

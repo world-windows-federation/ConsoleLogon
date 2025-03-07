@@ -176,7 +176,7 @@ HRESULT ConsoleUIView::GetScreenBuffer(void** pScreenBuffer)
 	return S_OK;
 }
 
-HRESULT ConsoleUIView::HandleKeyInput(PKEY_EVENT_RECORD keyEvent)
+HRESULT ConsoleUIView::HandleKeyInput(const KEY_EVENT_RECORD* keyEvent)
 {
 	BOOL keyHandled = FALSE;
 
