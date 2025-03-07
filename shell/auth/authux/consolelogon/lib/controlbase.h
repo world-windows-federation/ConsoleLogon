@@ -8,7 +8,7 @@
 
 struct IQueryFocus : public IUnknown
 {
-	BOOL HasFocus();
+	virtual BOOL STDMETHODCALLTYPE HasFocus() PURE;
 };
 
 class ControlBase

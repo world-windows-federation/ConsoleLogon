@@ -18,7 +18,7 @@ StatusView::~StatusView()
 HRESULT StatusView::RuntimeClassInitialize(HSTRING status,
 	Windows::Internal::UI::Logon::CredProvData::IUser* selectedUser)
 {
-	RETURN_IF_FAILED(ConsoleUIView::Initialize()); // 19
+	RETURN_IF_FAILED(this->Initialize()); // 19
 
 	if (selectedUser)
 	{

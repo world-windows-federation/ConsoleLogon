@@ -17,7 +17,7 @@ LockedView::~LockedView()
 
 HRESULT LockedView::RuntimeClassInitialize()
 {
-	RETURN_IF_FAILED(ConsoleUIView::Initialize()); //18
+	RETURN_IF_FAILED(this->Initialize()); //18
 	
 	ComPtr<BasicTextControl> control;
 	RETURN_IF_FAILED(MakeAndInitialize<BasicTextControl>(&control, this, 100)); //21

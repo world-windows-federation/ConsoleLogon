@@ -6,6 +6,15 @@
 
 #include "NativeString.h"
 #include "RefCountedObject.h"
+#include "serializationfailedview.h"
+#include "messageview.h"
+#include "statusview.h"
+#include "selectedcredentialview.h"
+#include "credprovselectionview.h"
+#include "userselectionview.h"
+#include "securityoptionsview.h"
+#include "lockedview.h"
+#include "comboboxselectionview.h"
 
 using namespace Microsoft::WRL;
 
