@@ -169,6 +169,7 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\logonviewmanager.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\OptionalDependencyProvider.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\statusview.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\userselectionview.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
