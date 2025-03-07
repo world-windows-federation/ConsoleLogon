@@ -4,7 +4,7 @@
 
 #include "consoleuiview.h"
 
-class CredProvSelectionView
+class CredProvSelectionView final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, ConsoleUIView>
 {
 public:

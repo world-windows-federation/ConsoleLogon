@@ -4,7 +4,7 @@
 
 #include "consoleuiview.h"
 
-class MessageView
+class MessageView final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, ConsoleUIView>
 {
 public:

@@ -4,7 +4,7 @@
 
 #include "consoleuiview.h"
 
-class SerializationFailedView
+class SerializationFailedView final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, ConsoleUIView>
 {
 public:

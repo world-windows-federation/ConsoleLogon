@@ -11,7 +11,7 @@ IComboBoxSelectCallback : IUnknown
 	virtual HRESULT OnComboboxSelected(LCPD::IComboBoxField* comboBox) = 0;
 };
 
-class SelectedCredentialView
+class SelectedCredentialView final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
 		, ConsoleUIView
 		, IComboBoxSelectCallback

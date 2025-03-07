@@ -961,6 +961,13 @@ namespace ABI::Windows::Foundation::Collections
 {
 	template <>
 	struct
+	IObservableVector<HSTRING>
+		: IObservableVector_impl<HSTRING>
+	{
+	};
+
+	template <>
+	struct
 	IObservableVector<IInspectable*>
 		: IObservableVector_impl<IInspectable*>
 	{

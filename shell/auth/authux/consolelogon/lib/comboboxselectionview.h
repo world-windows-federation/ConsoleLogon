@@ -4,7 +4,7 @@
 
 #include "consoleuiview.h"
 
-class ComboboxSelectionView
+class ComboboxSelectionView final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
 		, ConsoleUIView
 		, WFC::VectorChangedEventHandler<HSTRING>
@@ -29,6 +29,6 @@ protected:
 
 private:
 	Microsoft::WRL::ComPtr<LCPD::IComboBoxField> m_dataSource;
-	Microsoft::WRL::ComPtr<WFC::IObservableVector<HSTRING> > m_items;
+	Microsoft::WRL::ComPtr<WFC::IObservableVector<HSTRING>> m_items;
 	EventRegistrationToken m_itemsChangedToken;
 };

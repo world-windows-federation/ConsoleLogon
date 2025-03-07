@@ -4,7 +4,7 @@
 
 #include "consoleuiview.h"
 
-class UserSelectionView
+class UserSelectionView final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, ConsoleUIView>
 {
 public:
