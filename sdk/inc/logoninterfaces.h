@@ -115,8 +115,21 @@ namespace Windows::Internal::UI::Logon
 		MIDL_INTERFACE("20486918-5147-4725-a0cb-12b952a5f0c3")
 		ICommandLinkField : IInspectable
 		{
-			HRESULT get_Content(HSTRING* outContent);
-			HRESULT Invoke();
+			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING* outContent) PURE;
+			virtual HRESULT STDMETHODCALLTYPE Invoke() PURE;
+		};
+
+		MIDL_INTERFACE("d2e17318-81f9-4560-af02-dda5d4c2c27b")
+		ICredentialEditField : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING* );
+			virtual HRESULT STDMETHODCALLTYPE put_Content(HSTRING );
+			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordRevealEnabled(bool* );
+			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordField(bool* );
+			virtual HRESULT STDMETHODCALLTYPE get_MaxPasswordLength(int * );
+			virtual HRESULT STDMETHODCALLTYPE get_IsNumbersOnly(bool* );
+			virtual HRESULT STDMETHODCALLTYPE get_IsEmailAddress(bool* );
+			virtual HRESULT STDMETHODCALLTYPE get_IsEnglishOnly(bool* );
 		};
 
 		enum CredProvScenario

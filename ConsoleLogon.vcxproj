@@ -168,6 +168,7 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\controlhandle.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\credentialfieldcontrolbase.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\DefaultSelector.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\editcontrol.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\EventDispatcher.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\lockedview.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\logonviewmanager.cpp" />
