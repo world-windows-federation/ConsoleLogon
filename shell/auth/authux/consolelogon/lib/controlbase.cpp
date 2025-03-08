@@ -74,7 +74,7 @@ HRESULT ControlBase::ConvertStringToCharInfo(const WCHAR* content, UINT length, 
         charData[i].Char.UnicodeChar = content[i] == L'\r' || content[i] == L'\n' ? L' ' : content[i];
 
         WORD invertedAttributes;
-        if (colorScheme == Inverted)
+        if (colorScheme == ColorScheme::Inverted)
         {
             invertedAttributes = InvertColorAttributes(colorAttributes);
         }
@@ -97,7 +97,7 @@ HRESULT ControlBase::BackFillCharDataBuffer(WCHAR fillCharacter, ColorScheme col
     {
         charData[i].Char.UnicodeChar = fillCharacter;
         WORD invertedAttributes;
-        if (colorScheme == Inverted)
+        if (colorScheme == ColorScheme::Inverted)
         {
 	        invertedAttributes = InvertColorAttributes(colorAttributes);
         }

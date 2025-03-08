@@ -23,7 +23,7 @@ public:
 	STDMETHODIMP Unadvise() override;
 	//~ End IConsoleUIControl Interface
 
-	enum ColorScheme
+	enum class ColorScheme
 	{
 		Normal = 0,
 		Inverted = 1

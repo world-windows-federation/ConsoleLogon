@@ -125,11 +125,11 @@ extern "C" inline HRESULT (WINAPI *SHTaskPoolQueueTask)(
 	DWORD startDelayInMs,
 	Windows::Internal::IComPoolTask* task,
 	IUnknown** delayedTask
-);
+) = nullptr;
 
-extern "C" inline DWORD (WINAPI *SHTaskPoolGetUniqueContext)();
+extern "C" inline DWORD (WINAPI *SHTaskPoolGetUniqueContext)() = nullptr;
 
-extern "C" inline void (WINAPI *SHTaskPoolAllowThreadReuse)();
+extern "C" inline void (WINAPI *SHTaskPoolAllowThreadReuse)() = nullptr;
 
 namespace Windows::Internal::ComTaskPool
 {
