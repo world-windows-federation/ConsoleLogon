@@ -993,6 +993,17 @@ namespace ABI::Windows::Foundation
 	};
 
 	template <>
+	struct __declspec(uuid("f341f931-a6ad-54a8-ae85-7cf24438ccf9"))
+	ITypedEventHandler<LCPD::ICredentialField*, LCPD::CredentialFieldChangeKind>
+		: ITypedEventHandler_impl<LCPD::ICredentialField*, LCPD::CredentialFieldChangeKind>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.TypedEventHandler`2<Windows.Internal.UI.Logon.CredProvData.ICredentialField, Windows.Internal.UI.Logon.CredProvData.CredentialFieldChangeKind>";
+		}
+	};
+
+	template <>
 	struct
 	IAsyncOperation<LCPD::ReportResultInfo*>
 		: IAsyncOperation_impl<

@@ -156,7 +156,7 @@ IConsoleUIViewInternal : IUnknown
 	virtual HRESULT STDMETHODCALLTYPE InitializeFocus() PURE;
 };
 
-MIDL_INTERFACE("af86e2e0-b12d-4c6a-9c5a-d7aa65101e90")
+MIDL_INTERFACE("cb05bd7e-9f44-4dcb-8792-96e9630f1ae8")
 IComboBoxSelectCallback : IUnknown
 {
 	virtual HRESULT OnComboboxSelected(LCPD::IComboBoxField* comboBox) = 0;

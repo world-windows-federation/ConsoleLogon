@@ -8,8 +8,7 @@
 class CredentialFieldControlBase
 	: public Microsoft::WRL::Implements<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
 		, ControlBase
-		, WF::ITypedEventHandler<LCPD::ICredentialField *
-		, LCPD::CredentialFieldChangeKind>
+		, WF::ITypedEventHandler<LCPD::ICredentialField *, LCPD::CredentialFieldChangeKind>
 		, IQueryFocus
 	>
 {
