@@ -115,7 +115,7 @@ bool ComboboxControl::v_HasFocus()
 
 HRESULT ComboboxControl::Repaint(IConsoleUIView* view)
 {
-	Microsoft::WRL::ComPtr<WF::Collections::IVector<HSTRING> > items;
+	Microsoft::WRL::ComPtr<WF::Collections::IVector<HSTRING>> items;
 	RETURN_IF_FAILED(m_items.As(&items)); // 69
 	
 	int selectedIndex = 0;

@@ -112,6 +112,13 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE put_Checked(bool isChecked) PURE;
 		};
 
+		MIDL_INTERFACE("20486918-5147-4725-a0cb-12b952a5f0c3")
+		ICommandLinkField : IInspectable
+		{
+			HRESULT get_Content(HSTRING* outContent);
+			HRESULT Invoke();
+		};
+
 		enum CredProvScenario
 		{
 			CredProvScenario_Logon = 0,
