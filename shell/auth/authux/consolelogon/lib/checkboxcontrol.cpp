@@ -2,8 +2,6 @@
 
 #include "checkboxcontrol.h"
 
-#include <string_view>
-
 #include "basictextcontrol.h"
 
 CheckboxControl::CheckboxControl()
@@ -117,7 +115,10 @@ HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 	}
 	m_VisibleControlSize = controlSize;
 
-	RETURN_IF_FAILED(PaintArea(checkBoxAndLabel.Get(),count,(ColorScheme)m_HasFocus,consoleWidth,m_VisibleControlSize)); // 76
+	if (m_IsVisible)
+	{
+		RETURN_IF_FAILED(PaintArea(checkBoxAndLabel.Get(),count,FocusToColorScheme(m_HasFocus),consoleWidth,m_VisibleControlSize)); // 76
+	}
 
 	return S_OK;
 }

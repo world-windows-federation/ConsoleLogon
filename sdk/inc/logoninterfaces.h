@@ -95,7 +95,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(HSTRING*) PURE;
 		};
 
-		struct IComboBoxField : IInspectable
+		MIDL_INTERFACE("ff3e0ba7-f55b-40db-91d9-58626f36aead")
+		IComboBoxField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Items(WFC::IObservableVector<HSTRING>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectedIndex(int*) PURE;

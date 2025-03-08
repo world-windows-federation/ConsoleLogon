@@ -158,6 +158,7 @@
     </ClCompile>
     <ClCompile Include="shell\auth\authux\consolelogon\lib\basictextcontrol.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\checkboxcontrol.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\comboboxcontrol.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\comboboxselectionview.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consolelogon.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consoleuimanager.cpp" />

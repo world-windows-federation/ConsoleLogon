@@ -5,12 +5,6 @@
 #include "consoleuiview.h"
 #include "controlbase.h"
 
-MIDL_INTERFACE("af86e2e0-b12d-4c6a-9c5a-d7aa65101e90")
-IComboBoxSelectCallback : IUnknown
-{
-	virtual HRESULT OnComboboxSelected(LCPD::IComboBoxField* comboBox) = 0;
-};
-
 class SelectedCredentialView final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
 		, ConsoleUIView
