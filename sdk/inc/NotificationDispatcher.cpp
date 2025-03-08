@@ -33,7 +33,7 @@ HRESULT CNotificationDispatcherBase::QueueNotification(IDispatchNotification* pN
 	if (_fProcessNotifications && _hwndMsgWindow)
 	{
 		hr = _srgPendingNotifications.Add(pNotification);
-		if (hr >= 0)
+		if (SUCCEEDED(hr))
 		{
 			PostMessageW(_hwndMsgWindow, 0x400, 0, 0);
 		}

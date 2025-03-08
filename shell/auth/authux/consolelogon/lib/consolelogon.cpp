@@ -106,7 +106,7 @@ private:
 		>(
 			ppOperation,
 			handler,
-			L"Windows.Foundation.IAsyncOperation`1<Windows.Internal.UI.Logon.Controller.RequestCredentialsData>", // TODO Don't hardcode this
+			IAsyncOperation<TResultRaw>::z_get_rc_name_impl(),
 			BaseTrust,
 			WI::MakeOperationStagedLambda<TResult>([this, thisRef, lambda](WI::AsyncStage stage, HRESULT hr, TResult& result) -> HRESULT
 			{

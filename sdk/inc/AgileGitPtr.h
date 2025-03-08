@@ -38,5 +38,11 @@ public:
 		return CopyLocal(__uuidof(T), ptr);
 	}
 
+	HRESULT Revoke()
+	{
+		m_agileRef.Swap(nullptr); // @Note: Yes, null ComPtr construction here, and then swapping. Could've been .Reset() but this is what they wrote.
+		return S_OK;
+	}
+
 	Microsoft::WRL::AgileRef m_agileRef;
 };

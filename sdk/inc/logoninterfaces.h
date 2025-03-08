@@ -855,7 +855,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE CreateMessageDisplayResult(UINT, IMessageDisplayResult**) PURE;
 		};
 
-		struct ILogonUISecurityOptionsResult : IInspectable
+		MIDL_INTERFACE("e1b3be00-a1e8-4ab4-a1b9-ea94cc55ed0d")
+		ILogonUISecurityOptionsResult : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_SecurityOptionChoice(LogonUISecurityOptions*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_ShutdownChoice(LogonUIShutdownChoice*) PURE;
@@ -863,6 +864,12 @@ namespace Windows::Internal::UI::Logon
 
 		class LogonUISecurityOptionsResult : ILogonUISecurityOptionsResult
 		{
+		};
+
+		MIDL_INTERFACE("d54e91cd-1605-4e92-a736-b18f5b26cedd")
+		ILogonUISecurityOptionsResultFactory : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE CreateSecurityOptionsResult(LogonUISecurityOptions, LogonUIShutdownChoice, ILogonUISecurityOptionsResult**) PURE;
 		};
 
 		MIDL_INTERFACE("fbc9fd2c-9b7e-4ed1-9b60-61cf17f4ec4c")
@@ -893,6 +900,7 @@ extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_RequestCredentialsData[] = L"Windows.Internal.UI.Logon.Controller.RequestCredentialsData";
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ReportCredentialsData[] = L"Windows.Internal.UI.Logon.Controller.ReportCredentialsData";
 extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_MessageDisplayResult[] = L"Windows.Internal.UI.Logon.Controller.MessageDisplayResult";
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_LogonUISecurityOptionsResult[] = L"Windows.Internal.UI.Logon.Controller.LogonUISecurityOptionsResult";
 
 namespace LC = Windows::Internal::UI::Logon::Controller;
 namespace LCPD = Windows::Internal::UI::Logon::CredProvData;
@@ -910,6 +918,10 @@ namespace ABI::Windows::Foundation
 			, Internal::AggregateType<LCPD::CredentialSerialization*, LCPD::ICredentialSerialization*>
 		>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.TypedEventHandler`2<Windows.Internal.UI.Logon.CredProvData.CredProvDataModel, Windows.Internal.UI.Logon.CredProvData.CredentialSerialization>";
+		}
 	};
 
 	template <>
@@ -919,6 +931,10 @@ namespace ABI::Windows::Foundation
 			  Internal::AggregateType<LCPD::CredProvDataModel*, LCPD::ICredProvDataModel*>, LCPD::BioFeedbackState
 		>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.TypedEventHandler`2<Windows.Internal.UI.Logon.CredProvData.CredProvDataModel, Windows.Internal.UI.Logon.CredProvData.BioFeedbackState>";
+		}
 	};
 
 	template <>
@@ -926,6 +942,10 @@ namespace ABI::Windows::Foundation
 	ITypedEventHandler<IInspectable*, IInspectable*>
 		: ITypedEventHandler_impl<IInspectable*, IInspectable*>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.TypedEventHandler`2<Object, Object>";
+		}
 	};
 
 	template <>
@@ -936,6 +956,10 @@ namespace ABI::Windows::Foundation
 			, IInspectable*
 		>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.TypedEventHandler`2<Windows.Internal.UI.Logon.CredProvData.Credential, Object>";
+		}
 	};
 
 	template <>
@@ -945,6 +969,62 @@ namespace ABI::Windows::Foundation
 			  Internal::AggregateType<LCPD::ReportResultInfo*, LCPD::IReportResultInfo*>
 		>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.IAsyncOperation`1<Windows.Internal.UI.Logon.CredProvData.ReportResultInfo>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("21b7b9a0-3262-5d33-bab9-93bf7441e227"))
+	IAsyncOperation<LC::LogonUISecurityOptionsResult*>
+		: IAsyncOperation_impl<
+			  Internal::AggregateType<LC::LogonUISecurityOptionsResult*, LC::ILogonUISecurityOptionsResult*>
+		>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.IAsyncOperation`1<Windows.Internal.UI.Logon.Controller.LogonUISecurityOptionsResult>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("55a51b4d-565d-5406-a96c-330ce9523a75"))
+	IAsyncOperation<LC::MessageDisplayResult*>
+		: IAsyncOperation_impl<
+			  Internal::AggregateType<LC::MessageDisplayResult*, LC::IMessageDisplayResult*>
+		>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.IAsyncOperation`1<Windows.Internal.UI.Logon.Controller.MessageDisplayResult>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("b1cba636-d8a4-5a7c-8ea5-73c457d4a53c"))
+	IAsyncOperation<LC::ReportCredentialsData*>
+		: IAsyncOperation_impl<
+			  Internal::AggregateType<LC::ReportCredentialsData*, LC::IReportCredentialsData*>
+		>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.IAsyncOperation`1<Windows.Internal.UI.Logon.Controller.ReportCredentialsData>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("dfa58656-8538-5608-a288-2c63273a655e"))
+	IAsyncOperation<LC::RequestCredentialsData*>
+		: IAsyncOperation_impl<
+			  Internal::AggregateType<LC::RequestCredentialsData*, LC::IRequestCredentialsData*>
+		>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.IAsyncOperation`1<Windows.Internal.UI.Logon.Controller.RequestCredentialsData>";
+		}
 	};
 
 	template <>
@@ -954,16 +1034,89 @@ namespace ABI::Windows::Foundation
 			  Internal::AggregateType<LCPD::ReportResultInfo*, LCPD::IReportResultInfo*>
 		>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.AsyncOperationCompletedHandler`1<Windows.Internal.UI.Logon.CredProvData.ReportResultInfo>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("db4ea180-872b-5393-96c5-f2617c05b8d5"))
+	IAsyncOperationCompletedHandler<LC::LogonUISecurityOptionsResult*>
+		: IAsyncOperationCompletedHandler_impl<
+			  Internal::AggregateType<LC::LogonUISecurityOptionsResult*, LC::ILogonUISecurityOptionsResult*>
+		>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.AsyncOperationCompletedHandler`1<Windows.Internal.UI.Logon.Controller.LogonUISecurityOptionsResult>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("159cd2c8-ce8c-5397-9590-b2f0b17306e7"))
+	IAsyncOperationCompletedHandler<LC::MessageDisplayResult*>
+		: IAsyncOperationCompletedHandler_impl<
+			  Internal::AggregateType<LC::MessageDisplayResult*, LC::IMessageDisplayResult*>
+		>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.AsyncOperationCompletedHandler`1<Windows.Internal.UI.Logon.Controller.MessageDisplayResult>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("bed8c32f-53c8-5309-a701-c81353ecc80d"))
+	IAsyncOperationCompletedHandler<LC::ReportCredentialsData*>
+		: IAsyncOperationCompletedHandler_impl<
+			  Internal::AggregateType<LC::ReportCredentialsData*, LC::IReportCredentialsData*>
+		>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.AsyncOperationCompletedHandler`1<Windows.Internal.UI.Logon.Controller.ReportCredentialsData>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("613f6d50-f93e-568a-bd91-af580034347c"))
+	IAsyncOperationCompletedHandler<LC::RequestCredentialsData*>
+		: IAsyncOperationCompletedHandler_impl<
+			  Internal::AggregateType<LC::RequestCredentialsData*, LC::IRequestCredentialsData*>
+		>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.AsyncOperationCompletedHandler`1<Windows.Internal.UI.Logon.Controller.RequestCredentialsData>";
+		}
 	};
 }
 
 namespace ABI::Windows::Foundation::Collections
 {
+	// WFC::IVector<IInspectable*>
+
+	template <>
+	struct __declspec(uuid("b32bdca4-5e52-5b27-bc5d-d66a1a268c2a"))
+	IVector<IInspectable*>
+		: IVector_impl<IInspectable*>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.Collections.IVector`1<Object>";
+		}
+	};
+
 	template <>
 	struct
 	IObservableVector<HSTRING>
 		: IObservableVector_impl<HSTRING>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.Collections.IObservableVector`1<String>";
+		}
 	};
 
 	template <>
@@ -971,6 +1124,10 @@ namespace ABI::Windows::Foundation::Collections
 	IObservableVector<IInspectable*>
 		: IObservableVector_impl<IInspectable*>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.Collections.IObservableVector`1<Object>";
+		}
 	};
 
 	template <>
@@ -978,6 +1135,10 @@ namespace ABI::Windows::Foundation::Collections
 	IObservableVector<LCPD::Credential*>
 		: IObservableVector_impl<LCPD::Credential*>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.Collections.IObservableVector`1<Windows.Internal.UI.Logon.CredProvData.Credential>";
+		}
 	};
 
 	template <>
@@ -985,6 +1146,10 @@ namespace ABI::Windows::Foundation::Collections
 	VectorChangedEventHandler<HSTRING>
 		: VectorChangedEventHandler_impl<HSTRING>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.Collections.VectorChangedEventHandler`1<String>";
+		}
 	};
 
 	template <>
@@ -992,6 +1157,10 @@ namespace ABI::Windows::Foundation::Collections
 	VectorChangedEventHandler<IInspectable*>
 		: VectorChangedEventHandler_impl<IInspectable*>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.Collections.VectorChangedEventHandler`1<Object>";
+		}
 	};
 
 	template <>
@@ -999,6 +1168,10 @@ namespace ABI::Windows::Foundation::Collections
 	VectorChangedEventHandler<LCPD::Credential*>
 		: VectorChangedEventHandler_impl<LCPD::Credential*>
 	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.Collections.VectorChangedEventHandler`1<Windows.Internal.UI.Logon.CredProvData.Credential>";
+		}
 	};
 }
 
