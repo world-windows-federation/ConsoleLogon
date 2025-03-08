@@ -45,4 +45,7 @@ private:
 	WORD InvertColorAttributes(WORD colorAttributes);
 
 	BOOL m_isFocusable;
+
+	//@MOD: by wiktor, added this so that m_isFocusable can be changed in this class
+	friend class CredentialFieldControlBase;
 };

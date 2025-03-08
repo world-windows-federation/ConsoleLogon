@@ -102,6 +102,15 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE put_SelectedIndex(int) PURE;
 		};
 
+		//TODO: verify iid
+		MIDL_INTERFACE("5cad4c8f-6f35-4a41-ba52-bdf26571c77e")
+		ICheckBoxField : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_BoxLabel(HSTRING* boxLabel) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Checked(bool* isChecked) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_Checked(bool isChecked) PURE;
+		};
+
 		enum CredProvScenario
 		{
 			CredProvScenario_Logon = 0,
@@ -251,9 +260,9 @@ namespace Windows::Internal::UI::Logon
 		struct ICredentialField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Label(HSTRING*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInSelectedTile(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInSelectedTile(bool*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInDeselectedTile(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsHidden(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsHidden(bool*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateFocused(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateDisabled(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateReadOnly(unsigned char*) PURE;
