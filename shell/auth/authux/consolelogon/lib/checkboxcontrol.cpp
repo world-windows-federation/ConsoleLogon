@@ -19,10 +19,10 @@ CheckboxControl::~CheckboxControl()
 
 HRESULT CheckboxControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredentialField* dataSource)
 {
-	if (m_dataSource.Get())
-	{
-		m_dataSource->Release();
-	}
+	//if (m_dataSource.Get())
+	//{
+	//	m_dataSource->Release();
+	//}
 
 	RETURN_IF_FAILED(dataSource->QueryInterface(IID_PPV_ARGS(&m_dataSource))); // 23
 

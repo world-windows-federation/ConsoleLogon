@@ -20,10 +20,10 @@ CommandLinkControl::~CommandLinkControl()
 
 HRESULT CommandLinkControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredentialField* dataSource)
 {
-	if (m_dataSource)
-	{
-		m_dataSource.Reset();
-	}
+	//if (m_dataSource)
+	//{
+	//	m_dataSource.Reset();
+	//}
 
 	RETURN_IF_FAILED(dataSource->QueryInterface(IID_PPV_ARGS(&m_dataSource))); // 21
 

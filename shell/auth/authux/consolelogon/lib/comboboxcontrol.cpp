@@ -20,10 +20,10 @@ ComboboxControl::~ComboboxControl()
 HRESULT ComboboxControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredentialField* dataSource,
 	IComboBoxSelectCallback* callback)
 {
-	if (m_dataSource)
-	{
-		m_dataSource.Reset();
-	}
+	//if (m_dataSource)
+	//{
+	//	m_dataSource.Reset();
+	//}
 
 	RETURN_IF_FAILED(dataSource->QueryInterface(IID_PPV_ARGS(&m_dataSource))); // 24
 

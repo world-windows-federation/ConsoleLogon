@@ -19,10 +19,10 @@ EditControl::~EditControl()
 
 HRESULT EditControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredentialField* dataSource)
 {
-	if (m_dataSource.Get())
-	{
-		m_dataSource.Reset();
-	}
+	//if (m_dataSource.Get())
+	//{
+	//	m_dataSource.Reset();
+	//}
 
 	RETURN_IF_FAILED(dataSource->QueryInterface(IID_PPV_ARGS(&m_dataSource))); // 23
 
