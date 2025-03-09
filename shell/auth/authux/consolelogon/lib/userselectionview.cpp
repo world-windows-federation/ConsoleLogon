@@ -5,6 +5,8 @@
 #include "basictextcontrol.h"
 #include "selectableuserorcredentialcontrol.h"
 
+#include "resource.h"
+
 using namespace Microsoft::WRL;
 
 UserSelectionView::UserSelectionView()
@@ -22,7 +24,7 @@ HRESULT UserSelectionView::RuntimeClassInitialize(LCPD::ICredProvDataModel* data
 	m_dataModel = dataSource;
 
 	ComPtr<BasicTextControl> navigationMessage;
-	RETURN_IF_FAILED(MakeAndInitialize<BasicTextControl>(&navigationMessage, this, 101)); // 27
+	RETURN_IF_FAILED(MakeAndInitialize<BasicTextControl>(&navigationMessage, this, IDS_SELECTUSER)); // 27
 
 	ComPtr<WFC::IObservableVector<IInspectable*>> usersAndV1;
 	RETURN_IF_FAILED(dataSource->get_UsersAndV1Credentials(&usersAndV1)); // 30
