@@ -278,7 +278,9 @@ namespace Windows::Internal::UI::Logon
 			CredentialFieldChangeKind_MaxLength = 8
 		};
 
-		struct ICredentialField : IInspectable
+		//TODO: verify
+		MIDL_INTERFACE("546e206b-52e8-419c-a82f-6363971cdf29")
+		ICredentialField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Label(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInSelectedTile(bool*) PURE;

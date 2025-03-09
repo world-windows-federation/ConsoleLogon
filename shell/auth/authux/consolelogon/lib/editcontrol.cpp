@@ -111,7 +111,80 @@ bool EditControl::v_HasFocus()
 	return m_HasFocus;	
 }
 
+//TODO: have someone else other than me verify this code
 HRESULT EditControl::Repaint(IConsoleUIView* view)
 {
+	Microsoft::WRL::Wrappers::HString content;
+	RETURN_IF_FAILED(m_dataSource->get_Content(content.ReleaseAndGetAddressOf())); // 43
+
+	//strange way to get the length, but oky
+	unsigned int contentLength = 0;
+	PCWSTR StringRawBuffer = content.GetRawBuffer(&contentLength);
 	
+	Microsoft::WRL::ComPtr<LCPD::ICredentialField> fieldInfo;
+	RETURN_IF_FAILED(m_dataSource->QueryInterface(IID_PPV_ARGS(&fieldInfo))); // 49
+
+	Microsoft::WRL::Wrappers::HString label;
+	RETURN_IF_FAILED(fieldInfo->get_Label(label.ReleaseAndGetAddressOf())); // 52
+
+	bool isPasswordField = false;
+	RETURN_IF_FAILED(m_dataSource->get_IsPasswordField(&isPasswordField)); // 55
+
+	int maxPasswordLength = 0;
+	RETURN_IF_FAILED(m_dataSource->get_MaxPasswordLength(&maxPasswordLength)); // 58
+
+	CoTaskMemNativeString labelAndContent;
+	RETURN_IF_FAILED(labelAndContent.InitializeFormat(L"%s : ",label.GetRawBuffer(0))); // 62
+
+	if (contentLength > 0)
+	{
+		if (isPasswordField)
+		{
+			for (unsigned int i = 0; i < contentLength; i++)
+			{
+				RETURN_IF_FAILED(labelAndContent.Concat(L'*')); // 71
+			}
+		}
+		else
+		{
+			RETURN_IF_FAILED(labelAndContent.Concat(StringRawBuffer)); // 76
+		}
+	}
+	RETURN_IF_FAILED(labelAndContent.Concat(L' ')); // 81
+
+	unsigned int count = (unsigned int)labelAndContent.GetCount();
+
+	unsigned int consoleWidth = 0;
+	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 86
+
+	unsigned int consoleheight = 0;
+	if (m_IsVisible)
+		consoleheight = count / consoleWidth + 1;
+
+	if (!m_isInitialized)
+	{
+		RETURN_IF_FAILED(Initialize(true,consoleheight,view)); // 92
+		m_isInitialized = true;
+	}
+
+	if (consoleheight != m_VisibleControlSize)
+	{
+		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(),consoleheight)); // 98
+		m_VisibleControlSize = consoleheight;
+	}
+
+	if (m_IsVisible)
+	{
+		RETURN_IF_FAILED(PaintArea(labelAndContent.Get(),count,ColorScheme::Normal,consoleWidth,m_VisibleControlSize)); // 104
+
+		if (m_HasFocus)
+		{
+			COORD cursorPosition;
+			cursorPosition.Y = (SHORT)((count - 1) / consoleWidth);
+			cursorPosition.X = (SHORT)((count - 1) % consoleWidth);
+			RETURN_IF_FAILED(m_view->SetCursorPos(m_outputHandle.Get(),cursorPosition,true)); // 112
+		}
+	}
+
+	return S_OK;
 }
