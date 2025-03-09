@@ -85,7 +85,7 @@ HRESULT SecurityOptionControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent
 	RETURN_IF_FAILED(WF::GetActivationFactory(Microsoft::WRL::Wrappers::HStringReference(L"Windows.Internal.UI.Logon.Controller.LogonUISecurityOptionsResult").Get(),&factory)); // 101
 
 	Microsoft::WRL::ComPtr<LC::ILogonUISecurityOptionsResult> optionResult;
-	RETURN_IF_FAILED(factory->CreateSecurityOptionsResult(m_option,LC::LogonUIShutdownChoice_None,&optionResult));
+	RETURN_IF_FAILED(factory->CreateSecurityOptionsResult(m_option,LC::LogonUIShutdownChoice_None,&optionResult)); // 104
 
 	RETURN_IF_FAILED(m_completion->GetResult().Set(optionResult.Get())); // 106
 
