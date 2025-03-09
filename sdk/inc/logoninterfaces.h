@@ -663,6 +663,19 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_DefaultUserSid(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE AllowAutoSubmitOnSelection(IUser*, BOOLEAN*) PURE;
 		};
+
+		enum CredentialTextSize
+		{
+			CredentialTextSize_Large = 0,
+			CredentialTextSize_Small = 1
+		};
+
+		MIDL_INTERFACE("12af1a6b-0e79-4ad6-b317-436d849b1c11")
+		ICredentialTextField :  IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_TextSize(Windows::Internal::UI::Logon::CredProvData::CredentialTextSize*) PURE;
+		};
 	}
 
 	namespace Controller
