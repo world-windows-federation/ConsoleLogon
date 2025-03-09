@@ -176,6 +176,7 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\messageoptioncontrol.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\messageview.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\OptionalDependencyProvider.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\securityoptioncontrol.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\selectableuserorcredentialcontrol.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\statictextcontrol.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\statusview.cpp" />
