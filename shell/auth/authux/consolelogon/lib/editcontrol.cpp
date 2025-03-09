@@ -63,8 +63,7 @@ HRESULT EditControl::v_HandleKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandl
 	{
 		//i believe this is what they did, but someone should double check and verify it
 		unsigned int oldLength = 0;
-		const wchar_t* StringRawBuffer = oldContent.GetRawBuffer(&oldLength);
-		RETURN_IF_FAILED(newContent.Set(StringRawBuffer, oldLength - 1)); // 158
+		RETURN_IF_FAILED(newContent.Set(oldContent.GetRawBuffer(&oldLength), oldLength - 1)); // 158
 		
 		RETURN_IF_FAILED(m_dataSource->put_Content(newContent.Get())); // 172
 
@@ -117,7 +116,8 @@ HRESULT EditControl::Repaint(IConsoleUIView* view)
 	Microsoft::WRL::Wrappers::HString content;
 	RETURN_IF_FAILED(m_dataSource->get_Content(content.ReleaseAndGetAddressOf())); // 43
 
-	//strange way to get the length, but oky
+	//strange way to get the length, but okay
+	//note can't inline this
 	unsigned int contentLength = 0;
 	PCWSTR StringRawBuffer = content.GetRawBuffer(&contentLength);
 	
