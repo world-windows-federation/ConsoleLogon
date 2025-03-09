@@ -29,10 +29,15 @@ HRESULT CommandLinkControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::I
 
 	RETURN_IF_FAILED(CredentialFieldControlBase::Advise(dataSource)); // 23
 
+	auto scopeExit = wil::scope_exit([this]() -> void {
+		ControlBase::Unadvise();
+	});
+
 	RETURN_IF_FAILED(CredentialFieldControlBase::GetVisibility(&m_IsVisible)); // 30
 
 	RETURN_IF_FAILED(Repaint(view)); // 32
 
+	scopeExit.release();
 	return S_OK;
 }
 

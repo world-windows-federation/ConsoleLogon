@@ -28,10 +28,15 @@ HRESULT CheckboxControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICre
 
 	RETURN_IF_FAILED(Advise(dataSource)); // 25
 
+	auto scopeExit = wil::scope_exit([this]() -> void {
+		ControlBase::Unadvise();
+	});
+
 	RETURN_IF_FAILED(GetVisibility(&m_IsVisible)); // 32
 
 	RETURN_IF_FAILED(Repaint(view)); // 34
 
+	scopeExit.release();
 	return S_OK;
 }
 

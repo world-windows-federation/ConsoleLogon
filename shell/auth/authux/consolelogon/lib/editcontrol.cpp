@@ -28,10 +28,15 @@ HRESULT EditControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredent
 
 	RETURN_IF_FAILED(Advise(dataSource)); // 25
 
+	auto scopeExit = wil::scope_exit([this]() -> void {
+		ControlBase::Unadvise();
+	});
+
 	RETURN_IF_FAILED(GetVisibility(&m_IsVisible)); // 31
 
 	RETURN_IF_FAILED(Repaint(view)); // 33
 
+	scopeExit.release();
 	return S_OK;
 }
 

@@ -21,7 +21,9 @@ HRESULT StaticTextControl::RuntimeClassInitialize(IConsoleUIView* view, ICredent
 
 	RETURN_IF_FAILED(CredentialFieldControlBase::Advise(dataSource)); // 22
 
-	auto scopeExit = wil::scope_exit([this]() -> void { ControlBase::Unadvise(); });
+	auto scopeExit = wil::scope_exit([this]() -> void {
+		ControlBase::Unadvise();
+	});
 
 	RETURN_IF_FAILED(CredentialFieldControlBase::GetVisibility(&m_IsVisible)); // 28
 

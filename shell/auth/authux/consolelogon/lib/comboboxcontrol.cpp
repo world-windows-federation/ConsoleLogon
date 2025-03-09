@@ -32,6 +32,10 @@ HRESULT ComboboxControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICre
 
 	RETURN_IF_FAILED(Advise(dataSource)); // 27
 
+	auto scopeExit = wil::scope_exit([this]() -> void {
+		ControlBase::Unadvise();
+	});
+
 	m_items.Reset();
 	RETURN_IF_FAILED(m_dataSource->get_Items(&m_items)); // 33
 
@@ -41,6 +45,7 @@ HRESULT ComboboxControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICre
 
 	RETURN_IF_FAILED(ComboboxControl::Repaint(view)); // 39
 
+	scopeExit.release();
 	return S_OK;
 }
 
