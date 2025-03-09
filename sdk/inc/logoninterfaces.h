@@ -670,7 +670,7 @@ namespace Windows::Internal::UI::Logon
 			CredentialTextSize_Small = 1
 		};
 
-		MIDL_INTERFACE("12af1a6b-0e79-4ad6-b317-436d849b1c11")
+		MIDL_INTERFACE("59c3c31e-3f86-4fa5-9c7b-dc7b542e2a70")
 		ICredentialTextField :  IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING*) PURE;
