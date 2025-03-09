@@ -43,7 +43,7 @@ HRESULT EditControl::v_OnFocusChange(int hasFocus)
 	return S_OK;
 }
 
-HRESULT EditControl::v_HandleKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
+HRESULT EditControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
 {
 	*wasHandled = false;
 

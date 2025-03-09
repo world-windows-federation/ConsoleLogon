@@ -10,11 +10,13 @@
 #include "lockedview.h"
 #include "messageview.h"
 #include "optionaldependencyprovider.h"
+#include "resource.h"
 #include "securityoptionsview.h"
 #include "selectedcredentialview.h"
 #include "serializationfailedview.h"
 #include "statusview.h"
 #include "userselectionview.h"
+#include "resource.h"
 
 using namespace Microsoft::WRL;
 
@@ -168,7 +170,7 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, LCPD::ICreden
 					}
 
 					CoTaskMemNativeString caption;
-					RETURN_IF_FAILED(caption.Initialize(HINST_THISCOMPONENT, 128)); // 108
+					RETURN_IF_FAILED(caption.Initialize(HINST_THISCOMPONENT, IDS_WINSECURITY)); // 108
 
 					UINT redirectResult;
 					LC::LogonErrorRedirectorResponse errorResponse;
@@ -928,7 +930,7 @@ HRESULT LogonViewManager::ShowCredentialView()
 			if (!userName.Get())
 			{
 				CoTaskMemNativeString defaultV1Label;
-				RETURN_IF_FAILED(defaultV1Label.Initialize(HINST_THISCOMPONENT, 105)); // 895
+				RETURN_IF_FAILED(defaultV1Label.Initialize(HINST_THISCOMPONENT, IDS_USER)); // 895
 				RETURN_IF_FAILED(defaultV1Label.Get() ? userName.Set(defaultV1Label.Get()) : E_POINTER); // 896
 			}
 		}

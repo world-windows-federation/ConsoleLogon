@@ -71,7 +71,7 @@ HRESULT ComboboxControl::v_OnFocusChange(int hasFocus)
 	return S_OK;
 }
 
-HRESULT ComboboxControl::v_HandleKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
+HRESULT ComboboxControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
 {
 	*wasHandled = false;
 	

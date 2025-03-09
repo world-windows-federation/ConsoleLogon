@@ -17,7 +17,7 @@ public:
 
 private:
 	HRESULT v_OnFocusChange(int hasFocus) override;
-	HRESULT v_HandleKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled);
+	HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 	HRESULT v_OnFieldChange(LCPD::CredentialFieldChangeKind changeKind) override;
 	bool v_HasFocus() override;
 	HRESULT Repaint(IConsoleUIView* view);

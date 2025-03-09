@@ -3,6 +3,7 @@
 #include "checkboxcontrol.h"
 
 #include "basictextcontrol.h"
+#include "resource.h"
 
 CheckboxControl::CheckboxControl()
 	: m_VisibleControlSize(0)
@@ -42,7 +43,7 @@ HRESULT CheckboxControl::v_OnFocusChange(int hasFocus)
 	return S_OK;
 }
 
-HRESULT CheckboxControl::v_HandleKeyInput(KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
+HRESULT CheckboxControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled)
 {
 	*wasHandled = false;
 
@@ -93,10 +94,10 @@ HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 	RETURN_IF_FAILED(m_dataSource->get_Checked(&isChecked)); // 47
 
 	CoTaskMemNativeString checkMark;
-	RETURN_IF_FAILED(checkMark.Initialize(HINST_THISCOMPONENT,((isChecked == 0) + 126))); // 50
+	RETURN_IF_FAILED(checkMark.Initialize(HINST_THISCOMPONENT,((isChecked == 0) + IDS_X))); // 50
 
 	CoTaskMemNativeString checkBoxAndLabel;
-	RETURN_IF_FAILED(checkBoxAndLabel.InitializeResMessage(HINST_THISCOMPONENT,125,checkMark.Get(),boxLabel.GetRawBuffer(0))); //53
+	RETURN_IF_FAILED(checkBoxAndLabel.InitializeResMessage(HINST_THISCOMPONENT,IDS_COMBOBOXFORMAT,checkMark.Get(),boxLabel.GetRawBuffer(0))); //53
 	
 	size_t count = checkBoxAndLabel.GetCount();
 	UINT consoleWidth = 0;

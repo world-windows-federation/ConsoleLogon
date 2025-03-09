@@ -18,7 +18,7 @@ STRINGTABLE
 	IDS_CHANGEPASSWD     "Change a password"
 	IDS_TASKMGR          "Task Manager"
 	IDS_SWITCHUSER       "Switch User"
-	IDS_SOMEFORMAT       "%1!s! %2!s!"
+	IDS_COMBOBOXFORMAT   "%1!s! %2!s!"
 	IDS_X                "X"
 	IDS_UNDERSCORE       "_"
 }

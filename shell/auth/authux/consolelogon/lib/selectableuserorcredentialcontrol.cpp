@@ -2,6 +2,8 @@
 
 #include "selectableuserorcredentialcontrol.h"
 
+#include "resource.h"
+
 using namespace Microsoft::WRL;
 
 SelectableUserOrCredentialControl::SelectableUserOrCredentialControl()
@@ -50,7 +52,7 @@ HRESULT SelectableUserOrCredentialControl::Repaint(IConsoleUIView* view)
 		if (!content.Get())
 		{
 			CoTaskMemNativeString defaultContent;
-			RETURN_IF_FAILED(defaultContent.Initialize(HINST_THISCOMPONENT, 105)); // 48
+			RETURN_IF_FAILED(defaultContent.Initialize(HINST_THISCOMPONENT, IDS_USER)); // 48
 			RETURN_IF_FAILED(defaultContent.Get() ? content.Set(defaultContent.Get()) : E_POINTER); // 49
 		}
 	}

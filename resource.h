@@ -15,7 +15,7 @@
 #define IDS_CHANGEPASSWD      112
 #define IDS_TASKMGR           113
 #define IDS_SWITCHUSER        114
-#define IDS_SOMEFORMAT        125
+#define IDS_COMBOBOXFORMAT    125
 #define IDS_X                 126
 #define IDS_UNDERSCORE        127
 #define IDS_WINSECURITY       128
