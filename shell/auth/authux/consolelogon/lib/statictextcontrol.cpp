@@ -1,4 +1,7 @@
+#include "pch.h"
+
 #include "statictextcontrol.h"
+
 using namespace Windows::Internal::UI::Logon::CredProvData;
 
 StaticTextControl::StaticTextControl()
@@ -12,26 +15,20 @@ StaticTextControl::~StaticTextControl()
 {
 }
 
-// TODO: fix
 HRESULT StaticTextControl::RuntimeClassInitialize(IConsoleUIView* view, ICredentialField* dataSource)
 {
 	RETURN_IF_FAILED(dataSource->QueryInterface(IID_PPV_ARGS(&m_dataSource))); // 20
 
 	RETURN_IF_FAILED(CredentialFieldControlBase::Advise(dataSource)); // 22
 
-	HRESULT Visibility = CredentialFieldControlBase::GetVisibility(&m_IsVisible);
-	if (FAILED(Visibility))
-	{
-		LOG_HR(Visibility); // 28
-	}
-	else
-	{
-		RETURN_IF_FAILED(Repaint(view)); // 30
-		return S_OK;
-	}
-	ControlBase::Unadvise();
+	auto scopeExit = wil::scope_exit([this]() -> void { ControlBase::Unadvise(); });
 
-	return Visibility;
+	RETURN_IF_FAILED(CredentialFieldControlBase::GetVisibility(&m_IsVisible)); // 28
+
+	RETURN_IF_FAILED(Repaint(view)); // 30
+
+	scopeExit.release();
+	return S_OK;
 }
 
 HRESULT StaticTextControl::v_OnFocusChange(BOOL hasFocus)
