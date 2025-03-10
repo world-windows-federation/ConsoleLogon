@@ -24,7 +24,7 @@ public:
 	
 private:
 	HRESULT v_Unadvise() override;
-	HRESULT v_OnFocusChange(int hasFocus) override;
+	HRESULT v_OnFocusChange(BOOL hasFocus) override;
 	HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 	HRESULT v_OnFieldChange(LCPD::CredentialFieldChangeKind changeKind) override;
 	bool v_HasFocus() override;

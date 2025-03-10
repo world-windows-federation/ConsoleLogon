@@ -15,7 +15,7 @@ public:
 	HRESULT RuntimeClassInitialize(IConsoleUIView* view, LC::LogonUISecurityOptions option, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);
 
 private:
-	HRESULT v_OnFocusChange(int hasFocus) override;
+	HRESULT v_OnFocusChange(BOOL hasFocus) override;
 	HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 	HRESULT Repaint(IConsoleUIView* view);
 	

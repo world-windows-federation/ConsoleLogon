@@ -40,7 +40,7 @@ HRESULT EditControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredent
 	return S_OK;
 }
 
-HRESULT EditControl::v_OnFocusChange(int hasFocus)
+HRESULT EditControl::v_OnFocusChange(BOOL hasFocus)
 {
 	m_HasFocus = hasFocus != 0;
 	RETURN_IF_FAILED(Repaint(m_view.Get())); // 122

@@ -24,7 +24,7 @@ public:
 	HRESULT RuntimeClassInitialize(IConsoleUIView* view, MessageOptionFlag option, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
 
 private:
-	HRESULT v_OnFocusChange(int hasFocus) override;
+	HRESULT v_OnFocusChange(BOOL hasFocus) override;
 	HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 	HRESULT Repaint(IConsoleUIView* view);
 	

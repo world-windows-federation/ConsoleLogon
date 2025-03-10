@@ -52,7 +52,7 @@ HRESULT MessageOptionControl::RuntimeClassInitialize(IConsoleUIView* view, Messa
 	return S_OK;
 }
 
-HRESULT MessageOptionControl::v_OnFocusChange(int hasFocus)
+HRESULT MessageOptionControl::v_OnFocusChange(BOOL hasFocus)
 {
 	m_hasFocus = hasFocus != 0;
 	RETURN_IF_FAILED(Repaint(m_view.Get())); // 84

@@ -19,7 +19,7 @@ public:
 	
 	HRESULT Advise(LCPD::ICredentialField* dataSource);
 	HRESULT Invoke(LCPD::ICredentialField* sender, LCPD::CredentialFieldChangeKind args) override;
-	int HasFocus() override;
+	BOOL HasFocus() override;
 	
 	CredentialFieldControlBase& operator=(CredentialFieldControlBase& )= default;
 	

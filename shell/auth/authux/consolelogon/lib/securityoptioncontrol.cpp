@@ -63,7 +63,7 @@ HRESULT SecurityOptionControl::RuntimeClassInitialize(IConsoleUIView* view, LC::
 	return S_OK;
 }
 
-HRESULT SecurityOptionControl::v_OnFocusChange(int hasFocus)
+HRESULT SecurityOptionControl::v_OnFocusChange(BOOL hasFocus)
 {
 	m_hasFocus = hasFocus != 0;
 

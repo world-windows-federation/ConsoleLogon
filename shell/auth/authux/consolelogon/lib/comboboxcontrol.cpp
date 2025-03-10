@@ -69,7 +69,7 @@ HRESULT ComboboxControl::v_Unadvise()
 	return S_OK;
 }
 
-HRESULT ComboboxControl::v_OnFocusChange(int hasFocus)
+HRESULT ComboboxControl::v_OnFocusChange(BOOL hasFocus)
 {
 	m_HasFocus = hasFocus;
 	RETURN_IF_FAILED(Repaint(m_view.Get())); //114

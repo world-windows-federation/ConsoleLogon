@@ -19,16 +19,12 @@ CheckboxControl::~CheckboxControl()
 
 HRESULT CheckboxControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredentialField* dataSource)
 {
-	//if (m_dataSource.Get())
-	//{
-	//	m_dataSource->Release();
-	//}
-
 	RETURN_IF_FAILED(dataSource->QueryInterface(IID_PPV_ARGS(&m_dataSource))); // 23
 
 	RETURN_IF_FAILED(Advise(dataSource)); // 25
 
-	auto scopeExit = wil::scope_exit([this]() -> void {
+	auto scopeExit = wil::scope_exit([this]() -> void
+	{
 		ControlBase::Unadvise();
 	});
 
@@ -40,7 +36,7 @@ HRESULT CheckboxControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICre
 	return S_OK;
 }
 
-HRESULT CheckboxControl::v_OnFocusChange(int hasFocus)
+HRESULT CheckboxControl::v_OnFocusChange(BOOL hasFocus)
 {
 	m_HasFocus = hasFocus != 0;
 
@@ -52,32 +48,30 @@ HRESULT CheckboxControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL
 {
 	*wasHandled = false;
 
-	WORD wVirtualKeyCode = keyEvent->wVirtualKeyCode;
-	if (wVirtualKeyCode == VK_RETURN || wVirtualKeyCode == VK_SPACE)
+	if (keyEvent->wVirtualKeyCode == VK_RETURN || keyEvent->wVirtualKeyCode == VK_SPACE)
 	{
 		RETURN_IF_FAILED(Toggle()); // 104
 		*wasHandled = true;
 	}
-	
+
 	return S_OK;
 }
 
 HRESULT CheckboxControl::v_OnFieldChange(LCPD::CredentialFieldChangeKind changeKind)
 {
-	//if (changeKind && (changeKind-2) <= 1)
-	if (changeKind == LCPD::CredentialFieldChangeKind_InteractiveState) //note: pseudocode has it done through maths first then a cmp, but with its logic, it SHOULD always only be true on this value
+	if (changeKind == LCPD::CredentialFieldChangeKind_State)
 	{
-		RETURN_IF_FAILED(Repaint(m_view.Get())); // 126
-	}
-	else
-	{
-		bool isVisible = false;
+		bool isVisible;
 		RETURN_IF_FAILED(GetVisibility(&isVisible)); // 117
 		if (isVisible != m_IsVisible)
 		{
 			m_IsVisible = isVisible;
 			RETURN_IF_FAILED(Repaint(m_view.Get())); // 121
 		}
+	}
+	else if (changeKind == LCPD::CredentialFieldChangeKind_SetString || changeKind == LCPD::CredentialFieldChangeKind_SetCheckbox)
+	{
+		RETURN_IF_FAILED(Repaint(m_view.Get())); // 126
 	}
 
 	return S_OK;
@@ -88,42 +82,42 @@ bool CheckboxControl::v_HasFocus()
 	return m_HasFocus;
 }
 
-//TODO: have someone verify this, since its dealing with big inlined functions
 HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 {
 	Microsoft::WRL::Wrappers::HString boxLabel;
-	
 	RETURN_IF_FAILED(m_dataSource->get_BoxLabel(boxLabel.ReleaseAndGetAddressOf())); // 44
 
-	bool isChecked = false;
+	bool isChecked;
 	RETURN_IF_FAILED(m_dataSource->get_Checked(&isChecked)); // 47
 
 	CoTaskMemNativeString checkMark;
-	RETURN_IF_FAILED(checkMark.Initialize(HINST_THISCOMPONENT,((isChecked == 0) + IDS_X))); // 50
+	RETURN_IF_FAILED(checkMark.Initialize(HINST_THISCOMPONENT, isChecked ? IDS_X : IDS_UNDERSCORE)); // 50
 
 	CoTaskMemNativeString checkBoxAndLabel;
-	RETURN_IF_FAILED(checkBoxAndLabel.InitializeResMessage(HINST_THISCOMPONENT,IDS_COMBOBOXFORMAT,checkMark.Get(),boxLabel.GetRawBuffer(0))); //53
-	
-	size_t count = checkBoxAndLabel.GetCount();
-	UINT consoleWidth = 0;
+	RETURN_IF_FAILED(checkBoxAndLabel.InitializeResMessage(HINST_THISCOMPONENT, IDS_COMBOBOXFORMAT, checkMark.Get(), boxLabel.GetRawBuffer(nullptr))); // 53
+
+	UINT count = (UINT)checkBoxAndLabel.GetCount();
+
+	UINT consoleWidth;
 	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 58
 
-	UINT controlSize = count / consoleWidth + 1;
+	UINT controlSize = m_IsVisible ? count / consoleWidth + 1 : 0;
+
 	if (!m_isInitialized)
 	{
-		RETURN_IF_FAILED(Initialize(true, controlSize, view)); // 64
+		RETURN_IF_FAILED(Initialize(TRUE, controlSize, view)); // 64
 		m_isInitialized = true;
+		m_VisibleControlSize = controlSize;
 	}
-
-	if (controlSize != m_VisibleControlSize)
+	else if (controlSize != m_VisibleControlSize)
 	{
 		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(), controlSize)); // 70
+		m_VisibleControlSize = controlSize;
 	}
-	m_VisibleControlSize = controlSize;
 
 	if (m_IsVisible)
 	{
-		RETURN_IF_FAILED(PaintArea(checkBoxAndLabel.Get(),count,FocusToColorScheme(m_HasFocus),consoleWidth,m_VisibleControlSize)); // 76
+		RETURN_IF_FAILED(PaintArea(checkBoxAndLabel.Get(), count, m_HasFocus ? ColorScheme::Inverted : ColorScheme::Normal, consoleWidth, m_VisibleControlSize)); // 76
 	}
 
 	return S_OK;
@@ -131,9 +125,9 @@ HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 
 HRESULT CheckboxControl::Toggle()
 {
-	bool isChecked = false;
+	bool isChecked;
 	RETURN_IF_FAILED(m_dataSource->get_Checked(&isChecked)); // 85
-	RETURN_IF_FAILED(m_dataSource->put_Checked(isChecked == false)); // 86
-	
+	RETURN_IF_FAILED(m_dataSource->put_Checked(!isChecked)); // 86
+
 	return S_OK;
 }

@@ -41,7 +41,7 @@ HRESULT CommandLinkControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::I
 	return S_OK;
 }
 
-HRESULT CommandLinkControl::v_OnFocusChange(int hasFocus)
+HRESULT CommandLinkControl::v_OnFocusChange(BOOL hasFocus)
 {
 	m_HasFocus = hasFocus;
 	RETURN_IF_FAILED(Repaint(m_view.Get())); // 75
