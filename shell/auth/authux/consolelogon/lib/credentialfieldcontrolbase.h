@@ -17,7 +17,10 @@ public:
 
 	HRESULT Advise(LCPD::ICredentialField* dataSource);
 
-	HRESULT Invoke(LCPD::ICredentialField* sender, LCPD::CredentialFieldChangeKind args) override;
+	//~ Begin WF::ITypedEventHandler<LCPD::ICredentialField*, LCPD::CredentialFieldChangeKind> Interface
+	STDMETHODIMP Invoke(LCPD::ICredentialField* sender, LCPD::CredentialFieldChangeKind args) override;
+	//~ End WF::ITypedEventHandler<LCPD::ICredentialField*, LCPD::CredentialFieldChangeKind> Interface
+
 	BOOL HasFocus() override;
 
 	CredentialFieldControlBase& operator=(const CredentialFieldControlBase&) = delete;

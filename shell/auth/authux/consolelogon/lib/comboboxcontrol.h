@@ -5,36 +5,36 @@
 #include "consoleuiview.h"
 #include "credentialfieldcontrolbase.h"
 
-class ComboboxControl
+class ComboboxControl final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
 		, CredentialFieldControlBase
-		, WF::Collections::VectorChangedEventHandler<HSTRING>
+		, WFC::VectorChangedEventHandler<HSTRING>
 	>
 {
 public:
 	ComboboxControl();
 	~ComboboxControl() override;
 
-	//ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredentialField* dataSource, IComboBoxSelectCallback* callback);
 
-	//~ Begin WF::Collections::VectorChangedEventHandler<HSTRING> Interface
-	HRESULT Invoke(WF::Collections::IObservableVector<HSTRING>* sender, WF::Collections::IVectorChangedEventArgs* args);
-	//~ End WF::Collections::VectorChangedEventHandler<HSTRING> Interface
-	
+	//~ Begin WFC::VectorChangedEventHandler<HSTRING> Interface
+	STDMETHODIMP Invoke(WFC::IObservableVector<HSTRING>* sender, WFC::IVectorChangedEventArgs* args) override;
+	//~ End WFC::VectorChangedEventHandler<HSTRING> Interface
+
 private:
 	HRESULT v_Unadvise() override;
 	HRESULT v_OnFocusChange(BOOL hasFocus) override;
 	HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 	HRESULT v_OnFieldChange(LCPD::CredentialFieldChangeKind changeKind) override;
 	bool v_HasFocus() override;
+
 	HRESULT Repaint(IConsoleUIView* view);
-	
+
 	Microsoft::WRL::ComPtr<LCPD::IComboBoxField> m_dataSource;
-	Microsoft::WRL::ComPtr<WF::Collections::IObservableVector<HSTRING>> m_items;
+	Microsoft::WRL::ComPtr<WFC::IObservableVector<HSTRING>> m_items;
 	EventRegistrationToken m_itemsChangedToken;
 	Microsoft::WRL::ComPtr<IComboBoxSelectCallback> m_callback;
-	unsigned int m_VisibleControlSize;
+	UINT m_VisibleControlSize;
 	bool m_isInitialized;
 	bool m_IsVisible;
 	bool m_HasFocus;

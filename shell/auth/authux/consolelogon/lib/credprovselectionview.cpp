@@ -27,10 +27,10 @@ HRESULT CredProvSelectionView::RuntimeClassInitialize(LCPD::ICredentialGroup* cr
 	Microsoft::WRL::ComPtr<BasicTextControl> navigationMessage;
 	RETURN_IF_FAILED(Microsoft::WRL::MakeAndInitialize<BasicTextControl>(&navigationMessage,this,navigationString.Get(),false)); // 31
 
-	Microsoft::WRL::ComPtr<WF::Collections::IObservableVector<LCPD::Credential*>> credentials;
+	Microsoft::WRL::ComPtr<WFC::IObservableVector<LCPD::Credential*>> credentials;
 	RETURN_IF_FAILED(credentialGroup->get_Credentials(&credentials)); // 34
 
-	Microsoft::WRL::ComPtr<WF::Collections::IVector<LCPD::Credential*>> credentialVector;
+	Microsoft::WRL::ComPtr<WFC::IVector<LCPD::Credential*>> credentialVector;
 	RETURN_IF_FAILED(credentials.As(&credentialVector)); // 37
 
 	UINT numCredentials = 0;
@@ -74,10 +74,10 @@ HRESULT CredProvSelectionView::v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BO
 			break;
 
 		case VK_RETURN:
-			Microsoft::WRL::ComPtr<WF::Collections::IObservableVector<LCPD::Credential*>> credentials;
+			Microsoft::WRL::ComPtr<WFC::IObservableVector<LCPD::Credential*>> credentials;
 			RETURN_IF_FAILED(m_credentialGroup->get_Credentials(&credentials)); // 72
 
-			Microsoft::WRL::ComPtr<WF::Collections::IVector<LCPD::Credential*>> credentialVector;
+			Microsoft::WRL::ComPtr<WFC::IVector<LCPD::Credential*>> credentialVector;
 			RETURN_IF_FAILED(credentials.As(&credentialVector)); // 75
 
 			Microsoft::WRL::ComPtr<LCPD::Credential> credential; //@MOD, type changed to LCPD::Credential from ICredential, not sure if we should gut Credential and just use ICredential, we will see soon
