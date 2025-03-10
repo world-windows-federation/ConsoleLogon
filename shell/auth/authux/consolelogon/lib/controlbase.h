@@ -22,13 +22,13 @@ public:
 	STDMETHODIMP HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 	STDMETHODIMP Unadvise() override;
 	//~ End IConsoleUIControl Interface
-	
+
 	enum class ColorScheme
 	{
 		Normal = 0,
 		Inverted = 1
 	};
-	
+
 protected:
 	virtual HRESULT v_OnFocusChange(BOOL hasFocus) PURE;
 	virtual HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) PURE;
@@ -44,14 +44,11 @@ protected:
 private:
 	WORD InvertColorAttributes(WORD colorAttributes);
 
-	BOOL m_isFocusable;
-
-	//@MOD: by wiktor, added this so that m_isFocusable can be changed in this class
-	friend class CredentialFieldControlBase;
+	BOOL m_isFocusable = FALSE;
 };
 
 //@MOD helper func to convert a bool to colorscheme, should help prevent human error
-inline ControlBase::ColorScheme FocusToColorScheme(bool hasFocus)
+FORCEINLINE ControlBase::ColorScheme FocusToColorScheme(bool hasFocus)
 {
 	return hasFocus ? ControlBase::ColorScheme::Inverted : ControlBase::ColorScheme::Normal;
 }

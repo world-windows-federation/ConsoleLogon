@@ -5,7 +5,7 @@
 #include "consoleuiview.h"
 #include "credentialfieldcontrolbase.h"
 
-class CheckboxControl
+class CheckboxControl final
 	: public Microsoft::WRL::RuntimeClass<CredentialFieldControlBase>
 {
 public:

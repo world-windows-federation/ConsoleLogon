@@ -5,6 +5,8 @@
 #include "basictextcontrol.h"
 #include "resource.h"
 
+using namespace Microsoft::WRL;
+
 CheckboxControl::CheckboxControl()
 	: m_VisibleControlSize(0)
 	, m_isInitialized(false)
@@ -84,7 +86,7 @@ bool CheckboxControl::v_HasFocus()
 
 HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 {
-	Microsoft::WRL::Wrappers::HString boxLabel;
+	Wrappers::HString boxLabel;
 	RETURN_IF_FAILED(m_dataSource->get_BoxLabel(boxLabel.ReleaseAndGetAddressOf())); // 44
 
 	bool isChecked;
@@ -117,7 +119,7 @@ HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 
 	if (m_IsVisible)
 	{
-		RETURN_IF_FAILED(PaintArea(checkBoxAndLabel.Get(), count, m_HasFocus ? ColorScheme::Inverted : ColorScheme::Normal, consoleWidth, m_VisibleControlSize)); // 76
+		RETURN_IF_FAILED(PaintArea(checkBoxAndLabel.Get(), count, FocusToColorScheme(m_HasFocus), consoleWidth, m_VisibleControlSize)); // 76
 	}
 
 	return S_OK;
