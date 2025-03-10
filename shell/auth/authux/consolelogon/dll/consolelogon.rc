@@ -31,6 +31,8 @@ STRINGTABLE
 }
 
 #include <ntverp.h>
+#undef VER_COMPANYNAME_STR
+#undef VER_PRODUCTNAME_STR
 #define VER_FILETYPE                    VFT_DLL
 #define VER_FILESUBTYPE                 VFT_UNKNOWN
 #define VER_COMPANYNAME_STR             "Microsoft Corporation"

@@ -25,7 +25,7 @@ HRESULT CredentialFieldControlBase::Invoke(LCPD::ICredentialField* sender, LCPD:
 	return S_OK;
 }
 
-int CredentialFieldControlBase::HasFocus()
+BOOL CredentialFieldControlBase::HasFocus()
 {
 	return v_HasFocus();
 }

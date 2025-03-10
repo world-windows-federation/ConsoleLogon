@@ -105,7 +105,7 @@ public:
 	{
 	}
 
-	void Dispatch() override
+	STDMETHODIMP_(void) Dispatch() override
 	{
 		_func();
 	}

@@ -191,66 +191,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_IsLocalNoPasswordUser(unsigned char*) PURE;
 		};
 
-		class User : /*public Platform::Object, */public IUser
+		class User
 		{
-			class SelectedCredential
-			{
-			};
-			class Credentials
-			{
-			};
-			class IsAutoSubmitPending
-			{
-			};
-			class DisplayName
-			{
-			};
-			class EmailAddress
-			{
-			};
-			class IsBuiltInGuest
-			{
-			};
-			class IsLocalNoPasswordUser
-			{
-			};
-			class IsLoggedIn
-			{
-			};
-			class LargeUserTileImage
-			{
-			};
-			class LogonStatus
-			{
-			};
-			class QualifiedUsername
-			{
-			};
-			class ShouldShowDomainName
-			{
-			};
-			class ShouldShowEmail
-			{
-			};
-			class Sid
-			{
-			};
-			class SmallUserTileImage
-			{
-			};
-			class ImageChanged
-			{
-			};
-			class IsAutoSubmitPendingChanged
-			{
-			};
-			class SelectedCredentialChanged
-			{
-			};
-		public:
-			void RefreshSelection();
-		private:
-			User();
 		};
 
 		enum CredentialFieldKind
@@ -316,16 +258,8 @@ namespace Windows::Internal::UI::Logon
 
 		};
 
-		class SerializationProgressInfo : /*public Platform::Object,*/ public ISerializationProgressInfo
+		class SerializationProgressInfo
 		{
-			class Status
-			{
-			};
-			class StatusMessage
-			{
-			};
-
-			SerializationProgressInfo();
 		};
 
 		class Credential;
@@ -365,93 +299,12 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE remove_SelectionStateChanged(EventRegistrationToken) PURE;
 		};
 
-		class Credential : /*public Platform::Object,*/ public ICredential
+		class Credential
 		{
-			class ExtraSmallUserTileImage
-			{
-			};
-			class Fields
-			{
-			};
-			class HideUserTileImage
-			{
-			};
-			class IsPicturePassword
-			{
-			};
-			class IsSelected
-			{
-			};
-			class LargeUserTileImage
-			{
-			};
-			class LogoImageField
-			{
-			};
-			class LogoLabel
-			{
-			};
-			class ProviderId
-			{
-			};
-			class SmallUserTileImage
-			{
-			};
-			class SubmitButtonAdjacentID
-			{
-			};
-			class SubmitButtonEnabled
-			{
-			};
-			class SubmitButtonField
-			{
-			};
-			class UIMode
-			{
-			};
-			class SelectionStateChanged
-			{
-			};
-			class SerializationProgressChanged
-			{
-			};
-			class SubmitButtonChanged
-			{
-			};
-			class SubmitButtonEnabledChanged
-			{
-			};
-			class UIModeChanged
-			{
-			};
-			class UserImageChanged
-			{
-			};
-		public:
-			virtual HRESULT CancelSubmission();
-			virtual HRESULT RefreshSelection();
-			virtual HRESULT Submit();
-			void PicturePasswordSubmit( /*Platform::Object*/void*);
-		private:
-			Credential();
 		};
 
-		class CredentialSerialization : /*public Platform::Object,*/ public ICredentialSerialization
+		class CredentialSerialization
 		{
-			class CredentialId
-			{
-			};
-			class SerializationIcon
-			{
-			};
-			class SerializationResponse
-			{
-			};
-			class StatusMessage
-			{
-			};
-		public:
-			CredentialSerialization();
 		};
 
 		struct IReportResultInfo : IInspectable
@@ -463,25 +316,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(HSTRING*) PURE;
 		};
 
-		class ReportResultInfo : /*public Platform::Object,*/ public IReportResultInfo
+		class ReportResultInfo
 		{
-			class ProviderCLSID
-			{
-			};
-			class StatusCode
-			{
-			};
-			class StatusIcon
-			{
-			};
-			class StatusMessage
-			{
-			};
-			class SubstatusCode
-			{
-			};
-		public:
-			ReportResultInfo();
 		};
 
 		class CredProvDataModel;
@@ -531,79 +367,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE DisconnectCredentials() PURE;
 		};
 
-		class CredProvDataModel : /*public Platform::Object,*/ public ICredProvDataModel
+		class CredProvDataModel
 		{
-			class SelectionMode
-			{
-			};
-			class SelectedV1Credential
-			{
-			};
-			class SelectedUserOrV1Credential
-			{
-			};
-			class SelectedUser
-			{
-			};
-			class SelectedPLAPCredential
-			{
-			};
-			class SelectedFlatCredential
-			{
-			};
-			class BioFeedbackLabel
-			{
-			};
-			class CurrentBioFeedbackState
-			{
-			};
-			class FlatCredentials
-			{
-			};
-			class PLAPCredentials
-			{
-			};
-			class Users
-			{
-			};
-			class UsersAndV1Credentials
-			{
-			};
-			class V1Credentials
-			{
-			};
-			class BioFeedbackStateChange
-			{
-			};
-			class SelectedFlatCredentialChanged
-			{
-			};
-			class SelectedPLAPCredentialChanged
-			{
-			};
-			class SelectedUserChanged
-			{
-			};
-			class SelectedUserOrV1CredentialChanged
-			{
-			};
-			class SelectedV1CredentialChanged
-			{
-			};
-			class SerializationComplete
-			{
-			};
-
-			//not used in consolelogon
-			//public:
-			//	void DisconnectCredentials();
-			//	struct WF::IAsyncAction* InitializeAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario, unsigned short, enum Windows::Internal::UI::Logon::CredProvData::SelectionMode);
-			//	struct WF::IAsyncAction* InitializeWithContextAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario, unsigned short, enum Windows::Internal::UI::Logon::CredProvData::SelectionMode, UINT, bool, void/*class Platform::Object*/*, class Platform::Guid, struct Windows::Storage::Streams::IBuffer*);
-			//	struct WF::IAsyncOperation<Windows::Internal::UI::Logon::CredProvData::ReportResultInfo* /*originally a ^ for c++/cx, made a ptr for now*/>* ReportResultAsync(int, int, void/*class Platform::String*/*);
-			//	void ClearState();
-			//	struct WF::IAsyncAction* ResetAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario);
-			//	void ResetSelection();
-			//	void Shutdown();
 		};
 
 		struct IDispatchEvent : IInspectable

@@ -131,78 +131,6 @@ extern "C" inline DWORD (WINAPI *SHTaskPoolGetUniqueContext)() = nullptr;
 
 extern "C" inline void (WINAPI *SHTaskPoolAllowThreadReuse)() = nullptr;
 
-namespace Windows::Internal::ComTaskPool
-{
-	inline volatile DWORD s_dwUniqueCallingContext = 0x80000000;
-	inline volatile DWORD* p_s_dwThreadIdReuse; // Used in the actual code
-}
-
-static DWORD WINAPI CUSTOM_SHTaskPoolGetUniqueContext()
-{
-	return InterlockedIncrement(&Windows::Internal::ComTaskPool::s_dwUniqueCallingContext);
-}
-
-static void WINAPI CUSTOM_SHTaskPoolAllowThreadReuse()
-{
-	if (Windows::Internal::ComTaskPool::p_s_dwThreadIdReuse)
-		*Windows::Internal::ComTaskPool::p_s_dwThreadIdReuse = GetCurrentThreadId();
-}
-
-inline void TaskPool_InitFunctions()
-{
-	HMODULE hShcore = LoadLibraryW(L"shcore.dll");
-	SHTaskPoolQueueTask = (decltype(SHTaskPoolQueueTask))GetProcAddress(hShcore, "SHTaskPoolQueueTask");
-	SHTaskPoolGetUniqueContext = (decltype(SHTaskPoolGetUniqueContext))GetProcAddress(hShcore, "SHTaskPoolGetUniqueContext");
-	SHTaskPoolAllowThreadReuse = (decltype(SHTaskPoolAllowThreadReuse))GetProcAddress(hShcore, "SHTaskPoolAllowThreadReuse");
-
-	// @WARNING: These exports do not exist on early Windows 10 versions.
-	// Please make the code to pattern search shcore.dll for the non-exported functions!
-
-	/*MODULEINFO miShcore;
-	GetModuleInformation(GetCurrentProcess(), hShcore, &miShcore, sizeof(miShcore));
-
-	if (!SHTaskPoolQueueTask)
-	{
-		// HRESULT Windows::Internal::ComTaskPool::RunTask(
-		//     Windows::Internal::TaskApartment apartment,
-		//     Windows::Internal::TaskOptions options,
-		//     DWORD dwCallingContext,
-		//     DWORD dwMillisecondsFromNow,
-		//     Windows::Internal::IComPoolTask* pTask,
-		//     IUnknown** ppDelayedTask)
-		// 44 8B C0 8B 0F 48 89 5C 24 ?? E8 ?? ?? ?? ??
-		//                                  ^^^^^^^^^^^
-		// Ref: Windows::Internal::ComTaskPoolHandler::Start()
-		// Arguments dwMillisecondsFromNow and ppDelayedTask are optimized out; always 0 and nullptr respectively
-#if defined(_M_X64)
-		PBYTE matchRunTask = (PBYTE)FindPattern(
-			hShcore,
-			miShcore.SizeOfImage,
-			"\x44\x8B\xC0\x8B\x0F\x48\x89\x5C\x24\x00\xE8",
-			"xxxxxxxxx?x"
-		);
-		if (matchRunTask)
-		{
-			matchRunTask += 10;
-			matchRunTask += 5 + *(int*)(matchRunTask + 1);
-		}
-#else
-		PBYTE matchRunTask = nullptr;
-#endif
-		if (matchRunTask)
-		{
-			SHTaskPoolQueueTask = (decltype(SHTaskPoolQueueTask))matchRunTask;
-			printf("Windows::Internal::ComTaskPool::RunTask() = shcore.dll+%llX\n", (PBYTE)SHTaskPoolQueueTask - (PBYTE)hShcore);
-		}
-		FAIL_FAST_IF_NULL(SHTaskPoolQueueTask);
-	}
-
-	if (!SHTaskPoolGetUniqueContext)
-	{
-		SHTaskPoolGetUniqueContext = CUSTOM_SHTaskPoolGetUniqueContext;
-	}*/
-}
-
 namespace Windows::Internal
 {
 	enum class TaskApartment
@@ -693,7 +621,7 @@ namespace Windows::Internal
 		AsyncBaseFTM(const AsyncBaseFTM&) = delete;
 		AsyncBaseFTM(AsyncBaseFTM&&) noexcept = delete;
 
-		HRESULT PutOnComplete(TComplete* completeHandler) override // Microsoft::WRL::AsyncBase
+		STDMETHODIMP PutOnComplete(TComplete* completeHandler) override // Microsoft::WRL::AsyncBase
 		{
 			HRESULT hr = this->CheckValidStateForDelegateCall();
 			if (SUCCEEDED(hr))
@@ -726,7 +654,7 @@ namespace Windows::Internal
 			return hr;
 		}
 
-		HRESULT GetOnComplete(TComplete** completeHandler) override // Microsoft::WRL::AsyncBase
+		STDMETHODIMP GetOnComplete(TComplete** completeHandler) override // Microsoft::WRL::AsyncBase
 		{
 			*completeHandler = 0;
 			HRESULT hr = this->CheckValidStateForDelegateCall();
@@ -1207,7 +1135,7 @@ namespace Windows::Internal
 			return hr;
 		}
 
-		HRESULT GetTrustLevel(TrustLevel* trustLvl) override // IInspectable
+		STDMETHODIMP GetTrustLevel(TrustLevel* trustLvl) override // IInspectable
 		{
 			*trustLvl = m_trustLevel;
 			return S_OK;

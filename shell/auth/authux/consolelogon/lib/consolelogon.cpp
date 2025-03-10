@@ -8,28 +8,17 @@ using namespace ABI::Windows::Foundation;
 using namespace Windows::Internal::UI::Logon::Controller;
 using namespace Windows::Internal::UI::Logon::CredProvData;
 
+extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX[] = L"Windows.Internal.UI.Logon.Controller.ConsoleLogonUX";
+
 class ConsoleLogon final
 	: public RuntimeClass<RuntimeClassFlags<WinRtClassicComMix>
 		, ILogonUX
 		, FtmBase
 	>
 {
+	InspectableClass(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX, FullTrust);
+
 public:
-	static const WCHAR* InternalGetRuntimeClassName();
-	static TrustLevel InternalGetTrustLevel();
-
-	//~ Begin IInspectable Interface
-	STDMETHODIMP GetRuntimeClassName(HSTRING* runtimeName) override;
-	STDMETHODIMP GetTrustLevel(TrustLevel* trustLevel) override;
-	STDMETHODIMP GetIids(ULONG* iidCount, GUID** iids) override;
-	//~ End IInspectable Interface
-
-	//~ Begin IUnknown Interface
-	STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override;
-	STDMETHODIMP_(ULONG) Release() override;
-	STDMETHODIMP_(ULONG) AddRef() override;
-	//~ End IUnknown Interface
-
 	ConsoleLogon();
 
 	// ReSharper disable once CppHidingFunction
@@ -152,50 +141,6 @@ private:
 	Wrappers::SRWLock m_Lock;
 	ComPtr<LogonViewManager> m_consoleUIManager;
 };
-
-extern const __declspec(selectany) _Null_terminated_ WCHAR RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX[] = L"Windows.Internal.UI.Logon.Controller.ConsoleLogonUX";
-
-const WCHAR* ConsoleLogon::InternalGetRuntimeClassName()
-{
-	return RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX;
-}
-
-TrustLevel ConsoleLogon::InternalGetTrustLevel()
-{
-	return FullTrust;
-}
-
-HRESULT ConsoleLogon::GetRuntimeClassName(HSTRING* runtimeName)
-{
-	*runtimeName = nullptr;
-	return WindowsCreateString(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX, (UINT32)wcslen(RuntimeClass_Windows_Internal_UI_Logon_Controller_ConsoleLogonUX), runtimeName);
-}
-
-HRESULT ConsoleLogon::GetTrustLevel(TrustLevel* trustLevel)
-{
-	*trustLevel = FullTrust;
-	return S_OK;
-}
-
-HRESULT ConsoleLogon::GetIids(ULONG* iidCount, GUID** iids)
-{
-	return RuntimeClass::GetIids(iidCount, iids);
-}
-
-HRESULT ConsoleLogon::QueryInterface(const IID& riid, void** ppvObject)
-{
-	return RuntimeClass::QueryInterface(riid, ppvObject);
-}
-
-ULONG ConsoleLogon::Release()
-{
-	return RuntimeClass::Release();
-}
-
-ULONG ConsoleLogon::AddRef()
-{
-	return RuntimeClass::AddRef();
-}
 
 ConsoleLogon::ConsoleLogon()
 {

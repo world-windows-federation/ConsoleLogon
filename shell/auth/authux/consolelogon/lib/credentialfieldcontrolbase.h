@@ -21,7 +21,9 @@ public:
 	STDMETHODIMP Invoke(LCPD::ICredentialField* sender, LCPD::CredentialFieldChangeKind args) override;
 	//~ End WF::ITypedEventHandler<LCPD::ICredentialField*, LCPD::CredentialFieldChangeKind> Interface
 
-	BOOL HasFocus() override;
+	//~ Begin IQueryFocus Interface
+	STDMETHODIMP_(BOOL) HasFocus() override;
+	//~ End IQueryFocus Interface
 
 	CredentialFieldControlBase& operator=(const CredentialFieldControlBase&) = delete;
 
