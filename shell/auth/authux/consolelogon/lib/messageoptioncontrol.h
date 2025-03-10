@@ -5,30 +5,34 @@
 #include "consoleuiview.h"
 #include "controlbase.h"
 
-enum MessageOptionFlag
+enum class MessageOptionFlag
 {
-	None=0,
-	Ok=1,
-	Cancel=2,
-	Yes=4,
-	No=8
+	None = 0x0,
+	Ok = 0x1,
+	Cancel = 0x2,
+	Yes = 0x4,
+	No = 0x8,
 };
 
-class MessageOptionControl : public Microsoft::WRL::RuntimeClass<ControlBase>
+DEFINE_ENUM_FLAG_OPERATORS(MessageOptionFlag);
+
+class MessageOptionControl final : public Microsoft::WRL::RuntimeClass<ControlBase>
 {
 public:
 	MessageOptionControl();
 	~MessageOptionControl() override;
 
-	// ReSharper disable once CppHidingFunction
-	HRESULT RuntimeClassInitialize(IConsoleUIView* view, MessageOptionFlag option, WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
+	HRESULT RuntimeClassInitialize(
+		IConsoleUIView* view, MessageOptionFlag option,
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
 
 private:
 	HRESULT v_OnFocusChange(BOOL hasFocus) override;
 	HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
+
 	HRESULT Repaint(IConsoleUIView* view);
-	
-	unsigned int m_VisibleControlSize;
+
+	UINT m_VisibleControlSize;
 	CoTaskMemNativeString m_label;
 	bool m_isInitialized;
 	bool m_hasFocus;

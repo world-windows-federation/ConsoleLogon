@@ -67,17 +67,18 @@ HRESULT BasicTextControl::Repaint(IConsoleUIView* view)
 	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 47
 
 	UINT controlSize = contentLength / consoleWidth + 1;
+
 	if (!m_isInitialized)
 	{
 		RETURN_IF_FAILED(Initialize(m_acceptFocus, controlSize, view)); // 53
 		m_isInitialized = true;
+		m_VisibleControlSize = controlSize;
 	}
-
-	if (controlSize != m_VisibleControlSize)
+	else if (controlSize != m_VisibleControlSize)
 	{
 		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(), controlSize)); // 59
+		m_VisibleControlSize = controlSize;
 	}
-	m_VisibleControlSize = controlSize;
 
 	RETURN_IF_FAILED(PaintArea(m_dataSource.Get(), contentLength, FocusToColorScheme(m_hasFocus), consoleWidth, m_VisibleControlSize)); // 63
 	return S_OK;

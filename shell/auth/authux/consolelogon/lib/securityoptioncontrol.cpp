@@ -4,6 +4,8 @@
 
 #include "basictextcontrol.h"
 
+using namespace Microsoft::WRL;
+
 SecurityOptionControl::SecurityOptionControl()
 	: m_VisibleControlSize(0)
 	, m_isInitialized(false)
@@ -22,35 +24,35 @@ HRESULT SecurityOptionControl::RuntimeClassInitialize(IConsoleUIView* view, LC::
 	m_option = option;
 	m_completion = wil::make_unique_nothrow<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>>>(completion);
 
-	RETURN_HR_IF(E_OUTOFMEMORY,!m_completion);
+	RETURN_HR_IF(E_OUTOFMEMORY, !m_completion);
 
-	UINT resourceId = 0;
+	UINT resourceId;
 	switch (option)
 	{
 		case LC::LogonUISecurityOptions_Cancel:
 			resourceId = IDS_CANCEL;
 			break;
-		
+
 		case LC::LogonUISecurityOptions_Lock:
 			resourceId = IDS_LOCK;
 			break;
-		
+
 		case LC::LogonUISecurityOptions_LogOff:
 			resourceId = IDS_SIGNOUT;
 			break;
-		
+
 		case LC::LogonUISecurityOptions_ChangePassword:
 			resourceId = IDS_CHANGEPASSWD;
 			break;
-		
+
 		case LC::LogonUISecurityOptions_TaskManager:
 			resourceId = IDS_TASKMGR;
 			break;
-		
+
 		case LC::LogonUISecurityOptions_SwitchUser:
 			resourceId = IDS_SWITCHUSER;
 			break;
-		
+
 		default:
 			RETURN_HR(E_INVALIDARG); // 51
 	}
@@ -79,16 +81,19 @@ HRESULT SecurityOptionControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent
 
 	if (!m_completion)
 		return S_OK;
-	
-	Microsoft::WRL::ComPtr<LC::ILogonUISecurityOptionsResultFactory> factory;
-	RETURN_IF_FAILED(WF::GetActivationFactory(Microsoft::WRL::Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_Controller_LogonUISecurityOptionsResult).Get(),&factory)); // 101
 
-	Microsoft::WRL::ComPtr<LC::ILogonUISecurityOptionsResult> optionResult;
-	RETURN_IF_FAILED(factory->CreateSecurityOptionsResult(m_option,LC::LogonUIShutdownChoice_None,&optionResult)); // 104
+	ComPtr<LC::ILogonUISecurityOptionsResultFactory> factory;
+	RETURN_IF_FAILED(WF::GetActivationFactory(
+		Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_Controller_LogonUISecurityOptionsResult).Get(), &factory)); // 101
+
+	ComPtr<LC::ILogonUISecurityOptionsResult> optionResult;
+	RETURN_IF_FAILED(factory->CreateSecurityOptionsResult(m_option, LC::LogonUIShutdownChoice_None, &optionResult)); // 104
 
 	RETURN_IF_FAILED(m_completion->GetResult().Set(optionResult.Get())); // 106
 
 	m_completion->Complete(S_OK);
+	m_completion.reset();
+
 	*wasHandled = TRUE;
 
 	return S_OK;
@@ -96,27 +101,26 @@ HRESULT SecurityOptionControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent
 
 HRESULT SecurityOptionControl::Repaint(IConsoleUIView* view)
 {
-	UINT length = (UINT)m_label.GetCount();
+	UINT contentLength = (UINT)m_label.GetCount();
 
 	UINT consoleWidth;
 	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 66
 
-	UINT controlSize = length / consoleWidth + 1;
+	UINT controlSize = contentLength / consoleWidth + 1;
 
 	if (!m_isInitialized)
 	{
-		RETURN_IF_FAILED(Initialize(true,controlSize,view)); // 72
+		RETURN_IF_FAILED(Initialize(true, controlSize, view)); // 72
 		m_isInitialized = true;
 		m_VisibleControlSize = controlSize;
 	}
-
-	if (controlSize != m_VisibleControlSize)
+	else if (controlSize != m_VisibleControlSize)
 	{
-		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(),controlSize)); // 78
+		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(), controlSize)); // 78
 		m_VisibleControlSize = controlSize;
 	}
 
-	RETURN_IF_FAILED(PaintArea(m_label.Get(),length,FocusToColorScheme(m_hasFocus),consoleWidth,m_VisibleControlSize)); // 82
+	RETURN_IF_FAILED(PaintArea(m_label.Get(), contentLength, FocusToColorScheme(m_hasFocus), consoleWidth, m_VisibleControlSize)); // 82
 
 	return S_OK;
 }

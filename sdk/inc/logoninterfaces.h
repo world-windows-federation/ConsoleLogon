@@ -671,10 +671,10 @@ namespace Windows::Internal::UI::Logon
 		};
 
 		MIDL_INTERFACE("59c3c31e-3f86-4fa5-9c7b-dc7b542e2a70")
-		ICredentialTextField :  IInspectable
+		ICredentialTextField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_TextSize(Windows::Internal::UI::Logon::CredProvData::CredentialTextSize*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_TextSize(CredentialTextSize*) PURE;
 		};
 	}
 

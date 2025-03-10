@@ -97,12 +97,12 @@ HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 	CoTaskMemNativeString checkBoxAndLabel;
 	RETURN_IF_FAILED(checkBoxAndLabel.InitializeResMessage(HINST_THISCOMPONENT, IDS_COMBOBOXFORMAT, checkMark.Get(), boxLabel.GetRawBuffer(nullptr))); // 53
 
-	UINT count = (UINT)checkBoxAndLabel.GetCount();
+	UINT contentLength = (UINT)checkBoxAndLabel.GetCount();
 
 	UINT consoleWidth;
 	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 58
 
-	UINT controlSize = m_IsVisible ? count / consoleWidth + 1 : 0;
+	UINT controlSize = m_IsVisible ? contentLength / consoleWidth + 1 : 0;
 
 	if (!m_isInitialized)
 	{
@@ -118,7 +118,7 @@ HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 
 	if (m_IsVisible)
 	{
-		RETURN_IF_FAILED(PaintArea(checkBoxAndLabel.Get(), count, FocusToColorScheme(m_HasFocus), consoleWidth, m_VisibleControlSize)); // 76
+		RETURN_IF_FAILED(PaintArea(checkBoxAndLabel.Get(), contentLength, FocusToColorScheme(m_HasFocus), consoleWidth, m_VisibleControlSize)); // 76
 	}
 
 	return S_OK;

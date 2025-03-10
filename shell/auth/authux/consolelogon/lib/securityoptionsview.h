@@ -11,7 +11,6 @@ public:
 	SecurityOptionsView();
 	~SecurityOptionsView() override;
 
-	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(
 		LC::LogonUISecurityOptions options,
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);

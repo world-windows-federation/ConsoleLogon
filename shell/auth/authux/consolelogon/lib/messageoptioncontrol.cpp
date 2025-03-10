@@ -4,6 +4,8 @@
 
 #include "basictextcontrol.h"
 
+using namespace Microsoft::WRL;
+
 MessageOptionControl::MessageOptionControl()
 	: m_VisibleControlSize(0)
 	, m_isInitialized(false)
@@ -21,29 +23,29 @@ HRESULT MessageOptionControl::RuntimeClassInitialize(IConsoleUIView* view, Messa
 {
 	m_option = option;
 	m_completion = wil::make_unique_nothrow<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>>>(completion);
-
-	RETURN_HR_IF(E_OUTOFMEMORY,!m_completion); // 26
+	RETURN_IF_NULL_ALLOC(m_completion); // 26
 
 	UINT resourceId;
 	switch (option)
 	{
-	case Ok:
-		resourceId = IDS_OK;
-		break;
-	case Cancel:
-		resourceId = IDS_CANCEL;
-		break;
-	case Yes:
-		resourceId = IDS_YES;
-		break;
-	case No:
-		resourceId = IDS_NO;
-		break;
-	default:
-		RETURN_HR(E_INVALIDARG); // 45
+		case MessageOptionFlag::Ok:
+			resourceId = IDS_OK;
+			break;
+		case MessageOptionFlag::Cancel:
+			resourceId = IDS_CANCEL;
+			break;
+		case MessageOptionFlag::Yes:
+			resourceId = IDS_YES;
+			break;
+		case MessageOptionFlag::No:
+			resourceId = IDS_NO;
+			break;
+
+		default:
+			RETURN_HR(E_INVALIDARG); // 45
 	}
 
-	RETURN_IF_FAILED(m_label.Initialize(HINST_THISCOMPONENT,resourceId)); // 48
+	RETURN_IF_FAILED(m_label.Initialize(HINST_THISCOMPONENT, resourceId)); // 48
 
 	RETURN_IF_FAILED(Repaint(view)); // 50
 
@@ -62,40 +64,40 @@ HRESULT MessageOptionControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent,
 {
 	*wasHandled = FALSE;
 	if (keyEvent->wVirtualKeyCode != VK_RETURN || !m_completion)
-		return 0;
+		return S_OK;
 
-	UINT optflag;
-	
+	UINT messageCode;
 	switch (m_option)
 	{
-		case Ok:
-			optflag = 1;
+		case MessageOptionFlag::Ok:
+			messageCode = 1;
 			break;
-		case Cancel:
-			optflag = 2;
+		case MessageOptionFlag::Cancel:
+			messageCode = 2;
 			break;
-		case Yes:
-			optflag = 6;
+		case MessageOptionFlag::Yes:
+			messageCode = 6;
 			break;
-		case No:
-			optflag = 7;
+		case MessageOptionFlag::No:
+			messageCode = 7;
 			break;
+
 		default:
-			RETURN_HR(E_INVALIDARG); //111
+			RETURN_HR(E_INVALIDARG); // 111
 	}
 
-	Microsoft::WRL::ComPtr<LC::IMessageDisplayResultFactory> factory;
-	RETURN_IF_FAILED(WF::GetActivationFactory(Microsoft::WRL::Wrappers::HStringReference(L"Windows.Internal.UI.Logon.Controller.MessageDisplayResult").Get(),&factory)); // 115
+	ComPtr<LC::IMessageDisplayResultFactory> factory;
+	RETURN_IF_FAILED(WF::GetActivationFactory(
+		Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_Controller_MessageDisplayResult).Get(), &factory)); // 115
 
-	Microsoft::WRL::ComPtr<Windows::Internal::UI::Logon::Controller::IMessageDisplayResult> messageResult;
-	RETURN_IF_FAILED(factory->CreateMessageDisplayResult(optflag, &messageResult)); // 118
+	ComPtr<LC::IMessageDisplayResult> messageResult;
+	RETURN_IF_FAILED(factory->CreateMessageDisplayResult(messageCode, &messageResult)); // 118
 
 	RETURN_IF_FAILED(m_completion->GetResult().Set(messageResult.Get())); // 120
 
 	m_completion->Complete(S_OK);
-
-	//TODO: VERIFY THIS IS CORRECT
 	m_completion.reset();
+
 	*wasHandled = TRUE;
 
 	return S_OK;
@@ -103,27 +105,26 @@ HRESULT MessageOptionControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent,
 
 HRESULT MessageOptionControl::Repaint(IConsoleUIView* view)
 {
-	UINT length = (UINT)m_label.GetCount();
+	UINT contentLength = (UINT)m_label.GetCount();
 
 	UINT consoleWidth;
 	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 60
 
-	UINT controlSize = length / consoleWidth + 1;
+	UINT controlSize = contentLength / consoleWidth + 1;
+
 	if (!m_isInitialized)
 	{
-		RETURN_IF_FAILED(Initialize(TRUE,controlSize,view)); // 66
+		RETURN_IF_FAILED(Initialize(TRUE, controlSize, view)); // 66
 		m_isInitialized = true;
-		//note: theres a goto to go to setting this, which would avoid the resizecontrol call, no clue why they do this, but it is done, unless ida pseudocode is wrong
 		m_VisibleControlSize = controlSize;
 	}
-
-	if ( controlSize != this->m_VisibleControlSize )
+	else if (controlSize != m_VisibleControlSize)
 	{
-		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(),controlSize)); // 72
+		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(), controlSize)); // 72
 		m_VisibleControlSize = controlSize;
 	}
 
-	RETURN_IF_FAILED(PaintArea(m_label.Get(),length,FocusToColorScheme(m_hasFocus),consoleWidth,m_VisibleControlSize)); // 76
+	RETURN_IF_FAILED(PaintArea(m_label.Get(), contentLength, FocusToColorScheme(m_hasFocus), consoleWidth, m_VisibleControlSize)); // 76
 
 	return S_OK;
 }
