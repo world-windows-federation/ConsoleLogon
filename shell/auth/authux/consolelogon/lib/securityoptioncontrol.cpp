@@ -3,7 +3,6 @@
 #include "securityoptioncontrol.h"
 
 #include "basictextcontrol.h"
-#include "resource.h"
 
 SecurityOptionControl::SecurityOptionControl()
 	: m_VisibleControlSize(0)

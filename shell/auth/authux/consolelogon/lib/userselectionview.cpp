@@ -5,8 +5,6 @@
 #include "basictextcontrol.h"
 #include "selectableuserorcredentialcontrol.h"
 
-#include "resource.h"
-
 using namespace Microsoft::WRL;
 
 UserSelectionView::UserSelectionView()

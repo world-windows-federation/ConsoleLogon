@@ -2,8 +2,6 @@
 
 #include "selectableuserorcredentialcontrol.h"
 
-#include "resource.h"
-
 using namespace Microsoft::WRL;
 
 SelectableUserOrCredentialControl::SelectableUserOrCredentialControl()

@@ -4,8 +4,6 @@
 
 #include "basictextcontrol.h"
 
-#include "resource.h"
-
 MessageOptionControl::MessageOptionControl()
 	: m_VisibleControlSize(0)
 	, m_isInitialized(false)

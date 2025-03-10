@@ -10,13 +10,11 @@
 #include "lockedview.h"
 #include "messageview.h"
 #include "optionaldependencyprovider.h"
-#include "resource.h"
 #include "securityoptionsview.h"
 #include "selectedcredentialview.h"
 #include "serializationfailedview.h"
 #include "statusview.h"
 #include "userselectionview.h"
-#include "resource.h"
 
 using namespace Microsoft::WRL;
 

@@ -5,7 +5,6 @@
 #include "basictextcontrol.h"
 #include "messageoptioncontrol.h"
 #include "selectableuserorcredentialcontrol.h"
-#include "resource.h"
 
 CredProvSelectionView::CredProvSelectionView()
 {
@@ -51,7 +50,7 @@ HRESULT CredProvSelectionView::RuntimeClassInitialize(LCPD::ICredentialGroup* cr
 	//@MOD, REMOVED > 0 CHECK, REDUNDANT, THO IDK IF SOURCE ORIGINALLY HAD IT OR IF ITS A COMPILATION/DECOMPILATION QUIRK
 	for (unsigned int i = 0; i < numCredentials; i++)
 	{
-		Microsoft::WRL::ComPtr<LCPD::Credential> dataSource; //@MOD, type changed to LCPD::Credential from ICredential, not sure if we should gut Credential and just use ICredential, we will see soon
+		Microsoft::WRL::ComPtr<LCPD::ICredential> dataSource;
 		RETURN_IF_FAILED(credentialVector->GetAt(i,&dataSource)); // 45
 
 		Microsoft::WRL::ComPtr<SelectableUserOrCredentialControl> control;
@@ -80,7 +79,7 @@ HRESULT CredProvSelectionView::v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BO
 			Microsoft::WRL::ComPtr<WFC::IVector<LCPD::Credential*>> credentialVector;
 			RETURN_IF_FAILED(credentials.As(&credentialVector)); // 75
 
-			Microsoft::WRL::ComPtr<LCPD::Credential> credential; //@MOD, type changed to LCPD::Credential from ICredential, not sure if we should gut Credential and just use ICredential, we will see soon
+			Microsoft::WRL::ComPtr<LCPD::ICredential> credential;
 			RETURN_IF_FAILED(credentialVector->GetAt(GetFocusIndex() - 1,&credential)); // 78
 
 			RETURN_IF_FAILED(m_credentialGroup->put_SelectedCredential(credential.Get())); // 80

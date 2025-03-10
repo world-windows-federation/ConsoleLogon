@@ -1151,8 +1151,6 @@ namespace ABI::Windows::Foundation
 
 namespace ABI::Windows::Foundation::Collections
 {
-	// WFC::IVector<IInspectable*>
-
 	template <>
 	struct __declspec(uuid("b32bdca4-5e52-5b27-bc5d-d66a1a268c2a"))
 	IVector<IInspectable*>
@@ -1161,6 +1159,19 @@ namespace ABI::Windows::Foundation::Collections
 		static const wchar_t* z_get_rc_name_impl()
 		{
 			return L"Windows.Foundation.Collections.IVector`1<Object>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("9f15eb60-ec8f-5163-9d6e-dd6f3f7aa004"))
+	IVector<LCPD::Credential*>
+		: IVector_impl<
+			  Internal::AggregateType<LCPD::Credential*, LCPD::ICredential*>
+		>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.Collections.IVector`1<Windows.Internal.UI.Logon.CredProvData.Credential>";
 		}
 	};
 
@@ -1189,7 +1200,9 @@ namespace ABI::Windows::Foundation::Collections
 	template <>
 	struct
 	IObservableVector<LCPD::Credential*>
-		: IObservableVector_impl<LCPD::Credential*>
+		: IObservableVector_impl<
+			  Internal::AggregateType<LCPD::Credential*, LCPD::ICredential*>
+		>
 	{
 		static const wchar_t* z_get_rc_name_impl()
 		{
@@ -1222,7 +1235,9 @@ namespace ABI::Windows::Foundation::Collections
 	template <>
 	struct __declspec(uuid("a1181e1b-89d9-5148-8b13-c202a0e595f4"))
 	VectorChangedEventHandler<LCPD::Credential*>
-		: VectorChangedEventHandler_impl<LCPD::Credential*>
+		: VectorChangedEventHandler_impl<
+			  Internal::AggregateType<LCPD::Credential*, LCPD::ICredential*>
+		>
 	{
 		static const wchar_t* z_get_rc_name_impl()
 		{

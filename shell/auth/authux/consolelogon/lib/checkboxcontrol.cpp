@@ -3,7 +3,6 @@
 #include "checkboxcontrol.h"
 
 #include "basictextcontrol.h"
-#include "resource.h"
 
 using namespace Microsoft::WRL;
 
