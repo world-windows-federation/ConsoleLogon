@@ -11,7 +11,6 @@ public:
 	SerializationFailedView();
 	~SerializationFailedView() override;
 
-	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(HSTRING caption, HSTRING message, LCPD::IUser* selectedUser);
 
 protected:

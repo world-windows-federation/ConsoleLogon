@@ -1177,6 +1177,17 @@ namespace ABI::Windows::Foundation::Collections
 
 	template <>
 	struct
+	IVectorView<LCPD::ICredentialField*>
+		: IVectorView_impl<LCPD::ICredentialField*>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.Collections.IVectorView`1<Windows.Internal.UI.Logon.CredProvData.ICredentialField>";
+		}
+	};
+
+	template <>
+	struct
 	IObservableVector<HSTRING>
 		: IObservableVector_impl<HSTRING>
 	{

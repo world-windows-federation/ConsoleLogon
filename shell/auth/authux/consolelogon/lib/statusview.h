@@ -4,14 +4,13 @@
 
 #include "consoleuiview.h"
 
-class StatusView
+class StatusView final
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, ConsoleUIView>
 {
 public:
 	StatusView();
 	~StatusView() override;
 
-	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(HSTRING status, LCPD::IUser* selectedUser);
 
 protected:

@@ -14,7 +14,6 @@ public:
 	ComboboxSelectionView();
 	~ComboboxSelectionView() override;
 
-	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(LCPD::IComboBoxField* dataSource);
 
 	//~ Begin WFC::VectorChangedEventHandler<HSTRING> Interface

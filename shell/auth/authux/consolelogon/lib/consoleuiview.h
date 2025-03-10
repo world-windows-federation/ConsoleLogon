@@ -159,7 +159,7 @@ IConsoleUIViewInternal : IUnknown
 MIDL_INTERFACE("cb05bd7e-9f44-4dcb-8792-96e9630f1ae8")
 IComboBoxSelectCallback : IUnknown
 {
-	virtual HRESULT OnComboboxSelected(LCPD::IComboBoxField* comboBox) = 0;
+	virtual HRESULT STDMETHODCALLTYPE OnComboboxSelected(LCPD::IComboBoxField* comboBox) = 0;
 };
 
 class ConsoleUIView

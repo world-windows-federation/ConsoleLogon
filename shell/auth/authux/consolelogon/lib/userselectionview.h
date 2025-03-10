@@ -11,7 +11,6 @@ public:
 	UserSelectionView();
 	~UserSelectionView() override;
 
-	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(LCPD::ICredProvDataModel* dataSource);
 
 protected:

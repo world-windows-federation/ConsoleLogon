@@ -11,7 +11,6 @@ public:
 	CredProvSelectionView();
 	~CredProvSelectionView() override;
 
-	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(LCPD::ICredentialGroup* credentialGroup, HSTRING userName);
 
 protected:

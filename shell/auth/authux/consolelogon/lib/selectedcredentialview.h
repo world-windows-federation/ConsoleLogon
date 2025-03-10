@@ -15,7 +15,6 @@ public:
 	SelectedCredentialView();
 	~SelectedCredentialView() override;
 
-	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(LC::LogonUIRequestReason reason, LCPD::ICredential* credential, HSTRING userName);
 
 	//~ Begin IComboBoxSelectCallback Interface
