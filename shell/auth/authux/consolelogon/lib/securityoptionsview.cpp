@@ -22,35 +22,35 @@ HRESULT SecurityOptionsView::RuntimeClassInitialize(LC::LogonUISecurityOptions o
 	if ((options & LC::LogonUISecurityOptions_ChangePassword) != 0)
 	{
 		ComPtr<SecurityOptionControl> optionControl;
-		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_ChangePassword, &completion)); // 28
+		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_ChangePassword, completion)); // 28
 	}
 
 	if ((options & LC::LogonUISecurityOptions_Lock) != 0)
 	{
 		ComPtr<SecurityOptionControl> optionControl;
-		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_Lock, &completion)); // 34
+		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_Lock, completion)); // 34
 	}
 
 	if ((options & LC::LogonUISecurityOptions_LogOff) != 0)
 	{
 		ComPtr<SecurityOptionControl> optionControl;
-		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_LogOff, &completion)); // 40
+		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_LogOff, completion)); // 40
 	}
 
 	if ((options & LC::LogonUISecurityOptions_SwitchUser) != 0)
 	{
 		ComPtr<SecurityOptionControl> optionControl;
-		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_SwitchUser, &completion)); // 46
+		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_SwitchUser, completion)); // 46
 	}
 
 	if ((options & LC::LogonUISecurityOptions_TaskManager) != 0)
 	{
 		ComPtr<SecurityOptionControl> optionControl;
-		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_TaskManager, &completion)); // 52
+		RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_TaskManager, completion)); // 52
 	}
 
 	ComPtr<SecurityOptionControl> optionControl;
-	RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_Cancel, &completion)); // 56
+	RETURN_IF_FAILED(MakeAndInitialize<SecurityOptionControl>(&optionControl, this, LC::LogonUISecurityOptions_Cancel, completion)); // 56
 
 	m_completion = wil::make_unique_nothrow<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>>>(completion);
 	RETURN_HR_IF_NULL(E_OUTOFMEMORY, m_completion.get()); // 59
