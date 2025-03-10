@@ -102,19 +102,19 @@ HRESULT SecurityOptionControl::Repaint(IConsoleUIView* view)
 	UINT consoleWidth;
 	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 66
 
-	UINT consoleHeight = length / consoleWidth + 1;
-	
+	UINT controlSize = length / consoleWidth + 1;
+
 	if (!m_isInitialized)
 	{
-		RETURN_IF_FAILED(Initialize(true,consoleHeight,view)); // 72
+		RETURN_IF_FAILED(Initialize(true,controlSize,view)); // 72
 		m_isInitialized = true;
-		m_VisibleControlSize = consoleHeight;
+		m_VisibleControlSize = controlSize;
 	}
 
-	if (consoleHeight != m_VisibleControlSize)
+	if (controlSize != m_VisibleControlSize)
 	{
-		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(),consoleHeight)); // 78
-		m_VisibleControlSize = consoleHeight;
+		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(),controlSize)); // 78
+		m_VisibleControlSize = controlSize;
 	}
 
 	RETURN_IF_FAILED(PaintArea(m_label.Get(),length,FocusToColorScheme(m_hasFocus),consoleWidth,m_VisibleControlSize)); // 82

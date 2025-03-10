@@ -5,13 +5,12 @@
 #include "consoleuiview.h"
 #include "credentialfieldcontrolbase.h"
 
-class EditControl : public Microsoft::WRL::RuntimeClass<CredentialFieldControlBase>
+class EditControl final : public Microsoft::WRL::RuntimeClass<CredentialFieldControlBase>
 {
 public:
 	EditControl();
 	~EditControl() override;
 
-	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredentialField* dataSource);
 
 private:
@@ -19,12 +18,13 @@ private:
 	HRESULT v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wasHandled) override;
 	HRESULT v_OnFieldChange(LCPD::CredentialFieldChangeKind changeKind) override;
 	bool v_HasFocus() override;
+
 	HRESULT Repaint(IConsoleUIView* view);
-	
+
 	Microsoft::WRL::ComPtr<LCPD::ICredentialEditField> m_dataSource;
-	unsigned int m_VisibleControlSize;
+	UINT m_VisibleControlSize;
 	bool m_isInitialized;
 	bool m_IsVisible;
 	bool m_HasFocus;
-	unsigned int m_EditStartIndex;
+	UINT m_EditStartIndex;
 };

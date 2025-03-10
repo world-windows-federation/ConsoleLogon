@@ -110,19 +110,19 @@ HRESULT MessageOptionControl::Repaint(IConsoleUIView* view)
 	UINT consoleWidth;
 	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 60
 
-	UINT consoleHeight = length / consoleWidth + 1;
+	UINT controlSize = length / consoleWidth + 1;
 	if (!m_isInitialized)
 	{
-		RETURN_IF_FAILED(Initialize(TRUE,consoleHeight,view)); // 66
+		RETURN_IF_FAILED(Initialize(TRUE,controlSize,view)); // 66
 		m_isInitialized = true;
 		//note: theres a goto to go to setting this, which would avoid the resizecontrol call, no clue why they do this, but it is done, unless ida pseudocode is wrong
-		m_VisibleControlSize = consoleHeight;
+		m_VisibleControlSize = controlSize;
 	}
-	
-	if ( consoleHeight != this->m_VisibleControlSize )
+
+	if ( controlSize != this->m_VisibleControlSize )
 	{
-		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(),consoleHeight)); // 72
-		m_VisibleControlSize = consoleHeight;
+		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(),controlSize)); // 72
+		m_VisibleControlSize = controlSize;
 	}
 
 	RETURN_IF_FAILED(PaintArea(m_label.Get(),length,FocusToColorScheme(m_hasFocus),consoleWidth,m_VisibleControlSize)); // 76

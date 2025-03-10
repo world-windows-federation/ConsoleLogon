@@ -137,8 +137,8 @@ HRESULT ComboboxControl::Repaint(IConsoleUIView* view)
 	if (!m_isInitialized)
 	{
 		RETURN_IF_FAILED(ControlBase::Initialize(true, controlSize, view)); // 93
-		m_VisibleControlSize = controlSize;
 		m_isInitialized = true;
+		m_VisibleControlSize = controlSize;
 	}
 	else if (controlSize != m_VisibleControlSize)
 	{

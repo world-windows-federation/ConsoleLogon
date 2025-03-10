@@ -2,9 +2,7 @@
 
 #include "commandlinkcontrol.h"
 
-#include <string_view>
-
-#include "basictextcontrol.h"
+using namespace Microsoft::WRL;
 
 CommandLinkControl::CommandLinkControl()
 	: m_VisibleControlSize(0)
@@ -20,16 +18,12 @@ CommandLinkControl::~CommandLinkControl()
 
 HRESULT CommandLinkControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::ICredentialField* dataSource)
 {
-	//if (m_dataSource)
-	//{
-	//	m_dataSource.Reset();
-	//}
-
 	RETURN_IF_FAILED(dataSource->QueryInterface(IID_PPV_ARGS(&m_dataSource))); // 21
 
 	RETURN_IF_FAILED(CredentialFieldControlBase::Advise(dataSource)); // 23
 
-	auto scopeExit = wil::scope_exit([this]() -> void {
+	auto scopeExit = wil::scope_exit([this]() -> void
+	{
 		ControlBase::Unadvise();
 	});
 
@@ -43,7 +37,7 @@ HRESULT CommandLinkControl::RuntimeClassInitialize(IConsoleUIView* view, LCPD::I
 
 HRESULT CommandLinkControl::v_OnFocusChange(BOOL hasFocus)
 {
-	m_HasFocus = hasFocus;
+	m_HasFocus = hasFocus != 0;
 	RETURN_IF_FAILED(Repaint(m_view.Get())); // 75
 
 	return S_OK;
@@ -65,9 +59,8 @@ HRESULT CommandLinkControl::v_OnFieldChange(LCPD::CredentialFieldChangeKind chan
 {
 	if (changeKind == LCPD::CredentialFieldChangeKind_State)
 	{
-		bool isVisible = false;
+		bool isVisible;
 		RETURN_IF_FAILED(GetVisibility(&isVisible)); // 98
-
 		if (isVisible != m_IsVisible)
 		{
 			m_IsVisible = isVisible;
@@ -90,32 +83,31 @@ bool CommandLinkControl::v_HasFocus()
 
 HRESULT CommandLinkControl::Repaint(IConsoleUIView* view)
 {
-	Microsoft::WRL::Wrappers::HString content;
-	
+	Wrappers::HString content;
 	RETURN_IF_FAILED(m_dataSource->get_Content(content.ReleaseAndGetAddressOf())); // 43
 
-	UINT length = WindowsGetStringLen(content.Get());
+	UINT contentLength = content.Length();
 
-	UINT consoleWidth = 0;
+	UINT consoleWidth;
 	RETURN_IF_FAILED(view->GetConsoleWidth(&consoleWidth)); // 48
 
-	UINT consoleHeight = m_IsVisible ? (length / consoleWidth + 1) : (0); //turned into ternary operator so line numbers line up
+	UINT controlSize = m_IsVisible ? contentLength / consoleWidth + 1 : 0;
 
 	if (!m_isInitialized)
 	{
-		RETURN_IF_FAILED(ControlBase::Initialize(true,consoleHeight,view)); // 54
-		m_VisibleControlSize = consoleHeight;
+		RETURN_IF_FAILED(ControlBase::Initialize(true, controlSize, view)); // 54
 		m_isInitialized = true;
+		m_VisibleControlSize = controlSize;
 	}
-	else if ( consoleHeight != this->m_VisibleControlSize )
+	else if (controlSize != m_VisibleControlSize)
 	{
-		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(),consoleHeight)); // 60
-		m_VisibleControlSize = consoleHeight;
+		RETURN_IF_FAILED(view->ResizeControl(m_outputHandle.Get(), controlSize)); // 60
+		m_VisibleControlSize = controlSize;
 	}
 
 	if (m_IsVisible)
 	{
-		RETURN_IF_FAILED(ControlBase::PaintArea(content.GetRawBuffer(nullptr),length,FocusToColorScheme(m_HasFocus), consoleWidth,m_VisibleControlSize)); // 105
+		RETURN_IF_FAILED(ControlBase::PaintArea(content.GetRawBuffer(nullptr), contentLength, FocusToColorScheme(m_HasFocus), consoleWidth, m_VisibleControlSize)); // 105
 	}
 
 	return S_OK;

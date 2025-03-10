@@ -20,8 +20,8 @@ HRESULT StaticTextControl::RuntimeClassInitialize(IConsoleUIView* view, ICredent
 	RETURN_IF_FAILED(dataSource->QueryInterface(IID_PPV_ARGS(&m_dataSource))); // 20
 
 	RETURN_IF_FAILED(CredentialFieldControlBase::Advise(dataSource)); // 22
-
-	auto scopeExit = wil::scope_exit([this]() -> void {
+	auto scopeExit = wil::scope_exit([this]() -> void
+	{
 		ControlBase::Unadvise();
 	});
 
