@@ -163,6 +163,7 @@ STDAPI_(BOOL) DllMain(_In_opt_ HINSTANCE hInstance, DWORD dwReason, _In_opt_ voi
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
 		DisableThreadLibraryCalls(hInstance);
+		TaskPool_InitFunctions();
 	}
 	return TRUE;
 }

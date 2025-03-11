@@ -63,7 +63,7 @@ HRESULT ConsoleUIManager::StopUI()
 HRESULT ConsoleUIManager::SetActiveView(IConsoleUIView* view)
 {
 	ComPtr<IConsoleUIViewInternal> newView;
-	void* screenBuffer = nullptr;
+	HANDLE screenBuffer;
 
 	HRESULT hr = view->QueryInterface(IID_PPV_ARGS(&newView));
 	RETURN_IF_FAILED(hr); // 105

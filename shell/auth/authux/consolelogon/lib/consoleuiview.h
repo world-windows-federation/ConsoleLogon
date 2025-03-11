@@ -12,11 +12,7 @@ INavigationCallback : IUnknown
 };
 
 // Belongs to internal inputswitchserver.h
-DEFINE_GUID(CLSID_InputSwitchControl,
-	0xb9bc2a50,
-	0x43c3, 0x41aa, 0xa0, 0x86,
-	0x5d, 0xb1, 0x4e, 0x18, 0x4b, 0xae
-);
+inline const GUID DECLSPEC_SELECTANY CLSID_InputSwitchControl = { 0xb9bc2a50, 0x43c3, 0x41aa, { 0xa0, 0x86, 0x5d, 0xb1, 0x4e, 0x18, 0x4b, 0xae } };
 
 typedef enum __MIDL___MIDL_itf_inputswitchserver_0000_0000_0001
 {

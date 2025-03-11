@@ -58,7 +58,7 @@ public:
 		LC::IBioFeedbackListener* bioFeedbackListener);
 	HRESULT Lock(LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, LC::IUnlockTrigger* unlockTrigger);
 	HRESULT RequestCredentials(
-		LC::LogonUIRequestReason reason, LC::LogonUIFlags flags,
+		LC::LogonUIRequestReason reason, LC::LogonUIFlags flags,HSTRING unk,
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> completion);
 	HRESULT ReportResult(
 		LC::LogonUIRequestReason reason, NTSTATUS ntStatus, NTSTATUS ntSubStatus, HSTRING samCompatibleUserName,
@@ -85,7 +85,7 @@ private:
 	HRESULT LockUIThread(
 		LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, LC::IUnlockTrigger* unlockTrigger);
 	HRESULT RequestCredentialsUIThread(
-		LC::LogonUIRequestReason reason, LC::LogonUIFlags flags,
+		LC::LogonUIRequestReason reason, LC::LogonUIFlags flags,HSTRING unk,
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> completion);
 	HRESULT ReportResultUIThread(
 		LC::LogonUIRequestReason reason, NTSTATUS ntStatus, NTSTATUS ntSubStatus, HSTRING samCompatibleUserName,
@@ -113,7 +113,7 @@ private:
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
 	HRESULT ShowSerializationFailedView(HSTRING caption, HSTRING message);
 	HRESULT DestroyCurrentView();
-	HRESULT StartCredProvsIfNecessary(LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching);
+	HRESULT StartCredProvsIfNecessary(LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, HSTRING unk);
 	HRESULT OnCredProvInitComplete();
 
 	enum class LogonView

@@ -29,10 +29,10 @@ public:
 		IInspectable* autoLogonManager, IRedirectionManager* redirectionManager,
 		IUserSettingManager* userSettingManager, IDisplayStateProvider* displayStateProvider,
 		IBioFeedbackListener* bioFeedbackListener) override;
-	STDMETHODIMP DelayLock(BOOLEAN allowDirectUserSwitching, IUnlockTrigger* unlockTrigger) override;
-	STDMETHODIMP HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, IUnlockTrigger* unlockTrigger) override;
+	STDMETHODIMP DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger) override;
+	STDMETHODIMP HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger) override;
 	STDMETHODIMP RequestCredentialsAsync(
-		LogonUIRequestReason reason, LogonUIFlags flags, IAsyncOperation<RequestCredentialsData*>** ppOperation) override;
+		LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk, IAsyncOperation<RequestCredentialsData*>** ppOperation) override;
 	STDMETHODIMP ReportCredentialsAsync(
 		LogonUIRequestReason reason, NTSTATUS ntsStatus, NTSTATUS ntsSubStatus, HSTRING samCompatibleUserName,
 		HSTRING displayName, HSTRING userSid, IAsyncOperation<ReportCredentialsData*>** ppOperation) override;
@@ -43,12 +43,14 @@ public:
 		NTSTATUS ntsStatus, NTSTATUS ntsSubstatus, UINT messageBoxFlags, HSTRING caption, HSTRING message,
 		IAsyncOperation<MessageDisplayResult*>** ppOperation) override;
 	STDMETHODIMP DisplayStatusAsync(LogonUIState state, HSTRING status, IAsyncAction** ppAction) override;
+	STDMETHODIMP DisplayStatusAndForceCredentialPageAsync(LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk1, LogonUIState state, HSTRING unk2, WF::IAsyncAction**);
 	STDMETHODIMP TriggerLogonAnimationAsync(IAsyncAction** ppAction) override;
 	STDMETHODIMP ResetCredentials() override;
 	STDMETHODIMP RestoreFromFirstSignInAnimation() override;
 	STDMETHODIMP ClearUIState(HSTRING statusMessage) override;
 	STDMETHODIMP ShowSecurityOptionsAsync(
 		LogonUISecurityOptions options, IAsyncOperation<LogonUISecurityOptionsResult*>** ppOperation) override;
+	STDMETHODIMP WebDialogDisplayed(void*);
 	STDMETHODIMP get_WindowContainer(IInspectable** value) override;
 	STDMETHODIMP Hide() override;
 	STDMETHODIMP Stop() override;
@@ -165,7 +167,7 @@ HRESULT ConsoleLogon::Start(
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, IUnlockTrigger* unlockTrigger)
+HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
 {
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 118
@@ -174,7 +176,7 @@ HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, IUnlockTrigger
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, IUnlockTrigger* unlockTrigger)
+HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
 {
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 131
@@ -184,23 +186,25 @@ HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectU
 }
 
 HRESULT ConsoleLogon::RequestCredentialsAsync(
-	LogonUIRequestReason reason, LogonUIFlags flags, IAsyncOperation<RequestCredentialsData*>** ppOperation)
+	LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk, IAsyncOperation<RequestCredentialsData*>** ppOperation)
 {
 	*ppOperation = nullptr;
 
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 145
 
+	//MessageBox(0,WindowsGetStringRawBuffer(unk,0),WindowsGetStringRawBuffer(unk,0),0);
+
 	ComPtr<ConsoleLogon> asyncReference = this;
 	ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
 	HRESULT hr = MakeCancellableAsyncOperation<WI::CMarshaledInterfaceResult<IRequestCredentialsData>, RequestCredentialsData*>(
 		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
 		ppOperation,
-		[asyncReference, this, viewManager, reason, flags](WI::CMarshaledInterfaceResult<IRequestCredentialsData>& result) -> HRESULT
+		[asyncReference, this, viewManager, reason, flags, unk](WI::CMarshaledInterfaceResult<IRequestCredentialsData>& result) -> HRESULT // @Mod: pass in ref of unk param
 		{
 			UNREFERENCED_PARAMETER(asyncReference);
 			WI::AsyncDeferral<WI::CMarshaledInterfaceResult<IRequestCredentialsData>> deferral = result.GetDeferral(result);
-			RETURN_IF_FAILED(viewManager->RequestCredentials(reason, flags, deferral)); // 156
+			RETURN_IF_FAILED(viewManager->RequestCredentials(reason, flags, unk, deferral)); // 156
 			return S_OK;
 		}
 	);
@@ -348,6 +352,12 @@ HRESULT ConsoleLogon::DisplayStatusAsync(LogonUIState state, HSTRING status, IAs
 	return S_OK;
 }
 
+HRESULT ConsoleLogon::DisplayStatusAndForceCredentialPageAsync(LogonUIRequestReason reason, LogonUIFlags flags,
+	HSTRING unk1, LogonUIState state, HSTRING status, WF::IAsyncAction** asyncAction)
+{
+	return ConsoleLogon::DisplayStatusAsync(state,status,asyncAction);
+}
+
 static const WCHAR LogonAnimationAction[] = L"Windows.Foundation.IAsyncAction ConsoleLogon.LogonAnimation";
 
 HRESULT ConsoleLogon::TriggerLogonAnimationAsync(IAsyncAction** ppAction)
@@ -465,6 +475,12 @@ HRESULT ConsoleLogon::ShowSecurityOptionsAsync(LogonUISecurityOptions options, I
 		}
 	);
 	RETURN_IF_FAILED(hr); // 386
+	return S_OK;
+}
+
+HRESULT ConsoleLogon::WebDialogDisplayed(void*)
+{
+	MessageBoxW(nullptr,L"WebDialogDisplayed not Implemented",L"WebDialogDisplayed not Implemented",0);
 	return S_OK;
 }
 

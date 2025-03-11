@@ -173,7 +173,8 @@ HRESULT ConsoleUIView::SetCursorPos(IUnknown* handle, COORD position, bool isVis
 
 HRESULT ConsoleUIView::GetScreenBuffer(void** pScreenBuffer)
 {
-	*pScreenBuffer = m_navigationCallback.Get();
+	//*pScreenBuffer = m_navigationCallback.Get();
+	*pScreenBuffer = m_screenBuffer.get();
 	return S_OK;
 }
 

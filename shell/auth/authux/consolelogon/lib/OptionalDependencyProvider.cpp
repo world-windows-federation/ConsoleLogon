@@ -6,6 +6,56 @@
 
 using namespace Microsoft::WRL;
 
+class CredUXTelemetryProvider final
+	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
+		, LCPD::ITelemetryDataProvider
+		, Microsoft::WRL::FtmBase
+	>
+{
+public:
+	CredUXTelemetryProvider();
+	~CredUXTelemetryProvider();
+
+	HRESULT RuntimeClassInitialize(LC::LogonUIRequestReason reason);
+
+	virtual HRESULT STDMETHODCALLTYPE GetUserAccountKind(HSTRING str, LCPD::UserAccountKind* kind) override;
+	virtual HRESULT STDMETHODCALLTYPE get_CurrentLogonUIRequestReason(DWORD* reason) override;
+
+	LC::LogonUIRequestReason m_reason;
+};
+
+CredUXTelemetryProvider::CredUXTelemetryProvider()
+	: m_reason(LC::LogonUIRequestReason_LogonUILogon)
+{
+}
+
+CredUXTelemetryProvider::~CredUXTelemetryProvider()
+{
+}
+
+HRESULT CredUXTelemetryProvider::RuntimeClassInitialize(LC::LogonUIRequestReason reason)
+{
+	m_reason = reason;
+	return S_OK;
+}
+
+HRESULT CredUXTelemetryProvider::GetUserAccountKind(HSTRING str, LCPD::UserAccountKind* kind)
+{
+	if (!str)
+		return S_OK;
+
+	//TODO: add proper thing
+	*kind = LCPD::UserAccountKind_Local;
+
+	return S_OK;
+}
+
+HRESULT CredUXTelemetryProvider::get_CurrentLogonUIRequestReason(DWORD* reason)
+{
+	*reason = m_reason;
+	return S_OK;
+}
+
 HRESULT OptionalDependencyProvider::RuntimeClassInitialize(
 	LC::LogonUIRequestReason reason, IInspectable* autoLogonManager, LC::IUserSettingManager* userSettingManager,
 	LCPD::IDisplayStateProvider* displayStateProvider)
@@ -13,7 +63,9 @@ HRESULT OptionalDependencyProvider::RuntimeClassInitialize(
 	m_autoLogonManager = autoLogonManager;
 	m_displayStateProvider = displayStateProvider;
 	RETURN_IF_FAILED(MakeAndInitialize<DefaultSelector>(&m_defaultSelector, userSettingManager, reason)); // 16
-	RETURN_IF_FAILED(userSettingManager->get_TelemetryDataProvider(&m_telemetryProvider)); // 17
+	//@Mod
+	RETURN_IF_FAILED(MakeAndInitialize<CredUXTelemetryProvider>(&m_telemetryProvider, reason));
+	//RETURN_IF_FAILED(userSettingManager->get_TelemetryDataProvider(&m_telemetryProvider)); // 17
 	return S_OK;
 }
 
