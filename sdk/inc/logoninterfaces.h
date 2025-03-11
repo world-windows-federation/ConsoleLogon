@@ -575,10 +575,13 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_UserSid(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_UserSid(HSTRING) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_CaretWidth(int*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_TextScale(int *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsTransparencyEnabled(UCHAR*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LastLoggedOnUserSid(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_TelemetryDataProvider(CredProvData::ITelemetryDataProvider**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsLockScreenAllowed(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_IsLockScreenAllowed(BOOLEAN) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsSwitchUser(UCHAR*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_UserTheme(UserTheme*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsLowMemoryDevice(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsFirstLogonAfterSignOutOrSwitchUser(BOOLEAN*) PURE;
@@ -590,6 +593,11 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_ShouldLaunchFirstSignInAnimationInUserSession(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_ShouldLaunchFirstSignInAnimationInUserSession(BOOLEAN) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsAudioHIDEnabled(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_CurrentInputProfile(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsUserAssignedAccess(UCHAR*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLowPowerState(UCHAR*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_LowPowerStateChanged(WF::ITypedEventHandler<IUserSettingManager *,IInspectable *> *,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_LowPowerStateChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SessionDisconnected(WF::ITypedEventHandler<IUserSettingManager*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SessionDisconnected(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_ColorSetChanged(WF::ITypedEventHandler<IUserSettingManager*, IInspectable*>*, EventRegistrationToken*) PURE;
@@ -598,6 +606,10 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE remove_HighContrastChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_CaretWidthChanged(WF::ITypedEventHandler<IUserSettingManager*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_CaretWidthChanged(EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_TextScaleChanged(WF::ITypedEventHandler<IUserSettingManager *,IInspectable *>*,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_TextScaleChanged(EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_IsTransparencyEnabledChanged(WF::ITypedEventHandler<IUserSettingManager *,IInspectable *>*,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_IsTransparencyEnabledChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SlideToShutdownDetected(WF::ITypedEventHandler<IUserSettingManager*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SlideToShutdownDetected(EventRegistrationToken) PURE;
 		};
