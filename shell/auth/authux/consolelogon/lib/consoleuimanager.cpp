@@ -63,16 +63,13 @@ HRESULT ConsoleUIManager::StopUI()
 HRESULT ConsoleUIManager::SetActiveView(IConsoleUIView* view)
 {
 	ComPtr<IConsoleUIViewInternal> newView;
+	RETURN_IF_FAILED(view->QueryInterface(IID_PPV_ARGS(&newView))); // 105
+
 	HANDLE screenBuffer;
-
-	HRESULT hr = view->QueryInterface(IID_PPV_ARGS(&newView));
-	RETURN_IF_FAILED(hr); // 105
-
-	hr = newView->GetScreenBuffer(&screenBuffer);
-	RETURN_IF_FAILED(hr); // 108
+	RETURN_IF_FAILED(newView->GetScreenBuffer(&screenBuffer)); // 108
 
 	RETURN_IF_WIN32_BOOL_FALSE(SetConsoleActiveScreenBuffer(screenBuffer)); // 110
-	RETURN_IF_FAILED(hr = newView->InitializeFocus()); // 111
+	RETURN_IF_FAILED(newView->InitializeFocus()); // 111
 
 	m_activeView = newView;
 

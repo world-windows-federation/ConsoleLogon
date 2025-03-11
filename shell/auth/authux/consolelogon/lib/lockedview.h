@@ -4,8 +4,8 @@
 
 #include "consoleuiview.h"
 
-class LockedView
-	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, ConsoleUIView>
+class LockedView final
+	: public Microsoft::WRL::RuntimeClass<ConsoleUIView>
 {
 public:
 	LockedView();

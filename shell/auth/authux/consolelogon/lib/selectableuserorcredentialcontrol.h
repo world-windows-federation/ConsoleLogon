@@ -5,7 +5,7 @@
 #include "controlbase.h"
 
 class SelectableUserOrCredentialControl final
-	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, ControlBase>
+	: public Microsoft::WRL::RuntimeClass<ControlBase>
 {
 public:
 	SelectableUserOrCredentialControl();
