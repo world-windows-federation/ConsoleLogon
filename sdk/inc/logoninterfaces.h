@@ -495,6 +495,7 @@ namespace Windows::Internal::UI::Logon
 		ICredProvDefaultSelector : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_UseLastLoggedOnProvider(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_PreferredProvidersDup(WFC::IVectorView<GUID>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_PreferredProviders(WFC::IVectorView<GUID>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_ExcludedProviders(WFC::IVectorView<GUID>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_DefaultUserSid(HSTRING*) PURE;
@@ -703,10 +704,11 @@ namespace Windows::Internal::UI::Logon
 
 		DEFINE_ENUM_FLAG_OPERATORS(LogonUIShutdownChoice);
 
+		//todo: update guid
 		MIDL_INTERFACE("49931e22-78c2-41af-83de-4e02876bdb3c")
 		IRequestCredentialsDataFactory : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE CreateRequestCredentialsData(CredProvData::ICredentialSerialization*, LogonUIShutdownChoice, IRequestCredentialsData**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE CreateRequestCredentialsData(CredProvData::ICredentialSerialization*, LogonUIShutdownChoice, HSTRING, IRequestCredentialsData**) PURE;
 		};
 
 		enum LogonUICredProvResponse

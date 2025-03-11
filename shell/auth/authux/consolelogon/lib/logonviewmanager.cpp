@@ -123,7 +123,7 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, LCPD::ICreden
 				Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_Controller_RequestCredentialsData).Get(), &factory)); // 60
 
 			ComPtr<LC::IRequestCredentialsData> data;
-			RETURN_IF_FAILED(factory->CreateRequestCredentialsData(args, LC::LogonUIShutdownChoice_None, &data)); // 63
+			RETURN_IF_FAILED(factory->CreateRequestCredentialsData(args, LC::LogonUIShutdownChoice_None, nullptr, &data)); // 63
 
 			RETURN_IF_FAILED(m_requestCredentialsComplete->GetResult().Set(data.Get())); // 65
 
@@ -204,7 +204,7 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, LCPD::ICreden
 				RETURN_IF_FAILED(WF::GetActivationFactory(
 					Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_Controller_RequestCredentialsData).Get(), &factory)); // 152
 				ComPtr<LC::IRequestCredentialsData> data;
-				RETURN_IF_FAILED(factory->CreateRequestCredentialsData(nullptr, LC::LogonUIShutdownChoice_None, &data)); // 155
+				RETURN_IF_FAILED(factory->CreateRequestCredentialsData(nullptr, LC::LogonUIShutdownChoice_None, nullptr, &data)); // 155
 
 				RETURN_IF_FAILED(m_requestCredentialsComplete->GetResult().Set(data.Get())); // 157
 
@@ -636,7 +636,7 @@ HRESULT LogonViewManager::RequestCredentialsUIThread(
 			&factory)); // 610
 
 		ComPtr<LC::IRequestCredentialsData> data;
-		RETURN_IF_FAILED(factory->CreateRequestCredentialsData(m_cachedSerialization.Get(), LC::LogonUIShutdownChoice_None, &data)); // 613
+		RETURN_IF_FAILED(factory->CreateRequestCredentialsData(m_cachedSerialization.Get(), LC::LogonUIShutdownChoice_None, nullptr, &data)); // 613
 
 		RETURN_IF_FAILED(m_requestCredentialsComplete->GetResult().Set(data.Get())); // 615
 
@@ -1167,8 +1167,8 @@ HRESULT LogonViewManager::StartCredProvsIfNecessary(LC::LogonUIRequestReason rea
 	RETURN_IF_FAILED(MakeAndInitialize<OptionalDependencyProvider>(&optionalDependencyProvider, reason, m_autoLogonManager.Get(), m_userSettingManager.Get(), m_displayStateProvider.Get())); // 1084
 
 	//@MOD, dont think this is needed
-	//ComPtr<LCPD::ITelemetryDataProvider> telemetryProvider;
-	//RETURN_IF_FAILED(m_userSettingManager->get_TelemetryDataProvider(&telemetryProvider)); // 1087;
+	ComPtr<LCPD::ITelemetryDataProvider> telemetryProvider;
+	RETURN_IF_FAILED(m_userSettingManager->get_TelemetryDataProvider(&telemetryProvider)); // 1087;
 
 	ComPtr<LCPD::ICredProvDataModelFactory> credProvDataModelFactory;
 	RETURN_IF_FAILED(WF::GetActivationFactory(Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_CredProvData_CredProvDataModel).Get(), &credProvDataModelFactory)); // 1090

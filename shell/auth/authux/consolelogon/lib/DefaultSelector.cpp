@@ -38,6 +38,12 @@ HRESULT DefaultSelector::get_UseLastLoggedOnProvider(BOOLEAN* value)
 	return S_OK;
 }
 
+HRESULT DefaultSelector::get_PreferredProvidersDup(WFC::IVectorView<GUID>** ppValue)
+{
+	RETURN_IF_FAILED(m_preferredProviders.CopyTo(ppValue)); // 51
+	return S_OK;
+}
+
 HRESULT DefaultSelector::get_PreferredProviders(WFC::IVectorView<GUID>** ppValue)
 {
 	RETURN_IF_FAILED(m_preferredProviders.CopyTo(ppValue)); // 51

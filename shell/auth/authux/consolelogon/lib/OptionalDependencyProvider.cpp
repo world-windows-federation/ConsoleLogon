@@ -64,8 +64,8 @@ HRESULT OptionalDependencyProvider::RuntimeClassInitialize(
 	m_displayStateProvider = displayStateProvider;
 	RETURN_IF_FAILED(MakeAndInitialize<DefaultSelector>(&m_defaultSelector, userSettingManager, reason)); // 16
 	//@Mod
-	RETURN_IF_FAILED(MakeAndInitialize<CredUXTelemetryProvider>(&m_telemetryProvider, reason));
-	//RETURN_IF_FAILED(userSettingManager->get_TelemetryDataProvider(&m_telemetryProvider)); // 17
+	//RETURN_IF_FAILED(MakeAndInitialize<CredUXTelemetryProvider>(&m_telemetryProvider, reason));
+	RETURN_IF_FAILED(userSettingManager->get_TelemetryDataProvider(&m_telemetryProvider)); // 17
 	return S_OK;
 }
 
