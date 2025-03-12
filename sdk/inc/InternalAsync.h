@@ -759,7 +759,7 @@ namespace Windows::Internal
 
 		void UnlockCompleteDelegate()
 		{
-			if (InterlockedExchangeAdd(&completedDelegateLockCount_, -1) == 0)
+			if (InterlockedDecrement(&completedDelegateLockCount_) == 0)
 			{
 				MemoryBarrier();
 				completedDelegate_.Revoke();
@@ -876,7 +876,7 @@ namespace Windows::Internal
 
 		void UnlockProgressDelegate()
 		{
-			if (InterlockedExchangeAdd(&progressDelegateLockCount_, -1) == 0)
+			if (InterlockedDecrement(&progressDelegateLockCount_) == 0)
 			{
 				MemoryBarrier();
 				progressedDelegate_.Revoke();
@@ -968,7 +968,7 @@ namespace Windows::Internal
 			if (SUCCEEDED(hr))
 			{
 				hr = m_asyncHandler.Start(this);
-				if (hr < 0)
+				if (FAILED(hr))
 				{
 					if (m_callbackExecuteCount)
 					{
@@ -981,7 +981,7 @@ namespace Windows::Internal
 					}
 				}
 			}
-			if (hr < 0)
+			if (FAILED(hr))
 			{
 				this->TryTransitionToError(hr);
 			}
@@ -1118,7 +1118,7 @@ namespace Windows::Internal
 		STDMETHODIMP_(void) Complete(HRESULT hr) override // Windows::Internal::IAsyncDeferral
 		{
 			if (InterlockedCompareExchange(&m_deferralResult, hr, S_FALSE) == S_FALSE
-				&& !InterlockedExchangeAdd(&m_deferralsCompleted, -1))
+				&& InterlockedDecrement(&m_deferralsCompleted) == 0)
 			{
 				_AfterExecute(m_deferralResult);
 			}
@@ -1160,10 +1160,10 @@ namespace Windows::Internal
 
 		void _AfterExecute(HRESULT hr)
 		{
-			bool b = InterlockedExchangeAdd(&m_callbackRefs, -1) == 1;
+			bool b = InterlockedDecrement(&m_callbackRefs) == 1;
 			if (InterlockedIncrement(&m_callbackCancelCount) == 1)
 			{
-				b = InterlockedExchangeAdd(&m_callbackRefs, -1) == 1;
+				b = InterlockedDecrement(&m_callbackRefs) == 1;
 			}
 
 			if (SUCCEEDED(hr))
@@ -1195,11 +1195,11 @@ namespace Windows::Internal
 
 				m_callback->Run(AsyncStage::Cancel, hr, m_resultRetriever);
 
-				bool b = InterlockedExchangeAdd(&m_callbackRefs, -1) == 1;
+				bool b = InterlockedDecrement(&m_callbackRefs) == 1;
 				if (InterlockedIncrement(&m_callbackExecuteCount) == 1)
 				{
 					m_callback->Run(AsyncStage::Execute, HRESULT_FROM_WIN32(ERROR_CANCELLED), m_resultRetriever);
-					b = InterlockedExchangeAdd(&m_callbackRefs, -1) == 0;
+					b = InterlockedDecrement(&m_callbackRefs) == 0;
 				}
 
 				if (b)
@@ -1215,7 +1215,7 @@ namespace Windows::Internal
 				hr = m_callback->Run(AsyncStage::Execute, hr, m_resultRetriever);
 				if (SUCCEEDED(hr) && m_resultRetriever.IsDeferred())
 				{
-					if (!InterlockedExchangeAdd(&m_deferralsCompleted, -1))
+					if (InterlockedDecrement(&m_deferralsCompleted) == 0)
 					{
 						_AfterExecute(m_deferralResult);
 					}
