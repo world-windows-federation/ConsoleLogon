@@ -36,9 +36,28 @@ HRESULT SelectedCredentialView::RuntimeClassInitialize(LC::LogonUIRequestReason 
 	UINT numFields;
 	RETURN_IF_FAILED(fields->get_Size(&numFields)); // 37
 
-	//@Mod, switch to ptr instead of field, to comply with change in interface
+	int submitButtonIndex = -1;
+	//@Mod, this adds support for newer versions
 	LCPD::ICredentialField* submitButtonField;
 	RETURN_IF_FAILED(credential->get_SubmitButton(&submitButtonField)); // 40
+	if (submitButtonField)
+	{
+		bool isVisibleInDeselectedTile = false;
+		RETURN_IF_FAILED(submitButtonField->get_IsVisibleInDeselectedTile(&isVisibleInDeselectedTile));
+
+		if (!isVisibleInDeselectedTile)
+		{
+			ComPtr<LCPD::ICredentialSubmitButtonField> submitButtonField2;
+			RETURN_IF_FAILED(submitButtonField->QueryInterface(IID_PPV_ARGS(&submitButtonField2)));
+
+			RETURN_IF_FAILED(submitButtonField2->get_AdjacentID((UINT*)&submitButtonIndex)); // ye this really shouldn't be done, but they do treat the unsigned int as an int, so idgaf
+		}
+		else
+		{
+			//not sure if we need to handle anything here
+		}
+
+	}
 
 	LOG_HR_MSG(E_FAIL,"Numfields %i\n",numFields);
 
@@ -90,7 +109,7 @@ HRESULT SelectedCredentialView::RuntimeClassInitialize(LC::LogonUIRequestReason 
 			}
 		}
 
-		if (dataSource.Get() == submitButtonField)
+		if (i == submitButtonIndex)
 		{
 			m_controlWithSubmitButton = control;
 		}
@@ -117,7 +136,7 @@ HRESULT SelectedCredentialView::v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, B
 			*wasHandled = TRUE;
 			break;
 		case VK_RETURN:
-			if (m_controlWithSubmitButton->HasFocus())
+			if (m_controlWithSubmitButton && m_controlWithSubmitButton->HasFocus())
 			{
 				RETURN_IF_FAILED(m_credential->Submit()); // 122
 			}

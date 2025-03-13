@@ -233,7 +233,7 @@ namespace Windows::Internal::UI::Logon
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Label(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInSelectedTile(bool*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInDeselectedTile(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInDeselectedTile(bool*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsHidden(bool*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateFocused(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_IsInteractiveStateFocused(UCHAR) PURE;
@@ -535,6 +535,12 @@ namespace Windows::Internal::UI::Logon
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_TextSize(CredentialTextSize*) PURE;
+		};
+
+		MIDL_INTERFACE("2ce19468-de1a-4cb5-9a6f-d09c8146f35a")
+		ICredentialSubmitButtonField : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_AdjacentID(UINT*) PURE;
 		};
 	}
 
