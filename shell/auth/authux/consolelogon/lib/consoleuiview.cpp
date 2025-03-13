@@ -173,7 +173,6 @@ HRESULT ConsoleUIView::SetCursorPos(IUnknown* handle, COORD position, bool isVis
 
 HRESULT ConsoleUIView::GetScreenBuffer(void** pScreenBuffer)
 {
-	//*pScreenBuffer = m_navigationCallback.Get();
 	*pScreenBuffer = m_screenBuffer.get();
 	return S_OK;
 }
@@ -256,6 +255,9 @@ HRESULT ConsoleUIView::ShiftVisuals(UINT startIndex, int shiftDistance)
 		return S_OK;
 
 	size_t controlTableSize = m_controlTable.GetSize();
+	if (startIndex >= controlTableSize)
+		return S_OK;
+
 	UINT topOfRegionToShift = m_controlTable[startIndex]->GetOffsetFromRoot();
 
 	ComPtr<IControlHandle> lastControl = m_controlTable[controlTableSize - 1];
