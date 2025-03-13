@@ -340,7 +340,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(HSTRING*) PURE;
 		};
 
-		class ReportResultInfo
+		class ReportResultInfo : IReportResultInfo
 		{
 		};
 
@@ -447,6 +447,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE remove_SerializationComplete(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_CurrentBioFeedbackState(BioFeedbackState*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_BioFeedbackLabel(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_BioFeedbackAccessibilityText(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_BioFeedbackStateChange(WF::ITypedEventHandler<CredProvDataModel*, BioFeedbackState>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_BioFeedbackStateChange(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ReportResultAsync(long, long, HSTRING, WF::IAsyncOperation<ReportResultInfo*>**) PURE;

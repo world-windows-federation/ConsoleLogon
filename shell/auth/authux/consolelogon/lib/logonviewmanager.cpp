@@ -703,7 +703,7 @@ HRESULT LogonViewManager::ReportResultUIThread(
 	HRESULT hr = StartOperationAndThen<WF::IAsyncOperationCompletedHandler<LCPD::ReportResultInfo*>>(asyncOp.Get(), [completion, thisRef, this](HRESULT hrAction, WF::IAsyncOperation<LCPD::ReportResultInfo*>* asyncOp) -> HRESULT
 	{
 		UNREFERENCED_PARAMETER(thisRef);
-		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>>& completionRef = const_cast<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>>&>(completion);
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>> completionRef = completion;
 		auto completeOnFailure = wil::scope_exit([&completionRef]() -> void { completionRef.Complete(E_UNEXPECTED); });
 		RETURN_IF_FAILED(hrAction);
 
