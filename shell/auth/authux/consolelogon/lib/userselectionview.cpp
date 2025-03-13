@@ -36,7 +36,7 @@ HRESULT UserSelectionView::RuntimeClassInitialize(LCPD::ICredProvDataModel* data
 	for (UINT i = 0; i < numUsers; ++i)
 	{
 		ComPtr<IInspectable> userOrV1;
-		RETURN_IF_FAILED(usersAndV1Vector->GetAt(i, &usersAndV1Vector)); // 41
+		RETURN_IF_FAILED(usersAndV1Vector->GetAt(i, &userOrV1)); // 41
 
 		ComPtr<SelectableUserOrCredentialControl> control;
 		RETURN_IF_FAILED(MakeAndInitialize<SelectableUserOrCredentialControl>(&control, this, userOrV1.Get())); // 44

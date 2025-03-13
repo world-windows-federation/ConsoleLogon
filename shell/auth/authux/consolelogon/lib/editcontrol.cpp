@@ -66,7 +66,8 @@ HRESULT EditControl::v_HandleKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL* wa
 	if (keyEvent->wVirtualKeyCode == VK_BACK)
 	{
 		UINT oldLength = 0;
-		RETURN_IF_FAILED(newContent.Set(oldContent.GetRawBuffer(&oldLength), oldLength - 1)); // 158
+		auto rawOldContent = oldContent.GetRawBuffer(&oldLength);
+		RETURN_IF_FAILED(newContent.Set(rawOldContent, oldLength - 1)); // 158
 	}
 	else if (keyEvent->uChar.UnicodeChar)
 	{

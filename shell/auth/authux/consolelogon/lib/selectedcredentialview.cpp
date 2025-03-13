@@ -36,8 +36,11 @@ HRESULT SelectedCredentialView::RuntimeClassInitialize(LC::LogonUIRequestReason 
 	UINT numFields;
 	RETURN_IF_FAILED(fields->get_Size(&numFields)); // 37
 
-	int submitButtonIndex;
-	RETURN_IF_FAILED(credential->get_SubmitButtonAdjacentID(&submitButtonIndex)); // 40
+	//@Mod, switch to ptr instead of field, to comply with change in interface
+	LCPD::ICredentialField* submitButtonField;
+	RETURN_IF_FAILED(credential->get_SubmitButton(&submitButtonField)); // 40
+
+	LOG_HR_MSG(E_FAIL,"Numfields %i\n",numFields);
 
 	for (int i = 0; i < static_cast<int>(numFields); ++i)
 	{
@@ -46,6 +49,8 @@ HRESULT SelectedCredentialView::RuntimeClassInitialize(LC::LogonUIRequestReason 
 
 		LCPD::CredentialFieldKind fieldKind;
 		RETURN_IF_FAILED(dataSource->get_Kind(&fieldKind)); // 48
+
+		LOG_HR_MSG(E_FAIL,"fieldKind %i\n", (int)fieldKind);
 
 		ComPtr<IQueryFocus> control;
 		switch (fieldKind)
@@ -85,7 +90,7 @@ HRESULT SelectedCredentialView::RuntimeClassInitialize(LC::LogonUIRequestReason 
 			}
 		}
 
-		if (i == submitButtonIndex)
+		if (dataSource.Get() == submitButtonField)
 		{
 			m_controlWithSubmitButton = control;
 		}

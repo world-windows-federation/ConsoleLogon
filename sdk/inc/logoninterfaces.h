@@ -114,24 +114,28 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE put_Checked(bool isChecked) PURE;
 		};
 
-		MIDL_INTERFACE("20486918-5147-4725-a0cb-12b952a5f0c3")
+		//todo:verify, + this is updated to 21h2
+		MIDL_INTERFACE("1a522c5f-5032-4c4e-8563-20c524dde117")
 		ICommandLinkField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING* outContent) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsStyledAsButton(bool*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE Invoke() PURE;
 		};
 
-		MIDL_INTERFACE("d2e17318-81f9-4560-af02-dda5d4c2c27b")
+		//TODO: verify + UPDATED to 21h2
+		MIDL_INTERFACE("48a0b4dd-74a6-4b03-9850-672ff62135fd")
 		ICredentialEditField : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING* );
-			virtual HRESULT STDMETHODCALLTYPE put_Content(HSTRING );
-			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordRevealEnabled(bool* );
-			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordField(bool* );
-			virtual HRESULT STDMETHODCALLTYPE get_MaxPasswordLength(int * );
-			virtual HRESULT STDMETHODCALLTYPE get_IsNumbersOnly(bool* );
-			virtual HRESULT STDMETHODCALLTYPE get_IsEmailAddress(bool* );
-			virtual HRESULT STDMETHODCALLTYPE get_IsEnglishOnly(bool* );
+			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_Content(HSTRING ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordRevealEnabled(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordField(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_MaxPasswordLength(int * ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsNumbersOnly(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsEmailAddress(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsEnglishOnly(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLogonUserName(bool*) PURE;
 		};
 
 		enum CredProvScenario
@@ -223,7 +227,8 @@ namespace Windows::Internal::UI::Logon
 		};
 
 		//TODO: verify
-		MIDL_INTERFACE("546e206b-52e8-419c-a82f-6363971cdf29")
+		//MIDL_INTERFACE("546e206b-52e8-419c-a82f-6363971cdf29")
+		MIDL_INTERFACE("ddc7731f-aaf1-4bd4-b20a-d125a3bc23d8")
 		ICredentialField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Label(HSTRING*) PURE;
@@ -231,6 +236,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInDeselectedTile(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsHidden(bool*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateFocused(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_IsInteractiveStateFocused(UCHAR) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateDisabled(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateReadOnly(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Kind(CredentialFieldKind*) PURE;
@@ -270,29 +276,41 @@ namespace Windows::Internal::UI::Logon
 
 		class Credential;
 
-		MIDL_INTERFACE("a450753a-7095-4042-9ce1-d2847167ee58")
+		//todo: verify
+		MIDL_INTERFACE("e818d511-9182-420e-b02f-0ca0c728d047")
 		ICredential : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Fields(WFC::IVectorView<ICredentialField*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LogoImageField(ICredentialField**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LogoLabel(HSTRING*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonAdjacentID(int*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE add_SubmitButtonChanged(WF::ITypedEventHandler<Credential*, int>*, EventRegistrationToken*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE remove_SubmitButtonChanged(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonEnabled(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE add_SubmitButtonEnabledChanged(WF::ITypedEventHandler<Credential*, bool>*, EventRegistrationToken*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE remove_SubmitButtonEnabledChanged(EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_SubmitButton(ICredentialField**) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonAdjacentID(int*) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE add_SubmitButtonChanged(WF::ITypedEventHandler<Credential*, int>*, EventRegistrationToken*) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE remove_SubmitButtonChanged(EventRegistrationToken) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonEnabled(unsigned char*) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE add_SubmitButtonEnabledChanged(WF::ITypedEventHandler<Credential*, bool>*, EventRegistrationToken*) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE remove_SubmitButtonEnabledChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsPicturePassword(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_ProviderId(GUID*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_UIMode(CredentialUIMode*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsSelected(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonField(ICredentialField**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_HideUserTileImage(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsSelected(bool*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsTileVisible(bool*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_User(IUser**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_TileChanged(WF::ITypedEventHandler<Credential*,/*CredProvData::CredentialTileChangeKind*/int> *,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_TileChanged(EventRegistrationToken) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonField(ICredentialField**) PURE;
+
+			virtual HRESULT STDMETHODCALLTYPE get_HideUserTileImage(bool*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LargeUserTileImage(IUserTileImage**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SmallUserTileImage(IUserTileImage**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_ExtraSmallUserTileImage(IUserTileImage**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_UserImageChanged(WF::ITypedEventHandler<Credential*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_UserImageChanged(EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_WebDialogUrl(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsWebDialogVisible(bool*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_IsWebDialogVisible(bool) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_WebDialogVisibilityChanged(WF::ITypedEventHandler<Credential *,IInspectable *> *,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_WebDialogVisibilityChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE Submit() PURE;
 			virtual HRESULT STDMETHODCALLTYPE PicturePasswordSubmit(IInspectable*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE CancelSubmission() PURE;
@@ -305,11 +323,11 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE remove_SelectionStateChanged(EventRegistrationToken) PURE;
 		};
 
-		class Credential
+		class Credential : ICredential
 		{
 		};
 
-		class CredentialSerialization
+		class CredentialSerialization : ICredentialSerialization
 		{
 		};
 
@@ -1041,7 +1059,8 @@ namespace ABI::Windows::Foundation::Collections
 	};
 
 	template <>
-	struct __declspec(uuid("9f15eb60-ec8f-5163-9d6e-dd6f3f7aa004"))
+	//struct __declspec(uuid("9f15eb60-ec8f-5163-9d6e-dd6f3f7aa004"))
+	struct __declspec(uuid("85488cf7-2edf-541c-970b-0e9395940279"))
 	IVector<LCPD::Credential*>
 		: IVector_impl<
 			  Internal::AggregateType<LCPD::Credential*, LCPD::ICredential*>

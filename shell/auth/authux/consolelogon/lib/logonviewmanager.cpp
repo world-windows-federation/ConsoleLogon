@@ -260,7 +260,8 @@ HRESULT LogonViewManager::OnNavigation()
 				ComPtr<LCPD::ICredentialGroup> group;
 				if (SUCCEEDED(selectedUserOrV1.As(&group)))
 				{
-					RETURN_IF_FAILED(((LCPD::ICredentialGroup*)selectedUserOrV1.Get())->put_SelectedCredential(nullptr)); // 265 @Note WTF??? Why cast like this?
+					//RETURN_IF_FAILED(((LCPD::ICredentialGroup*)selectedUserOrV1.Get())->put_SelectedCredential(nullptr)); // 265 @Note WTF??? Why cast like this?
+					RETURN_IF_FAILED(group->put_SelectedCredential(nullptr)); //@Mod, fix this
 				}
 				else
 				{
@@ -777,7 +778,7 @@ HRESULT LogonViewManager::DisplayMessageUIThread(
 	RETURN_IF_FAILED(m_redirectionManager->RedirectMessage(caption, message, messageBoxFlags, &redirectResult, &errorResponse)); // 733
 
 	if (errorResponse == LC::LogonErrorRedirectorResponse_HandledDoNotShowLocally
-		|| errorResponse == LC::LogonErrorRedirectorResponse_HandledDoNotShowLocallyStartOver)
+		|| errorResponse == LC::LogonErrorRedirectorResponse_HandledDoNotShowLocallyStartOver)	
 	{
 		ComPtr<LC::IMessageDisplayResultFactory> factory;
 		RETURN_IF_FAILED(WF::GetActivationFactory<ComPtr<LC::IMessageDisplayResultFactory>>(
