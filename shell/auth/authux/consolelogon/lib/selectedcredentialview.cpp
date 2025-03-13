@@ -39,7 +39,7 @@ HRESULT SelectedCredentialView::RuntimeClassInitialize(LC::LogonUIRequestReason 
 	int submitButtonIndex;
 	RETURN_IF_FAILED(credential->get_SubmitButtonAdjacentID(&submitButtonIndex)); // 40
 
-	for (UINT i = 0; i < numFields; ++i)
+	for (int i = 0; i < static_cast<int>(numFields); ++i)
 	{
 		ComPtr<LCPD::ICredentialField> dataSource;
 		RETURN_IF_FAILED(fields->GetAt(i, &dataSource)); // 45

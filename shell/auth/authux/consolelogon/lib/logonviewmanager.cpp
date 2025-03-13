@@ -604,7 +604,7 @@ HRESULT LogonViewManager::LockUIThread(
 	ComPtr<LockedView> lockView;
 	RETURN_IF_FAILED(MakeAndInitialize<LockedView>(&lockView)); // 578
 
-	RETURN_IF_FAILED(lockView->LockedView::Advise(this)); // 580
+	RETURN_IF_FAILED(lockView->Advise(this)); // 580
 
 	RETURN_IF_FAILED(SetActiveView(lockView.Get())); // 582
 
@@ -702,7 +702,7 @@ HRESULT LogonViewManager::ReportResultUIThread(
 	HRESULT hr = StartOperationAndThen<WF::IAsyncOperationCompletedHandler<LCPD::ReportResultInfo*>>(asyncOp.Get(), [completion, thisRef, this](HRESULT hrAction, WF::IAsyncOperation<LCPD::ReportResultInfo*>* asyncOp) -> HRESULT
 	{
 		UNREFERENCED_PARAMETER(thisRef);
-		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>> completionRef = completion;
+		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>>& completionRef = const_cast<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IReportCredentialsData>>&>(completion);
 		auto completeOnFailure = wil::scope_exit([&completionRef]() -> void { completionRef.Complete(E_UNEXPECTED); });
 		RETURN_IF_FAILED(hrAction);
 
@@ -786,8 +786,8 @@ HRESULT LogonViewManager::DisplayMessageUIThread(
 		ComPtr<LC::IMessageDisplayResult> messageResult;
 		RETURN_IF_FAILED(factory->CreateMessageDisplayResult(redirectResult, &messageResult)); // 744
 
-		WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult> result = completion.GetResult(); // @Note: This is a copy of `completion`, not a reference, and is set below???
-		RETURN_IF_FAILED(result.Set(messageResult.Get())); // 747
+		//WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult> result = completion.GetResult(); // @Note: This is a copy of `completion`, not a reference, and is set below???
+		RETURN_IF_FAILED(completion.GetResult().Set(messageResult.Get())); // 747
 
 		completion.Complete(S_OK);
 	}

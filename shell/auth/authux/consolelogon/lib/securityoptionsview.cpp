@@ -73,8 +73,8 @@ HRESULT SecurityOptionsView::v_OnKeyInput(const KEY_EVENT_RECORD* keyEvent, BOOL
 	RETURN_IF_FAILED(factory->CreateSecurityOptionsResult(LC::LogonUISecurityOptions_Cancel, LC::LogonUIShutdownChoice_None, &optionResult)); // 73
 
 	// more bad code from them, not fixing it yet just in case the badness is needed
-	WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult> result = m_completion->GetResult();
-	RETURN_IF_FAILED(result.Set(optionResult.Get())); // 76
+	//WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult> result = m_completion->GetResult();
+	RETURN_IF_FAILED(m_completion->GetResult().Set(optionResult.Get())); // 76
 
 	m_completion->Complete(S_OK);
 	m_completion.reset();

@@ -235,8 +235,12 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateReadOnly(unsigned char*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Kind(CredentialFieldKind*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_ID(UINT*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_AccessibilityText(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsAccessibilityViewRaw(UCHAR*) PURE;;
 			virtual HRESULT STDMETHODCALLTYPE add_FieldChanged(WF::ITypedEventHandler<ICredentialField*, CredentialFieldChangeKind>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_FieldChanged(EventRegistrationToken) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_ShuttingDown(WF::ITypedEventHandler<ICredentialField *,IInspectable*>*,EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_ShuttingDown(EventRegistrationToken) PURE;
 		};
 
 		enum CredentialUIMode

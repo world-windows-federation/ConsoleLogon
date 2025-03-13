@@ -671,7 +671,7 @@ namespace Windows::Internal
 			HRESULT hr = S_OK;
 			this->TryTransitionToCompleted();
 
-			if (completedDelegateLockCount_ > 0 && InterlockedIncrement(&this->cCallbackMade_) == 1)
+			//if (completedDelegateLockCount_ > 0 && InterlockedIncrement(&this->cCallbackMade_) == 1)
 			{
 				Microsoft::WRL::ComPtr<IAsyncInfo> asyncInfo = this;
 				Microsoft::WRL::ComPtr<typename Microsoft::WRL::Details::DerefHelper<typename CompleteTraits::Arg1Type>::DerefType> operationInterface;
@@ -1180,7 +1180,7 @@ namespace Windows::Internal
 				}
 			}
 
-			if (b)
+			//if (b)
 			{
 				_AfterComplete();
 			}
