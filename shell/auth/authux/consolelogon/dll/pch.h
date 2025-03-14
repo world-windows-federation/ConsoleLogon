@@ -17,6 +17,7 @@
 #include "SimpleArray.h"
 
 #include "resource.h"
+#include "version.h"
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)

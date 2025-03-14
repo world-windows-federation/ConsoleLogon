@@ -5,6 +5,7 @@
 #include <windows.foundation.collections.h>
 #include <windows.foundation.numerics.h>
 #include <windows.storage.streams.h>
+#include "version.h"
 
 namespace Windows::Internal
 {
@@ -178,7 +179,12 @@ namespace Windows::Internal::UI::Logon
 
 		class User;
 
+
+#if (CONSOLELOGON_FOR >= CONSOLELOGON_FOR_22621)
+		MIDL_INTERFACE("8c4b5cd8-e91d-43e8-bc9b-59b6e744ad5b")
+#else
 		MIDL_INTERFACE("837c3232-b75b-4f12-bf4c-d85f57d3882f")
+#endif
 		IUser : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_IsLoggedIn(unsigned char*) PURE;
@@ -276,8 +282,13 @@ namespace Windows::Internal::UI::Logon
 
 		class Credential;
 
+		//GUID_1e5854d9_e7e1_4b99_b286_202a3c27cc05
 		//todo: verify
+#if (CONSOLELOGON_FOR >= CONSOLELOGON_FOR_22621)
+		MIDL_INTERFACE("1e5854d9-e7e1-4b99-b286-202a3c27cc05")
+#else
 		MIDL_INTERFACE("e818d511-9182-420e-b02f-0ca0c728d047")
+#endif
 		ICredential : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Fields(WFC::IVectorView<ICredentialField*>**) PURE;
@@ -1067,7 +1078,12 @@ namespace ABI::Windows::Foundation::Collections
 
 	template <>
 	//struct __declspec(uuid("9f15eb60-ec8f-5163-9d6e-dd6f3f7aa004"))
+	//struct __declspec(uuid("85488cf7-2edf-541c-970b-0e9395940279"))
+#if (CONSOLELOGON_FOR >= CONSOLELOGON_FOR_22621)
+	struct __declspec(uuid("8191239c-d019-5340-87d8-959a8fde15d3"))
+#else
 	struct __declspec(uuid("85488cf7-2edf-541c-970b-0e9395940279"))
+#endif
 	IVector<LCPD::Credential*>
 		: IVector_impl<
 			  Internal::AggregateType<LCPD::Credential*, LCPD::ICredential*>
