@@ -671,7 +671,7 @@ namespace Windows::Internal
 			HRESULT hr = S_OK;
 			this->TryTransitionToCompleted();
 
-			//if (completedDelegateLockCount_ > 0 && InterlockedIncrement(&this->cCallbackMade_) == 1)
+			if (completedDelegate_.IsInitialized() && InterlockedIncrement(&this->cCallbackMade_) == 1)
 			{
 				Microsoft::WRL::ComPtr<IAsyncInfo> asyncInfo = this;
 				Microsoft::WRL::ComPtr<typename Microsoft::WRL::Details::DerefHelper<typename CompleteTraits::Arg1Type>::DerefType> operationInterface;
@@ -748,13 +748,14 @@ namespace Windows::Internal
 
 		bool TryLockCompleteDelegate()
 		{
-			long oldValue;
-			do
+			while (true)
 			{
-				oldValue = completedDelegateLockCount_;
+				long oldValue = completedDelegateLockCount_;
+				if (oldValue <= 0)
+					return false;
+				if (InterlockedCompareExchange(&completedDelegateLockCount_, oldValue + 1, oldValue) == oldValue)
+					return true;
 			}
-			while (completedDelegateLockCount_ > 0 && InterlockedCompareExchange(&completedDelegateLockCount_, oldValue + 1, oldValue) != oldValue);
-			return oldValue > 0;
 		}
 
 		void UnlockCompleteDelegate()
@@ -865,13 +866,14 @@ namespace Windows::Internal
 
 		bool TryLockProgressDelegate()
 		{
-			long oldValue;
-			do
+			while (true)
 			{
-				oldValue = progressDelegateLockCount_;
+				long oldValue = progressDelegateLockCount_;
+				if (oldValue <= 0)
+					return false;
+				if (InterlockedCompareExchange(&progressDelegateLockCount_, oldValue + 1, oldValue) == oldValue)
+					return true;
 			}
-			while (progressDelegateLockCount_ > 0 && InterlockedCompareExchange(&progressDelegateLockCount_, oldValue + 1, oldValue) != oldValue);
-			return oldValue > 0;
 		}
 
 		void UnlockProgressDelegate()
@@ -1012,7 +1014,7 @@ namespace Windows::Internal
 			_Run(AsyncStage::Cancel, HRESULT_FROM_WIN32(ERROR_CANCELLED));
 		}
 
-		HRESULT FireCompletion() override // Microsoft::WRL::AsyncBase
+			HRESULT FireCompletion() override // Microsoft::WRL::AsyncBase
 		{
 			HRESULT hr = S_OK;
 			if (InterlockedIncrement(&m_completionsAllowed) == 2)
@@ -1160,10 +1162,10 @@ namespace Windows::Internal
 
 		void _AfterExecute(HRESULT hr)
 		{
-			bool b = InterlockedDecrement(&m_callbackRefs) == 1;
+			bool b = InterlockedDecrement(&m_callbackRefs) == 0;
 			if (InterlockedIncrement(&m_callbackCancelCount) == 1)
 			{
-				b = InterlockedDecrement(&m_callbackRefs) == 1;
+				b = InterlockedDecrement(&m_callbackRefs) == 0;
 			}
 
 			if (SUCCEEDED(hr))
@@ -1180,7 +1182,7 @@ namespace Windows::Internal
 				}
 			}
 
-			//if (b)
+			if (b)
 			{
 				_AfterComplete();
 			}
@@ -1190,39 +1192,39 @@ namespace Windows::Internal
 		{
 			if (stage == AsyncStage::Cancel)
 			{
-				if (InterlockedIncrement(&m_callbackCancelCount) != 1)
-					return;
-
-				m_callback->Run(AsyncStage::Cancel, hr, m_resultRetriever);
-
-				bool b = InterlockedDecrement(&m_callbackRefs) == 1;
-				if (InterlockedIncrement(&m_callbackExecuteCount) == 1)
+				if (InterlockedIncrement(&m_callbackCancelCount) == 1)
 				{
-					m_callback->Run(AsyncStage::Execute, HRESULT_FROM_WIN32(ERROR_CANCELLED), m_resultRetriever);
-					b = InterlockedDecrement(&m_callbackRefs) == 0;
-				}
+					m_callback->Run(AsyncStage::Cancel, hr, m_resultRetriever);
 
-				if (b)
-				{
-					_AfterComplete();
+					bool b = InterlockedDecrement(&m_callbackRefs) == 0;
+					if (InterlockedIncrement(&m_callbackExecuteCount) == 1)
+					{
+						m_callback->Run(AsyncStage::Execute, HRESULT_FROM_WIN32(ERROR_CANCELLED), m_resultRetriever);
+						b = InterlockedDecrement(&m_callbackRefs) == 0;
+					}
+
+					if (b)
+					{
+						_AfterComplete();
+					}
 				}
 			}
 			else if (stage == AsyncStage::Execute)
 			{
-				if (InterlockedIncrement(&m_callbackExecuteCount) != 1)
-					return;
-
-				hr = m_callback->Run(AsyncStage::Execute, hr, m_resultRetriever);
-				if (SUCCEEDED(hr) && m_resultRetriever.IsDeferred())
+				if (InterlockedIncrement(&m_callbackExecuteCount) == 1)
 				{
-					if (InterlockedDecrement(&m_deferralsCompleted) == 0)
+					hr = m_callback->Run(AsyncStage::Execute, hr, m_resultRetriever);
+					if (SUCCEEDED(hr) && m_resultRetriever.IsDeferred())
 					{
-						_AfterExecute(m_deferralResult);
+						if (InterlockedDecrement(&m_deferralsCompleted) == 0)
+						{
+							_AfterExecute(m_deferralResult);
+						}
 					}
-				}
-				else
-				{
-					_AfterExecute(hr);
+					else
+					{
+						_AfterExecute(hr);
+					}
 				}
 			}
 		}
