@@ -237,6 +237,7 @@
     <ClCompile Include="shell\auth\authux\consolelogon\lib\comboboxcontrol.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\comboboxselectionview.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\commandlinkcontrol.cpp" />
+    <ClCompile Include="shell\auth\authux\consolelogon\lib\consolebsdrstub.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consolelock.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consolelockaction.cpp" />
     <ClCompile Include="shell\auth\authux\consolelogon\lib\consolelogon.cpp" />

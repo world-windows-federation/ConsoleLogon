@@ -902,6 +902,41 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE add_UserActivity(WF::ITypedEventHandler<ILockInfo *,LockActivity>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_UserActivity(struct EventRegistrationToken ) PURE;
 		};
+
+		struct ILogonUIStateInfo : IInspectable
+		{
+			HRESULT get_CurrentLogonUIState(LogonUIState* );
+		};
+
+		struct IShutdownBlockingApp : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_Icon(ABI::Windows::Storage::Streams::IRandomAccessStream** ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Caption(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_BlockReason(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsBlocking(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Id(UINT* ) PURE;
+		};
+
+		enum BlockedShutdownResolution
+		{
+			BlockedShutdownResolution_None=0,
+			BlockedShutdownResolution_Force=1,
+			BlockedShutdownResolution_Cancel=2
+		};
+
+		MIDL_INTERFACE("36d8e713-0af2-428f-931c-346c1cd1a722")
+		IBlockedShutdownResolverUX : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE Start(IUserSettingManager* , ILogonUIStateInfo* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ScaleFactor(UINT* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_WasClicked(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE AddApplication(IShutdownBlockingApp* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE RemoveApplication(UINT ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_Resolved(WF::ITypedEventHandler<IBlockedShutdownResolverUX*,BlockedShutdownResolution>* , EventRegistrationToken* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_Resolved(EventRegistrationToken ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE Hide() PURE;
+			virtual HRESULT STDMETHODCALLTYPE Stop() PURE;
+		};
 	}
 }
 
@@ -992,6 +1027,17 @@ namespace ABI::Windows::Foundation
 		static const wchar_t* z_get_rc_name_impl()
 		{
 			return L"Windows.Foundation.TypedEventHandler`2<Windows.Internal.UI.Logon.Controller.ILockInfo, Windows.Internal.UI.Logon.Controller.LockActivity>";
+		}
+	};
+
+	template <>
+	struct __declspec(uuid("00915c44-56ec-46c4-a0bd-154182b2a893"))
+	ITypedEventHandler<LC::IBlockedShutdownResolverUX *, LC::BlockedShutdownResolution>
+		: ITypedEventHandler_impl<LC::IBlockedShutdownResolverUX *, LC::BlockedShutdownResolution>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.TypedEventHandler`2<Windows.Internal.UI.Logon.Controller.IBlockedShutdownResolverUX, Windows.Internal.UI.Logon.Controller.BlockedShutdownResolution>";
 		}
 	};
 
