@@ -466,7 +466,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE SignInOrUnlockUserWithUserManagerAsync(ICredentialSerialization *,WF::IAsyncOperation</*CredProvData::SignInOrUnlockResult * */ void*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE SetUserSuggestion(HSTRING) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ClearState() PURE;
-			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, WF::IAsyncAction**) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, WF::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, int supportedFeatureFlags, HSTRING, WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ResetSelection() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Shutdown() PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisconnectCredentials() PURE;
@@ -655,7 +656,9 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE remove_SlideToShutdownDetected(EventRegistrationToken) PURE;
 		};
 
-		struct IUnlockTrigger : IInspectable
+		//todo: verify
+		MIDL_INTERFACE("bd4fd664-fd5e-4ea2-8a71-48a75a4529c0")
+		IUnlockTrigger : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE TriggerUnlock() PURE;
 			virtual HRESULT STDMETHODCALLTYPE SyncBackstop() PURE;
@@ -851,6 +854,54 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE Hide() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Stop() PURE;
 		};
+
+		enum LockOptions
+		{
+			LockOptions_Default=0,
+			LockOptions_SecureDesktop=1,
+			LockOptions_TooManyFailedAttempts=2,
+			LockOptions_RequireSecureGesture=4,
+			LockOptions_DelayLock=8
+		};
+
+		//MIDL_INTERFACE("133bcdc9-89ab-4094-941e-9e8a69407eb4")
+		MIDL_INTERFACE("716a5b05-6e30-4f65-8a89-97de0fda0852")
+		ILockScreenHost : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE LockAsync(LockOptions, HSTRING, HSTRING, HSTRING,HSTRING, bool*, IUnlockTrigger**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE Reset() PURE;
+			virtual HRESULT STDMETHODCALLTYPE PreShutdown() PURE;
+		};
+
+		enum LockDisplayOwner
+		{
+			LockDisplayOwner_LockHost=0,
+			LockDisplayOwner_LogonUX=1
+		};
+
+		enum LockActivity
+		{
+			LockActivity_None=0,
+			LockActivity_Manipulation=1,
+			LockActivity_StartDismiss=2,
+			LockActivity_StopDismiss=3,
+			LockActivity_AboveLockApp=4
+		};
+
+		MIDL_INTERFACE("c1dee830-94c1-488c-82d0-3332c15a6f2d")
+		ILockInfo : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE get_VisualOwner(LockDisplayOwner * ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_DomainName(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_UserName(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_FriendlyName(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_RequireSecureGesture(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ShowSpeedBump(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_RequireSecureGestureString(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_SpeedBumpString(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_UserActivity(WF::ITypedEventHandler<ILockInfo *,LockActivity>*, EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_UserActivity(struct EventRegistrationToken ) PURE;
+		};
 	}
 }
 
@@ -929,6 +980,18 @@ namespace ABI::Windows::Foundation
 		static const wchar_t* z_get_rc_name_impl()
 		{
 			return L"Windows.Foundation.TypedEventHandler`2<Windows.Internal.UI.Logon.CredProvData.ICredentialField, Windows.Internal.UI.Logon.CredProvData.CredentialFieldChangeKind>";
+		}
+	};
+
+	//TODO: verify guid
+	template <>
+	struct __declspec(uuid("d31db316-e169-4263-8f34-99aa38b92275"))
+	ITypedEventHandler<LC::ILockInfo *, LC::LockActivity>
+		: ITypedEventHandler_impl<LC::ILockInfo *, LC::LockActivity>
+	{
+		static const wchar_t* z_get_rc_name_impl()
+		{
+			return L"Windows.Foundation.TypedEventHandler`2<Windows.Internal.UI.Logon.Controller.ILockInfo, Windows.Internal.UI.Logon.Controller.LockActivity>";
 		}
 	};
 

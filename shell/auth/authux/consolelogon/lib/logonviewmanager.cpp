@@ -250,6 +250,7 @@ HRESULT LogonViewManager::OnNavigation()
 				if (m_requestCredentialsComplete)
 				{
 					m_requestCredentialsComplete->Complete(HRESULT_FROM_WIN32(ERROR_CANCELLED));
+					RETURN_IF_FAILED(ClearCredentialStateUIThread()); // @MOD should fix password change bug
 				}
 			}
 			else
@@ -1113,7 +1114,7 @@ HRESULT LogonViewManager::StartCredProvsIfNecessary(LC::LogonUIRequestReason rea
 		if (m_isCredentialResetRequired)
 		{
 			ComPtr<WF::IAsyncAction> resetAction;
-			RETURN_IF_FAILED(m_credProvDataModel->ResetAsync(scenario, &resetAction)); // 1124
+			RETURN_IF_FAILED(m_credProvDataModel->ResetAsync(scenario,0,nullptr,&resetAction)); // 1124
 			m_credProvInitialized = false;
 
 			ComPtr<LogonViewManager> thisRef = this;
