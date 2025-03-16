@@ -41,7 +41,6 @@ HRESULT ConsoleLock::LockAsync(LockOptions options, HSTRING domainName, HSTRING 
 	*ppAction = nullptr;
 	*setWin32kForegroundHardening = false;
 	RETURN_HR_IF(E_NOTIMPL, (options & LockOptions_SecureDesktop) == 0);
-	*ppAction = nullptr; // they do it again here lol
 
 	RETURN_IF_FAILED(MakeAndInitialize<ConsoleLockAction>(ppAction,domainName,userName,friendlyName)); // 36
 
