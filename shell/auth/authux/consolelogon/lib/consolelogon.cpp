@@ -29,10 +29,17 @@ public:
 		IInspectable* autoLogonManager, IRedirectionManager* redirectionManager,
 		IUserSettingManager* userSettingManager, IDisplayStateProvider* displayStateProvider,
 		IBioFeedbackListener* bioFeedbackListener) override;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 	STDMETHODIMP DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger) override;
 	STDMETHODIMP HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger) override;
 	STDMETHODIMP RequestCredentialsAsync(
 		LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk, IAsyncOperation<RequestCredentialsData*>** ppOperation) override;
+#else
+	STDMETHODIMP DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger) override;
+	STDMETHODIMP HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger) override;
+	STDMETHODIMP RequestCredentialsAsync(
+		LogonUIRequestReason reason, LogonUIFlags flags, IAsyncOperation<RequestCredentialsData*>** ppOperation) override;
+#endif
 	STDMETHODIMP ReportCredentialsAsync(
 		LogonUIRequestReason reason, NTSTATUS ntsStatus, NTSTATUS ntsSubStatus, HSTRING samCompatibleUserName,
 		HSTRING displayName, HSTRING userSid, IAsyncOperation<ReportCredentialsData*>** ppOperation) override;
@@ -166,8 +173,11 @@ HRESULT ConsoleLogon::Start(
 	RETURN_IF_FAILED(m_consoleUIManager->SetContext(autoLogonManager, userSettingManager, redirectionManager, displayStateProvider, bioFeedbackListener)); // 106
 	return S_OK;
 }
-
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
+#else
+HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger)
+#endif
 {
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 118
@@ -175,8 +185,11 @@ HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UC
 	RETURN_IF_FAILED(Lock(LogonUIRequestReason_LogonUIUnlock, allowDirectUserSwitching, unlockTrigger)); // 120
 	return S_OK;
 }
-
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
+#else
+HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger)
+#endif
 {
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
 	RETURN_IF_FAILED(CheckUIStarted()); // 131
@@ -184,9 +197,13 @@ HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectU
 	RETURN_IF_FAILED(Lock(reason, allowDirectUserSwitching, unlockTrigger)); // 133
 	return S_OK;
 }
-
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 HRESULT ConsoleLogon::RequestCredentialsAsync(
 	LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk, IAsyncOperation<RequestCredentialsData*>** ppOperation)
+#else
+HRESULT ConsoleLogon::RequestCredentialsAsync(
+	LogonUIRequestReason reason, LogonUIFlags flags, IAsyncOperation<RequestCredentialsData*>** ppOperation)
+#endif
 {
 	*ppOperation = nullptr;
 
@@ -200,11 +217,11 @@ HRESULT ConsoleLogon::RequestCredentialsAsync(
 	HRESULT hr = MakeCancellableAsyncOperation<WI::CMarshaledInterfaceResult<IRequestCredentialsData>, RequestCredentialsData*>(
 		WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
 		ppOperation,
-		[asyncReference, this, viewManager, reason, flags, unk](WI::CMarshaledInterfaceResult<IRequestCredentialsData>& result) -> HRESULT // @Mod: pass in ref of unk param
+		[asyncReference, this, viewManager, reason, flags](WI::CMarshaledInterfaceResult<IRequestCredentialsData>& result) -> HRESULT // @Mod: pass in ref of unk param
 		{
 			UNREFERENCED_PARAMETER(asyncReference);
 			WI::AsyncDeferral<WI::CMarshaledInterfaceResult<IRequestCredentialsData>> deferral = result.GetDeferral(result);
-			RETURN_IF_FAILED(viewManager->RequestCredentials(reason, flags, unk, deferral)); // 156
+			RETURN_IF_FAILED(viewManager->RequestCredentials(reason, flags, nullptr, deferral)); // 156
 			return S_OK;
 		}
 	);

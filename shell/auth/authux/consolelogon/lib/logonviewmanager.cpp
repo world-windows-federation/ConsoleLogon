@@ -1182,7 +1182,11 @@ HRESULT LogonViewManager::StartCredProvsIfNecessary(LC::LogonUIRequestReason rea
 	ComPtr<WF::IAsyncAction> initAction;
 	LANGID langID = 0;
 	RETURN_IF_FAILED(m_userSettingManager->get_LangID(&langID)); // 1098
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 	RETURN_IF_FAILED(m_credProvDataModel->InitializeAsync(scenario, langID, LCPD::SelectionMode_UserAndV1Aggregate, unk, &initAction)); // 1099
+#else
+	RETURN_IF_FAILED(m_credProvDataModel->InitializeAsync(scenario, langID, LCPD::SelectionMode_UserAndV1Aggregate, &initAction)); // 1099
+#endif
 
 	ComPtr<LogonViewManager> thisRef = this;
 

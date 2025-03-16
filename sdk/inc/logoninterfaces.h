@@ -116,7 +116,11 @@ namespace Windows::Internal::UI::Logon
 		};
 
 		//todo:verify, + this is updated to 21h2
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 		MIDL_INTERFACE("1a522c5f-5032-4c4e-8563-20c524dde117")
+#else
+		MIDL_INTERFACE("20486918-5147-4725-a0cb-12b952a5f0c3")
+#endif
 		ICommandLinkField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING* outContent) PURE;
@@ -408,8 +412,13 @@ namespace Windows::Internal::UI::Logon
 		struct ICredProvDataModel : IInspectable
 		{
 			//virtual long __cdecl CCredProvDataModel::InitializeAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario,enum Windows::Internal::UI::Logon::CredProvData::SupportedFeatureFlags,unsigned short,struct HSTRING__ * __ptr64,struct Windows::Foundation::IAsyncAction * __ptr64 * __ptr64) __ptr64
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(CredProvScenario, int, unsigned short, HSTRING, WF::IAsyncAction **) PURE;
 			virtual HRESULT STDMETHODCALLTYPE InitializeAsyncAndReportAutologon(CredProvScenario,/*CredProvData::SupportedFeatureFlags*/ int,USHORT,HSTRING,/*Windows::Foundation::IAsyncOperation<bool> * *  */ void**) PURE;
+#else
+			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(CredProvScenario, int, unsigned short, WF::IAsyncAction **) PURE;
+			virtual HRESULT STDMETHODCALLTYPE InitializeAsyncAndReportAutologon(CredProvScenario,/*CredProvData::SupportedFeatureFlags*/ int,USHORT,/*Windows::Foundation::IAsyncOperation<bool> * *  */ void**) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE InitializeWithContextAsync(CredProvScenario, unsigned short, SelectionMode, UINT, unsigned char, IInspectable*, GUID, ABI::Windows::Storage::Streams::IBuffer*, WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE InitializeForFingerprintOnlyAsync(USHORT, WF::IAsyncAction**);
 			virtual HRESULT STDMETHODCALLTYPE get_SelectionMode(SelectionMode*) PURE;
@@ -463,8 +472,14 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE remove_BioFeedbackStateChange(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ReportResultAsync(long, long, HSTRING, WF::IAsyncOperation<ReportResultInfo*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ReportResultWithNameAsync(long,long,HSTRING,HSTRING,HSTRING,WF::IAsyncOperation<ReportResultInfo*>**) PURE;
+
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_VB
 			virtual HRESULT STDMETHODCALLTYPE SignInOrUnlockUserWithUserManagerAsync(ICredentialSerialization *,WF::IAsyncOperation</*CredProvData::SignInOrUnlockResult * */ void*>**) PURE;
+#endif
+
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE SetUserSuggestion(HSTRING) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE ClearState() PURE;
 			//virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, int supportedFeatureFlags, HSTRING, WF::IAsyncAction**) PURE;
@@ -617,8 +632,10 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_UserSid(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_UserSid(HSTRING) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_CaretWidth(int*) PURE;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE get_TextScale(int *) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsTransparencyEnabled(UCHAR*) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE get_LastLoggedOnUserSid(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_TelemetryDataProvider(CredProvData::ITelemetryDataProvider**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsLockScreenAllowed(BOOLEAN*) PURE;
@@ -648,10 +665,12 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE remove_HighContrastChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_CaretWidthChanged(WF::ITypedEventHandler<IUserSettingManager*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_CaretWidthChanged(EventRegistrationToken) PURE;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE add_TextScaleChanged(WF::ITypedEventHandler<IUserSettingManager *,IInspectable *>*,EventRegistrationToken *) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_TextScaleChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_IsTransparencyEnabledChanged(WF::ITypedEventHandler<IUserSettingManager *,IInspectable *>*,EventRegistrationToken *) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_IsTransparencyEnabledChanged(EventRegistrationToken) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE add_SlideToShutdownDetected(WF::ITypedEventHandler<IUserSettingManager*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SlideToShutdownDetected(EventRegistrationToken) PURE;
 		};
@@ -832,18 +851,30 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE Hide() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Stop() PURE;
 		};*/
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 		MIDL_INTERFACE("0f689741-b89f-41f0-8f2b-19da66e5f54b")
+#else
+		MIDL_INTERFACE("b20f1813-3f69-4f1f-97a0-35f558178cd5")
+#endif
 		ILogonUX : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE Start(IInspectable*, IRedirectionManager*, IUserSettingManager*, CredProvData::IDisplayStateProvider*, IBioFeedbackListener*) PURE;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE DelayLock(BOOLEAN, UCHAR, UCHAR, HSTRING, IUnlockTrigger*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE HardLock(LogonUIRequestReason, BOOLEAN, UCHAR, UCHAR, HSTRING, IUnlockTrigger*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE RequestCredentialsAsync(LogonUIRequestReason, LogonUIFlags, HSTRING, WF::IAsyncOperation<RequestCredentialsData*>**) PURE;
+#else
+			virtual HRESULT STDMETHODCALLTYPE DelayLock(BOOLEAN, UCHAR, UCHAR, IUnlockTrigger*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE HardLock(LogonUIRequestReason, BOOLEAN, UCHAR, UCHAR, IUnlockTrigger*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE RequestCredentialsAsync(LogonUIRequestReason, LogonUIFlags, WF::IAsyncOperation<RequestCredentialsData*>**) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE ReportCredentialsAsync(LogonUIRequestReason, long, long, HSTRING, HSTRING, HSTRING, WF::IAsyncOperation<ReportCredentialsData*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisplayMessageAsync(LogonMessageMode, UINT, HSTRING, HSTRING, WF::IAsyncOperation<MessageDisplayResult*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisplayCredentialErrorAsync(long, long, UINT, HSTRING, HSTRING, WF::IAsyncOperation<MessageDisplayResult*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisplayStatusAsync(LogonUIState, HSTRING, WF::IAsyncAction**) PURE;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE DisplayStatusAndForceCredentialPageAsync(LogonUIRequestReason, LogonUIFlags, HSTRING, LogonUIState, HSTRING, WF::IAsyncAction**) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE TriggerLogonAnimationAsync(WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ResetCredentials() PURE;
 			virtual HRESULT STDMETHODCALLTYPE ClearUIState(HSTRING) PURE;
