@@ -106,7 +106,6 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE put_SelectedIndex(int) PURE;
 		};
 
-		//TODO: verify iid
 		MIDL_INTERFACE("5cad4c8f-6f35-4a41-ba52-bdf26571c77e")
 		ICheckBoxField : IInspectable
 		{
@@ -115,7 +114,6 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE put_Checked(bool isChecked) PURE;
 		};
 
-		//todo:verify, + this is updated to 21h2
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 		MIDL_INTERFACE("1a522c5f-5032-4c4e-8563-20c524dde117")
 #else
@@ -482,7 +480,11 @@ namespace Windows::Internal::UI::Logon
 #endif
 			virtual HRESULT STDMETHODCALLTYPE ClearState() PURE;
 			//virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, WF::IAsyncAction**) PURE;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, int supportedFeatureFlags, HSTRING, WF::IAsyncAction**) PURE;
+#else
+			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, int supportedFeatureFlags, WF::IAsyncAction**) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE ResetSelection() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Shutdown() PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisconnectCredentials() PURE;
@@ -899,6 +901,7 @@ namespace Windows::Internal::UI::Logon
 		MIDL_INTERFACE("716a5b05-6e30-4f65-8a89-97de0fda0852")
 		ILockScreenHost : IInspectable
 		{
+			virtual HRESULT STDMETHODCALLTYPE ShowWebDialogAsync(HSTRING, void**/* Windows::Internal::UI::Logon::Controller::IWebDialogDismissTrigger** */) PURE;
 			virtual HRESULT STDMETHODCALLTYPE LockAsync(LockOptions, HSTRING, HSTRING, HSTRING,HSTRING, bool*, IUnlockTrigger**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE Reset() PURE;
 			virtual HRESULT STDMETHODCALLTYPE PreShutdown() PURE;
@@ -930,6 +933,8 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_ShowSpeedBump(bool* ) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_RequireSecureGestureString(HSTRING* ) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SpeedBumpString(HSTRING* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLostMode(bool* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_LostModeMessage(HSTRING* ) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_UserActivity(WF::ITypedEventHandler<ILockInfo *,LockActivity>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_UserActivity(struct EventRegistrationToken ) PURE;
 		};

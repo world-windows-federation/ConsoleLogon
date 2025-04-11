@@ -17,6 +17,7 @@ HRESULT ConsoleLockAction::RuntimeClassInitialize(HSTRING domainName, HSTRING us
 	RETURN_IF_FAILED(m_userName.Set(userName)); // 17
 	RETURN_IF_FAILED(m_friendlyName.Set(friendlyName)); // 18
 	RETURN_IF_FAILED(Start()); // 19
+	//RETURN_IF_FAILED(TriggerUnlock()); // 19
 
 	return S_OK;
 }
@@ -101,8 +102,20 @@ HRESULT ConsoleLockAction::get_SpeedBumpString(HSTRING* value)
 	return S_OK;
 }
 
+HRESULT ConsoleLockAction::get_IsLostMode(bool* value)
+{
+	*value = false;
+	return S_OK;
+}
+
+HRESULT ConsoleLockAction::get_LostModeMessage(HSTRING* value)
+{
+	*value = nullptr;
+	return S_OK;
+}
+
 HRESULT ConsoleLockAction::add_UserActivity(WF::ITypedEventHandler<LC::ILockInfo*, LC::LockActivity>* handler,
-	EventRegistrationToken* token)
+                                            EventRegistrationToken* token)
 {
 	token->value = 0;
 	RETURN_IF_FAILED(m_userActivityEvent.Add(handler,token)); // 99
@@ -116,13 +129,13 @@ HRESULT ConsoleLockAction::remove_UserActivity(EventRegistrationToken token)
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::put_Completed(WF::IAsyncActionCompletedHandler* pRequestHandler)
+HRESULT ConsoleLockAction::put_Completed(WF::IAsyncOperationCompletedHandler<HSTRING>* pRequestHandler)
 {
 	RETURN_IF_FAILED(PutOnComplete(pRequestHandler)); // 112
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_Completed(WF::IAsyncActionCompletedHandler** ppRequestHandler)
+HRESULT ConsoleLockAction::get_Completed(WF::IAsyncOperationCompletedHandler<HSTRING>** ppRequestHandler)
 {
 	*ppRequestHandler = nullptr;
 	RETURN_IF_FAILED(GetOnComplete(ppRequestHandler)); // 119
@@ -130,7 +143,7 @@ HRESULT ConsoleLockAction::get_Completed(WF::IAsyncActionCompletedHandler** ppRe
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::GetResults()
+HRESULT ConsoleLockAction::GetResults(HSTRING* results)
 {
 	return S_OK;
 }

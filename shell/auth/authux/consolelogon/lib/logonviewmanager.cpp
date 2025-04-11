@@ -1114,7 +1114,12 @@ HRESULT LogonViewManager::StartCredProvsIfNecessary(LC::LogonUIRequestReason rea
 		if (m_isCredentialResetRequired)
 		{
 			ComPtr<WF::IAsyncAction> resetAction;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			RETURN_IF_FAILED(m_credProvDataModel->ResetAsync(scenario,0,nullptr,&resetAction)); // 1124
+#else
+			RETURN_IF_FAILED(m_credProvDataModel->ResetAsync(scenario,0,&resetAction)); // 1124
+#endif
+
 			m_credProvInitialized = false;
 
 			ComPtr<LogonViewManager> thisRef = this;

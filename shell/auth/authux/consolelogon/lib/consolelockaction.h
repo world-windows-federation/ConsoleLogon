@@ -1,6 +1,6 @@
 ﻿#pragma once
-
 #include "pch.h"
+#include "InternalAsync.h"
 
 extern const __declspec(selectany) _Null_terminated_ WCHAR ConsoleLockAsyncAction[];
 
@@ -8,33 +8,35 @@ class ConsoleLockAction
 	: public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>
 		,LC::IUnlockTrigger
 		,LC::ILockInfo
-		,WF::IAsyncAction
-		,WI::AsyncBaseFTM<WF::IAsyncActionCompletedHandler
+		,WF::IAsyncOperation<HSTRING>
+		,WI::AsyncBaseFTM<WF::IAsyncOperationCompletedHandler<HSTRING>
 			, Microsoft::WRL::SingleResult
-			, Microsoft::WRL::AsyncCausalityOptions<ConsoleLockAsyncAction,GUID_CAUSALITY_WINDOWS_PLATFORM_ID, WF::Diagnostics::CausalitySource_System>>
+			, Microsoft::WRL::AsyncOptions<Microsoft::WRL::ErrorPropagationPolicy::PropagateDelegateError,nullptr,GUID_CAUSALITY_WINDOWS_PLATFORM_ID, WF::Diagnostics::CausalitySource_System>>
 		>
 {
 public:
 	ConsoleLockAction();
 	~ConsoleLockAction() override;
-	
-	HRESULT RuntimeClassInitialize(HSTRING domainName, HSTRING userName, HSTRING friendlyName);
-    HRESULT TriggerUnlock() override;
-    HRESULT SyncBackstop() override;
-    HRESULT CheckCompletion() override;
-    HRESULT get_VisualOwner(LC::LockDisplayOwner* value) override;
-    HRESULT get_DomainName(HSTRING* value) override;
-    HRESULT get_UserName(HSTRING* value) override;
-    HRESULT get_FriendlyName(HSTRING* value) override;
-    HRESULT get_RequireSecureGesture(bool* value) override;
-    HRESULT get_ShowSpeedBump(bool* value) override;
-    HRESULT get_RequireSecureGestureString(HSTRING* value) override;
-    HRESULT get_SpeedBumpString(HSTRING* value) override;
-    HRESULT add_UserActivity(WF::ITypedEventHandler<LC::ILockInfo *, LC::LockActivity>* handler, EventRegistrationToken* token) override;
-    HRESULT remove_UserActivity(EventRegistrationToken token) override;
-    HRESULT put_Completed(WF::IAsyncActionCompletedHandler* pRequestHandler) override;
-    HRESULT get_Completed(WF::IAsyncActionCompletedHandler** ppRequestHandler) override;
-    HRESULT GetResults() override;
+
+	HRESULT STDMETHODCALLTYPE RuntimeClassInitialize(HSTRING domainName, HSTRING userName, HSTRING friendlyName);
+    HRESULT STDMETHODCALLTYPE TriggerUnlock() override;
+    HRESULT STDMETHODCALLTYPE SyncBackstop() override;
+    HRESULT STDMETHODCALLTYPE CheckCompletion() override;
+    HRESULT STDMETHODCALLTYPE get_VisualOwner(LC::LockDisplayOwner* value) override;
+    HRESULT STDMETHODCALLTYPE get_DomainName(HSTRING* value) override;
+    HRESULT STDMETHODCALLTYPE get_UserName(HSTRING* value) override;
+    HRESULT STDMETHODCALLTYPE get_FriendlyName(HSTRING* value) override;
+    HRESULT STDMETHODCALLTYPE get_RequireSecureGesture(bool* value) override;
+    HRESULT STDMETHODCALLTYPE get_ShowSpeedBump(bool* value) override;
+    HRESULT STDMETHODCALLTYPE get_RequireSecureGestureString(HSTRING* value) override;
+    HRESULT STDMETHODCALLTYPE get_SpeedBumpString(HSTRING* value) override;
+    HRESULT STDMETHODCALLTYPE get_IsLostMode(bool* value) override;
+    HRESULT STDMETHODCALLTYPE get_LostModeMessage(HSTRING* value) override;
+    HRESULT STDMETHODCALLTYPE add_UserActivity(WF::ITypedEventHandler<LC::ILockInfo *, LC::LockActivity>* handler, EventRegistrationToken* token) override;
+    HRESULT STDMETHODCALLTYPE remove_UserActivity(EventRegistrationToken token) override;
+    HRESULT STDMETHODCALLTYPE put_Completed(WF::IAsyncOperationCompletedHandler<HSTRING>* pRequestHandler) override;
+    HRESULT STDMETHODCALLTYPE get_Completed(WF::IAsyncOperationCompletedHandler<HSTRING>** ppRequestHandler) override;
+	HRESULT STDMETHODCALLTYPE GetResults(HSTRING* results) override;
     HRESULT OnStart() override;
     void OnClose() override;
     void OnCancel() override;
