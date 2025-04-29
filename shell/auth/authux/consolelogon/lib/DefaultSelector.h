@@ -13,7 +13,9 @@ public:
 
 	//~ Begin LCPD::ICredProvDefaultSelector Interface
 	STDMETHODIMP get_UseLastLoggedOnProvider(BOOLEAN* value) override;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 	STDMETHODIMP get_PreferredProvidersDup(WFC::IVectorView<GUID>** ppValue) override;
+#endif
 	STDMETHODIMP get_PreferredProviders(WFC::IVectorView<GUID>** ppValue) override;
 	STDMETHODIMP get_ExcludedProviders(WFC::IVectorView<GUID>** ppValue) override;
 	STDMETHODIMP get_DefaultUserSid(HSTRING* value) override;

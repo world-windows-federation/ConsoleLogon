@@ -547,7 +547,9 @@ namespace Windows::Internal::UI::Logon
 		ICredProvDefaultSelector : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_UseLastLoggedOnProvider(BOOLEAN*) PURE;
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE get_PreferredProvidersDup(WFC::IVectorView<GUID>**) PURE;
+#endif
 			virtual HRESULT STDMETHODCALLTYPE get_PreferredProviders(WFC::IVectorView<GUID>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_ExcludedProviders(WFC::IVectorView<GUID>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_DefaultUserSid(HSTRING*) PURE;

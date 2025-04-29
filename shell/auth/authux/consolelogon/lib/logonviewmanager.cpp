@@ -898,7 +898,7 @@ HRESULT LogonViewManager::ShowCredentialView()
 		m_selectedCredentialChangedToken.value = 0;
 	}
 
-	ComPtr<IInspectable> selectedUserOrV1;
+	ComPtr<IInspectable> selectedUserOrV1 = nullptr;
 	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 864
 	if (selectedUserOrV1.Get())
 	{
