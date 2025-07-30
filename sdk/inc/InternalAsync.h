@@ -1014,7 +1014,7 @@ namespace Windows::Internal
 			_Run(AsyncStage::Cancel, HRESULT_FROM_WIN32(ERROR_CANCELLED));
 		}
 
-			HRESULT FireCompletion() override // Microsoft::WRL::AsyncBase
+		HRESULT FireCompletion() override // Microsoft::WRL::AsyncBase
 		{
 			HRESULT hr = S_OK;
 			if (InterlockedIncrement(&m_completionsAllowed) == 2)

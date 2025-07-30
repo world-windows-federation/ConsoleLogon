@@ -12,29 +12,29 @@ namespace Windows::Internal
     public:
         static bool FindAndSize(HINSTANCE hInstance, UINT uId, WORD wLanguage, const WCHAR** ppch, WORD* plen)
         {
-            bool rv = false;
+            bool fRet = false;
             *ppch = nullptr;
             if (plen)
                 *plen = 0;
-            HRSRC hRsrc = FindResourceExW(hInstance, RT_STRING, MAKEINTRESOURCEW((uId >> 4) + 1), wLanguage);
-            if (hRsrc)
+            HRSRC hRes = FindResourceExW(hInstance, RT_STRING, MAKEINTRESOURCEW((uId >> 4) + 1), wLanguage);
+            if (hRes)
             {
-                HGLOBAL hgRsrc = LoadResource(hInstance, hRsrc);
-                if (hgRsrc)
+                HGLOBAL hStringSeg = LoadResource(hInstance, hRes);
+                if (hStringSeg)
                 {
-                    WCHAR* pRsrc = (WCHAR*)LockResource(hgRsrc);
-                    if (pRsrc)
+                    WCHAR* pch = (WCHAR*)LockResource(hStringSeg);
+                    if (pch)
                     {
-                        for (UINT v12 = (char)uId & 0xF; v12; --v12)
-                            pRsrc += *pRsrc + 1;
-                        *ppch = *pRsrc ? pRsrc + 1 : L"";
+                        for (uId = (char)uId & 0xF; uId; --uId)
+                            pch += *pch + 1;
+                        *ppch = *pch ? pch + 1 : L"";
                         if (plen)
-                            *plen = *pRsrc;
-                        rv = true;
+                            *plen = *pch;
+                        fRet = true;
                     }
                 }
             }
-            return rv;
+            return fRet;
         }
     };
 
@@ -105,12 +105,14 @@ namespace Windows::Internal
             Free();
         }
 
-        HRESULT Initialize(HINSTANCE hInstance, UINT uId)
+        HRESULT Initialize(const WCHAR* psz, const size_t cch)
         {
-            const WCHAR* pch;
-            WORD len;
-            return ResourceString::FindAndSize(hInstance, uId, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), &pch, &len)
-                       ? _Initialize(pch, len) : E_FAIL;
+            return _Initialize(psz, cch);
+        }
+
+        HRESULT Initialize(const WCHAR* psz)
+        {
+            return _Initialize(psz, s_cchUnknown);
         }
 
         HRESULT Initialize(const NativeString& other)
@@ -118,14 +120,78 @@ namespace Windows::Internal
             return _Initialize(other._pszStringData, other.GetCount());
         }
 
-        HRESULT Initialize(const WCHAR* psz)
+        HRESULT Initialize(HINSTANCE hInstance, UINT uId, WORD wLanguage)
         {
-            return _Initialize(psz, (size_t)-1);
+            HRESULT hr;
+            const WCHAR* rgch;
+            WORD cch;
+            if (ResourceString::FindAndSize(hInstance, uId, wLanguage, &rgch, &cch))
+            {
+                hr = _Initialize(rgch, cch);
+            }
+            else
+            {
+                hr = E_FAIL;
+            }
+            return hr;
         }
 
-        HRESULT Initialize(const WCHAR* psz, size_t cch)
+        HRESULT Initialize(HINSTANCE hInstance, UINT uId)
         {
-            return _Initialize(psz, cch);
+            return Initialize(hInstance, uId, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
+        }
+
+        HRESULT Initialize(HKEY hKey, const WCHAR* pszValueName)
+        {
+            return _InitializeFromRegistry(hKey, pszValueName, true);
+        }
+
+        HRESULT Initialize(HKEY hKey, const WCHAR* pszSubKey, const WCHAR* pszValueName)
+        {
+            HKEY hkeySub;
+            HRESULT hr = HRESULT_FROM_WIN32(RegOpenKeyExW(hKey, pszSubKey, 0, KEY_READ, &hkeySub));
+            if (SUCCEEDED(hr))
+            {
+                hr = Initialize(hkeySub, pszValueName);
+                RegCloseKey(hkeySub);
+            }
+            return hr;
+        }
+
+        HRESULT InitializeNoExpand(HKEY hKey, const WCHAR* pszValueName)
+        {
+            return _InitializeFromRegistry(hKey, pszValueName, false);
+        }
+
+        HRESULT InitializeNoExpand(HKEY hKey, const WCHAR* pszSubKey, const WCHAR* pszValueName)
+        {
+            HKEY hkeySub;
+            HRESULT hr = HRESULT_FROM_WIN32(RegOpenKeyExW(hKey, pszSubKey, 0, KEY_READ, &hkeySub));
+            if (SUCCEEDED(hr))
+            {
+                hr = InitializeNoExpand(hkeySub, pszValueName);
+                RegCloseKey(hkeySub);
+            }
+            return hr;
+        }
+
+        HRESULT InitializeFormat(const WCHAR* pszFormat, va_list argList)
+        {
+            return _InitializeHelper(pszFormat, argList, [](const WCHAR* pszFormat, va_list argList, WCHAR* pszStringData, size_t cchStringData) -> HRESULT
+            {
+                _set_errno(0);
+                HRESULT hr = StringCchVPrintfW(pszStringData, cchStringData, pszFormat, argList);
+                if (hr == HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
+                {
+                    errno_t err;
+                    _get_errno(&err);
+                    if (err == EINVAL)
+                    {
+                        hr = E_INVALIDARG;
+                    }
+                }
+                return hr;
+            });
         }
 
         HRESULT InitializeFormat(const WCHAR* pszFormat, ...)
@@ -133,23 +199,6 @@ namespace Windows::Internal
             va_list args;
             va_start(args, pszFormat);
             return InitializeFormat(pszFormat, args);
-        }
-
-        HRESULT InitializeFormat(const WCHAR* pszFormat, va_list argList)
-        {
-            return _InitializeHelper(pszFormat, argList, [](WCHAR* pszStringData, size_t cchStringDataCapacity, const WCHAR* pszFormat, va_list argList) -> HRESULT
-            {
-                _set_errno(0);
-                HRESULT hr = StringCchVPrintfW(pszStringData, cchStringDataCapacity, pszFormat, argList);
-                if (hr == HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
-                {
-                    errno_t v13;
-                    _get_errno(&v13);
-                    if (v13 == EINVAL)
-                        return E_INVALIDARG;
-                }
-                return hr;
-            });
         }
 
         HRESULT InitializeResFormat(HINSTANCE hInstance, UINT uId, ...)
@@ -173,10 +222,11 @@ namespace Windows::Internal
             HRESULT hr = spszFormat.Initialize(hInstance, uId);
             if (SUCCEEDED(hr))
             {
-                hr = _InitializeHelper(spszFormat._pszStringData, argList, [](WCHAR* pszStringData, size_t cchStringDataCapacity, const WCHAR* pszFormat, va_list argList) -> HRESULT
+                hr = _InitializeHelper(spszFormat._pszStringData, argList, [](const WCHAR* pszFormat, va_list argList, WCHAR* pszStringData, size_t cchStringData) -> HRESULT
                 {
-                    return FormatMessageW(FORMAT_MESSAGE_FROM_STRING, pszFormat, 0, 0, pszStringData, (DWORD)cchStringDataCapacity, &argList)
-                        ? S_OK : ResultFromKnownLastError();
+                    va_list argListT = argList;
+                    DWORD cchResult = FormatMessageW(FORMAT_MESSAGE_FROM_STRING, pszFormat, 0, 0, pszStringData, (DWORD)cchStringData, &argListT);
+                    return ResultFromWin32Bool(cchResult);
                 });
             }
             return hr;
@@ -189,24 +239,17 @@ namespace Windows::Internal
 
         void Attach(WCHAR* psz)
         {
-            Attach(psz, (size_t)-1);
+            _Attach(psz);
         }
 
-        void Attach(WCHAR* psz, size_t cch)
+        void Attach(WCHAR* psz, const size_t cch)
         {
-            _Free();
-            _pszStringData = psz;
-            _cchStringData = cch;
-            _cchStringDataCapacity = cch;
+            _Attach(psz, cch);
         }
 
         WCHAR* Detach()
         {
-            WCHAR* pszStringData = _pszStringData;
-            _pszStringData = nullptr;
-            _cchStringData = 0;
-            _cchStringDataCapacity = 0;
-            return pszStringData;
+            return _Detach();
         }
 
         HRESULT DetachInitializeIfEmpty(WCHAR** ppsz)
@@ -229,10 +272,7 @@ namespace Windows::Internal
 
         WCHAR** FreeAndGetAddressOf()
         {
-            _Free();
-            _cchStringData = -1;
-            _cchStringDataCapacity = -1;
-            return &_pszStringData;
+            return _FreeAndGetAddressOf();
         }
 
         HRESULT CopyTo(WCHAR** ppszDest) const
@@ -266,9 +306,9 @@ namespace Windows::Internal
             return StringCchCopyW(pszDest, cchDest, _pszStringData);
         }
 
-        WCHAR* Get() const
+        const WCHAR* Get() const
         {
-            return _pszStringData;
+            return _Get();
         }
 
         const WCHAR* GetNonNull() const
@@ -278,15 +318,12 @@ namespace Windows::Internal
 
         size_t GetCount()
         {
-            _EnsureCount();
-            return _cchStringData;
+            return _GetCount();
         }
 
         size_t GetCount() const
         {
-            if (_cchStringData != -1)
-                return _cchStringData;
-            return _pszStringData ? wcslen(_pszStringData) : 0;
+            return _GetCount();
         }
 
         bool IsEmpty() const
@@ -299,19 +336,29 @@ namespace Windows::Internal
             return !_IsEmpty();
         }
 
+        int CompareOrdinal(const WCHAR* psz, const size_t cch) const
+        {
+            return CompareStringOrdinal(GetNonNull(), (int)GetCount(), psz ? psz : L"", psz ? (int)cch : 0, FALSE);
+        }
+
+        int CompareOrdinal(const WCHAR* psz) const
+        {
+            return CompareOrdinal(psz, s_cchUnknown);
+        }
+
         int CompareOrdinal(const NativeString& other) const
         {
             return CompareOrdinal(other.GetNonNull(), other.GetCount());
         }
 
-        int CompareOrdinal(const WCHAR* psz) const
+        int CompareOrdinalIgnoreCase(const WCHAR* psz, const size_t cch) const
         {
-            return CompareOrdinal(psz, -1);
+            return CompareStringOrdinal(GetNonNull(), (int)GetCount(), psz ? psz : L"", psz ? (int)cch : 0, TRUE);
         }
 
-        int CompareOrdinal(const WCHAR* psz, size_t cch) const
+        int CompareOrdinalIgnoreCase(const WCHAR* psz) const
         {
-            return CompareStringOrdinal(GetNonNull(), (int)GetCount(), psz ? psz : L"", psz ? (int)cch : 0, FALSE);
+            return CompareOrdinalIgnoreCase(psz, s_cchUnknown);
         }
 
         int CompareOrdinalIgnoreCase(const NativeString& other) const
@@ -319,20 +366,14 @@ namespace Windows::Internal
             return CompareOrdinalIgnoreCase(other.GetNonNull(), other.GetCount());
         }
 
-        int CompareOrdinalIgnoreCase(const WCHAR* psz) const
+        HRESULT Concat(const WCHAR* psz, const size_t cch)
         {
-            return CompareOrdinalIgnoreCase(psz, -1);
-        }
-
-        int CompareOrdinalIgnoreCase(const WCHAR* psz, size_t cch) const
-        {
-            return CompareStringOrdinal(GetNonNull(), (int)GetCount(), psz ? psz : L"", psz ? (int)cch : 0, TRUE);
+            return _Concat(psz, cch);
         }
 
         HRESULT Concat(WCHAR c)
         {
-            WCHAR sz[2] = { c, 0 };
-            return _Concat(sz, 1);
+            return _Concat(c);
         }
 
         HRESULT Concat(const WCHAR* psz)
@@ -340,21 +381,30 @@ namespace Windows::Internal
             return _Concat(psz, psz ? wcslen(psz) : 0);
         }
 
-        HRESULT Concat(const WCHAR* psz, const size_t cch)
-        {
-            return _Concat(psz, cch);
-        }
-
         HRESULT Concat(const NativeString& other)
         {
             return _Concat(other.Get(), other.GetCount());
         }
 
-        HRESULT ConcatFormat(const WCHAR* pszFormat, ...)
+        HRESULT Concat(HINSTANCE hInstance, UINT uId, WORD wLanguage)
         {
-            va_list argList;
-            va_start(argList, pszFormat);
-            return ConcatFormat(pszFormat, argList);
+            HRESULT hr;
+            const WCHAR* rgch;
+            WORD cch;
+            if (ResourceString::FindAndSize(hInstance, uId, wLanguage, &rgch, &cch))
+            {
+                hr = _Concat(rgch, cch);
+            }
+            else
+            {
+                hr = HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+            }
+            return hr;
+        }
+
+        HRESULT Concat(HINSTANCE hInstance, UINT uId)
+        {
+            return Concat(hInstance, uId, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
         }
 
         HRESULT ConcatFormat(const WCHAR* pszFormat, va_list argList)
@@ -370,6 +420,13 @@ namespace Windows::Internal
                 hr = Concat(strT);
             }
             return hr;
+        }
+
+        HRESULT ConcatFormat(const WCHAR* pszFormat, ...)
+        {
+            va_list argList;
+            va_start(argList, pszFormat);
+            return ConcatFormat(pszFormat, argList);
         }
 
         bool RemoveAt(size_t iElem, size_t cchElem)
@@ -435,6 +492,11 @@ namespace Windows::Internal
             return FreeAndGetAddressOf();
         }
 
+        /*WCHAR* operator*() const
+        {
+            return Get();
+        }*/
+
         bool operator==(const WCHAR* pszOther) const
         {
             return pszOther ? CompareOrdinal(pszOther) == CSTR_EQUAL : !_pszStringData;
@@ -445,6 +507,11 @@ namespace Windows::Internal
             return !operator==(pszOther);
         }
 
+        HRESULT AppendMayTruncate(const WCHAR* psz, size_t cchMaxCapacity)
+        {
+            return _ConcatMayTruncate(psz, cchMaxCapacity);
+        }
+
         HRESULT EnsureCapacity(size_t cchDesired)
         {
             return _EnsureCapacity(cchDesired);
@@ -453,7 +520,7 @@ namespace Windows::Internal
     private:
         void _EnsureCount()
         {
-            if (_cchStringData == -1)
+            if (_cchStringData == s_cchUnknown)
             {
                 _cchStringData = _pszStringData ? wcslen(_pszStringData) : 0;
             }
@@ -461,44 +528,52 @@ namespace Windows::Internal
 
         HRESULT _EnsureCapacity(size_t cchDesired)
         {
-            size_t desiredCapacity = cchDesired + 1;
-            if (cchDesired + 1 < cchDesired)
-                return INTSAFE_E_ARITHMETIC_OVERFLOW;
-            if (_cchStringDataCapacity == -1)
+            size_t cchCapacityCur;
+            HRESULT hr = SizeTAdd(cchDesired, 1, &cchCapacityCur);
+            if (SUCCEEDED(hr))
             {
-                _EnsureCount();
-                _cchStringDataCapacity = _pszStringData ? _cchStringData + 1 : 0;
+                if (_cchStringDataCapacity == s_cchUnknown)
+                {
+                    _EnsureCount();
+                    _cchStringDataCapacity = _pszStringData ? _cchStringData + 1 : 0;
+                }
+                if (_cchStringDataCapacity == 0) // First allocation
+                {
+                    size_t cbDesired;
+                    hr = SizeTMult(cchCapacityCur, sizeof(WCHAR), &cbDesired);
+                    if (SUCCEEDED(hr))
+                    {
+                        WCHAR* pvArrayT = Allocator::Alloc(cbDesired);
+                        hr = pvArrayT ? S_OK : E_OUTOFMEMORY;
+                        if (SUCCEEDED(hr))
+                        {
+                            _cchStringDataCapacity = cchCapacityCur;
+                            _pszStringData = pvArrayT;
+                            pvArrayT[0] = 0;
+                        }
+                    }
+                }
+                else if (cchCapacityCur > _cchStringDataCapacity) // Growing
+                {
+                    size_t celemNew;
+                    hr = SizeTMult(_cchStringDataCapacity, 2, &celemNew); // Double the capacity
+                    if (SUCCEEDED(hr))
+                    {
+                        if (celemNew - _cchStringDataCapacity > 2048)
+                            celemNew = _cchStringDataCapacity + 2048; // Make sure it doesn't grow too much; TODO Check disassembly
+                        if (cchCapacityCur <= celemNew)
+                            cchCapacityCur = celemNew;
+                        WCHAR* pvArrayT = Allocator::Realloc(_pszStringData, sizeof(WCHAR) * cchCapacityCur);
+                        hr = pvArrayT ? S_OK : E_OUTOFMEMORY;
+                        if (SUCCEEDED(hr))
+                        {
+                            _cchStringDataCapacity = cchCapacityCur;
+                            _pszStringData = pvArrayT;
+                        }
+                    }
+                }
             }
-            if (_cchStringDataCapacity == 0) // First allocation
-            {
-                size_t bytes;
-                HRESULT hr = SizeTMult(desiredCapacity, sizeof(WCHAR), &bytes);
-                if (FAILED(hr))
-                    return hr;
-                WCHAR* newStringData = Allocator::Alloc(bytes);
-                if (!newStringData)
-                    return E_OUTOFMEMORY;
-                _cchStringDataCapacity = desiredCapacity;
-                _pszStringData = newStringData;
-                newStringData[0] = 0;
-            }
-            else if (desiredCapacity > _cchStringDataCapacity) // Growing
-            {
-                size_t newCapacity;
-                HRESULT hr = SizeTMult(_cchStringDataCapacity, 2, &newCapacity); // Double the capacity
-                if (FAILED(hr))
-                    return hr;
-                if (newCapacity - _cchStringDataCapacity > 2048)
-                    newCapacity = _cchStringDataCapacity + 2048; // Make sure it doesn't grow too much; TODO Check disassembly
-                if (desiredCapacity <= newCapacity)
-                    desiredCapacity = newCapacity;
-                WCHAR* reallocatedStringData = Allocator::Realloc(_pszStringData, sizeof(WCHAR) * desiredCapacity);
-                if (!reallocatedStringData)
-                    return E_OUTOFMEMORY;
-                _cchStringDataCapacity = desiredCapacity;
-                _pszStringData = reallocatedStringData;
-            }
-            return S_OK;
+            return hr;
         }
 
         bool _IsEmpty() const
@@ -508,28 +583,24 @@ namespace Windows::Internal
 
         HRESULT _Initialize(const WCHAR* psz, size_t cch)
         {
-            size_t cchStringDataCapacity = cch;
+            size_t cchDesired = cch;
             size_t cchStringData;
             HRESULT hr = S_OK;
             if (psz)
             {
-                if (cch == -1)
+                if (cchDesired == s_cchUnknown)
                 {
-                    cchStringDataCapacity = wcslen(psz);
-                    cchStringData = cchStringDataCapacity;
-                }
-                else if (cch >= wcslen(psz))
-                {
-                    cchStringData = wcslen(psz);
+                    cchDesired = wcslen(psz);
+                    cchStringData = cchDesired;
                 }
                 else
                 {
-                    cchStringData = cchStringDataCapacity;
+                    cchStringData = _NativeString_Min<size_t>(cchDesired, wcslen(psz)); // @MOD Prevent double evaluation
                 }
-                hr = _EnsureCapacity(cchStringDataCapacity);
+                hr = _EnsureCapacity(cchDesired);
                 if (SUCCEEDED(hr))
                 {
-                    StringCchCopyNW(_pszStringData, cchStringDataCapacity + 1, psz, cchStringData);
+                    StringCchCopyNW(_pszStringData, cchDesired + 1, psz, cchStringData);
                     _cchStringData = cchStringData;
                 }
             }
@@ -544,35 +615,136 @@ namespace Windows::Internal
         HRESULT _InitializeHelper(const WCHAR* pszFormat, va_list argList, const T& callback)
         {
             HRESULT hr;
-            size_t v6 = 32;
-            while (true)
+            size_t cchCapacityGuess = 32;
+            do
             {
-                hr = _EnsureCapacity(v6);
-                if (FAILED(hr))
-                    break;
-
-                hr = callback(_pszStringData, _cchStringDataCapacity, pszFormat, argList);
-                if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
-                    break;
-
-                v6 = _cchStringDataCapacity + 32;
-                if (v6 < _cchStringDataCapacity)
+                hr = _EnsureCapacity(cchCapacityGuess);
+                if (SUCCEEDED(hr))
                 {
-                    hr = INTSAFE_E_ARITHMETIC_OVERFLOW;
-                    break;
+                    hr = callback(pszFormat, argList, _pszStringData, _cchStringDataCapacity);
+                    if (hr == HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
+                    {
+                        size_t cchCapacityT;
+                        hr = SizeTAdd(_cchStringDataCapacity, 32, &cchCapacityT);
+                        if (SUCCEEDED(hr))
+                        {
+                            cchCapacityGuess = cchCapacityT;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                // Keep growing
             }
-            if (FAILED(hr))
+            while (SUCCEEDED(hr));
+            if (SUCCEEDED(hr))
+            {
+                _cchStringData = s_cchUnknown;
+            }
+            else
             {
                 _Free();
-                return hr;
             }
-            _cchStringData = -1;
             return hr;
         }
 
-        HRESULT _Concat(const WCHAR* psz, size_t cch)
+        HRESULT _InitializeFromRegistry(HKEY hKey, const WCHAR* pszValueName, bool fExpand)
+        {
+            DWORD dwType;
+            DWORD cbT = 0;
+            LSTATUS lRes = RegQueryValueExW(hKey, pszValueName, nullptr, &dwType, nullptr, &cbT);
+            HRESULT hr = HRESULT_FROM_WIN32(lRes);
+            if (SUCCEEDED(hr) && ((dwType != REG_SZ && dwType != REG_EXPAND_SZ) || cbT == 0 || (cbT & 1) != 0))
+            {
+                hr = HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+            }
+
+            WCHAR* pszT = nullptr;
+            if (SUCCEEDED(hr))
+            {
+                pszT = Allocator::Alloc(cbT);
+                hr = pszT ? S_OK : E_OUTOFMEMORY;
+            }
+
+            if (SUCCEEDED(hr))
+            {
+                lRes = RegQueryValueExW(hKey, pszValueName, nullptr, &dwType, (LPBYTE)pszT, &cbT);
+                hr = HRESULT_FROM_WIN32(lRes);
+            }
+
+            DWORD cchT = 0;
+            if (SUCCEEDED(hr))
+            {
+                cchT = (cbT / sizeof(WCHAR)) - 1;
+                if (dwType == REG_EXPAND_SZ && fExpand)
+                {
+                    DWORD cchBuffer = ExpandEnvironmentStringsW(pszT, nullptr, 0);
+                    if (cchBuffer != 0)
+                    {
+                        WCHAR* pszExpand = Allocator::Alloc(sizeof(WCHAR) * cchBuffer);
+                        hr = pszExpand ? S_OK : E_OUTOFMEMORY;
+                        if (SUCCEEDED(hr))
+                        {
+                            DWORD cchResult = ExpandEnvironmentStringsW(pszT, pszExpand, cchBuffer);
+                            hr = ResultFromWin32Count(cchResult, cchBuffer);
+                            if (SUCCEEDED(hr))
+                            {
+                                Allocator::Free(pszT);
+                                pszT = pszExpand;
+                                cchT = cchResult - 1;
+                            }
+                            else
+                            {
+                                Allocator::Free(pszExpand);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (SUCCEEDED(hr))
+            {
+                if (!pszT[cchT])
+                {
+                    _Attach(pszT, cchT + 1);
+                    pszT = nullptr;
+                }
+                else
+                {
+                    hr = HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+                }
+            }
+
+            Allocator::Free(pszT);
+            return hr;
+        }
+
+        size_t _GetCount()
+        {
+            _EnsureCount();
+            return _cchStringData;
+        }
+
+        size_t _GetCount() const
+        {
+            if (_cchStringData != s_cchUnknown)
+                return _cchStringData;
+            return _pszStringData ? wcslen(_pszStringData) : 0;
+        }
+
+        const WCHAR* _Get() const
+        {
+            return _pszStringData;
+        }
+
+        HRESULT _Concat(const WCHAR c)
+        {
+            WCHAR sz[2] = { c, 0 };
+            return _Concat(sz, 1);
+        }
+
+        HRESULT _Concat(const WCHAR* psz, const size_t cch)
         {
             HRESULT hr = S_OK;
             if (psz)
@@ -588,6 +760,23 @@ namespace Windows::Internal
             return hr;
         }
 
+        HRESULT _ConcatMayTruncate(const WCHAR* psz, size_t cchMaxCapacity)
+        {
+            _EnsureCount();
+            HRESULT hr = S_OK;
+            if (cchMaxCapacity > _cchStringData)
+            {
+                size_t cchDesired = _NativeString_Min<size_t>(cchMaxCapacity - _cchStringData, wcslen(psz)); // @MOD Prevent double evaluation
+                hr = _Concat(psz, cchDesired);
+            }
+            else if (cchMaxCapacity < _cchStringData)
+            {
+                _cchStringData = cchMaxCapacity;
+                _pszStringData[cchMaxCapacity] = 0;
+            }
+            return hr;
+        }
+
         bool _RemoveAt(size_t iElem, size_t cchElem)
         {
             _EnsureCount();
@@ -596,11 +785,11 @@ namespace Windows::Internal
 
             if (iElem < _cchStringData)
             {
-                size_t removeLen = min(cchElem, _cchStringData - iElem);
-                if (removeLen)
+                cchElem = _NativeString_Min<size_t>(cchElem, _cchStringData - iElem); // @MOD Prevent double evaluation
+                if (cchElem)
                 {
-                    memmove(&_pszStringData[iElem], &_pszStringData[iElem + removeLen], sizeof(WCHAR) * (_cchStringData - iElem - removeLen));
-                    _cchStringData -= removeLen;
+                    memmove(&_pszStringData[iElem], &_pszStringData[iElem + cchElem], sizeof(WCHAR) * (_cchStringData - iElem - cchElem));
+                    _cchStringData -= cchElem;
                 }
                 _pszStringData[_cchStringData] = 0;
                 fRet = true;
@@ -666,9 +855,51 @@ namespace Windows::Internal
             _cchStringDataCapacity = 0;
         }
 
+        void _Attach(WCHAR* psz)
+        {
+            return _Attach(psz, wcslen(psz) + 1);
+        }
+
+        void _Attach(WCHAR* psz, const size_t cch)
+        {
+            _Free();
+            if (psz && cch)
+            {
+                _pszStringData = psz;
+                _cchStringData = cch - 1;
+                _cchStringDataCapacity = cch;
+                psz[cch - 1] = 0;
+            }
+        }
+
+        WCHAR* _Detach()
+        {
+            WCHAR* pszStringData = _pszStringData;
+            _pszStringData = nullptr;
+            _cchStringData = 0;
+            _cchStringDataCapacity = 0;
+            return pszStringData;
+        }
+
+        WCHAR** _FreeAndGetAddressOf()
+        {
+            _Free();
+            _cchStringData = s_cchUnknown;
+            _cchStringDataCapacity = s_cchUnknown;
+            return &_pszStringData;
+        }
+
+        static const size_t s_cchUnknown = -1;
+
         WCHAR* _pszStringData;
         size_t _cchStringData;
         size_t _cchStringDataCapacity;
+
+        template <typename T>
+        static FORCEINLINE constexpr const T& (_NativeString_Min)(const T& a, const T& b)
+        {
+            return a < b ? a : b;
+        }
     };
 }
 

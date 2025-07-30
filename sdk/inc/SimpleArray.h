@@ -15,6 +15,15 @@ public:
     }
 };
 
+class CSimpleArrayCaseInsensitiveOrdinalStringCompareHelper
+{
+public:
+    int Compare(const WCHAR* psz1, const WCHAR* psz2) const
+    {
+        return CompareStringOrdinal(psz1, -1, psz2, -1, TRUE) - CSTR_EQUAL;
+    }
+};
+
 template <typename T>
 class CSimpleArrayStandardMergeHelper
 {
@@ -52,7 +61,7 @@ public:
         return hr;
     }
 
-    T* GetData() { return _parray; }
+    T* GetData() const { return _parray; }
     T* begin() { return _parray; }
     T* begin() const { return _parray; }
     T* end() { return _parray + _celem; }
@@ -146,7 +155,7 @@ public:
     {
         for (size_t iElement = 0; iElement < _celem; ++iElement)
         {
-            callback(_parray[iElement]);
+            callback(iElement, _parray[iElement]);
         }
     }
 };
@@ -161,8 +170,6 @@ template <
 class CTSimpleArray : public CTSimpleFixedArray<T, CompareHelper>
 {
 public:
-    using CTSimpleFixedArray<T, CompareHelper>::_celem;
-
     T* _parrayT;
     size_t _celemCapacity;
 
@@ -178,11 +185,6 @@ public:
         RemoveAll();
     }
 
-    HRESULT Add(const T* t, size_t* piElemInsertedAt = nullptr)
-    {
-        return _Add(t, piElemInsertedAt);
-    }
-
     HRESULT Add(const T& t, size_t* piElemInsertedAt = nullptr)
     {
         return _Add(t, piElemInsertedAt);
@@ -193,11 +195,6 @@ public:
         return _Add(std::move(t), piElemInsertedAt);
     }
 
-    HRESULT InsertAt(const T* t, size_t iElem)
-    {
-        return _InsertAt(t, iElem);
-    }
-
     HRESULT InsertAt(const T& t, size_t iElem)
     {
         return _InsertAt(t, iElem);
@@ -206,6 +203,16 @@ public:
     HRESULT InsertAt(T&& t, size_t iElem)
     {
         return _InsertAt(std::move(t), iElem);
+    }
+
+    HRESULT SetAtIndex(size_t iElem, const T& t)
+    {
+        return _SetAtIndex(iElem, t);
+    }
+
+    HRESULT SetAtIndex(size_t iElem, T&& t)
+    {
+        return _SetAtIndex(iElem, std::move(t));
     }
 
     HRESULT Remove(const T& t, size_t* piElemRemovedAt = nullptr)
@@ -253,6 +260,19 @@ public:
         }
         this->_celem = 0;
         _celemCapacity = 0;
+    }
+
+    void TransferData(CTSimpleArray* other)
+    {
+        RemoveAll();
+        this->_parray = other->_parray;
+        this->_celem = other->_celem;
+        this->_parrayT = other->_parrayT;
+        this->_celemCapacity = other->_celemCapacity;
+        other->_parray = nullptr;
+        other->_celem = 0;
+        other->_parrayT = nullptr;
+        other->_celemCapacity = 0;
     }
 
     size_t GetCapacity() const
@@ -328,7 +348,7 @@ public:
         size_t cElemGrowTo = max(this->_celem, iElem) + 1;
         if (cElemGrowTo > _celemCapacity)
         {
-            hr = _EnsureCapacity(cElemGrowTo, iElem);
+            hr = _EnsureCapacity(cElemGrowTo);
         }
 
         if (SUCCEEDED(hr))
@@ -359,7 +379,7 @@ public:
 
         if (this->_celem == _celemCapacity)
         {
-            hr = _EnsureCapacity(_celemCapacity + 1, 0);
+            hr = _EnsureCapacity(_celemCapacity + 1);
         }
 
         if (SUCCEEDED(hr))
@@ -380,6 +400,20 @@ public:
         if (SUCCEEDED(hr))
         {
             _InternalSetAtIndex(iElem, std::forward<ArgType>(t));
+        }
+
+        return hr;
+    }
+
+    template <typename ArgType>
+    HRESULT _SetAtIndex(size_t iElem, ArgType&& t)
+    {
+        HRESULT hr = TYPE_E_OUTOFBOUNDS;
+
+        if (iElem < this->_celem)
+        {
+            _InternalSetAtIndex(iElem, std::forward<ArgType>(t));
+            hr = S_OK;
         }
 
         return hr;
@@ -459,30 +493,14 @@ public:
 
     CCoSimpleArray(CCoSimpleArray&& other) noexcept
     {
-        this->RemoveAll();
-        this->_parray = other._parray;
-        this->_celem = other._celem;
-        this->_parrayT = other._parrayT;
-        this->_celemCapacity = other._celemCapacity;
-        other._parray = nullptr;
-        other._celem = 0;
-        other._parrayT = nullptr;
-        other._celemCapacity = 0;
+        this->TransferData(&other);
     }
 
     CCoSimpleArray& operator=(CCoSimpleArray&& other) noexcept
     {
         if (this != &other)
         {
-            this->RemoveAll();
-            this->_parray = other._parray;
-            this->_celem = other._celem;
-            this->_parrayT = other._parrayT;
-            this->_celemCapacity = other._celemCapacity;
-            other._parray = nullptr;
-            other._celem = 0;
-            other._parrayT = nullptr;
-            other._celemCapacity = 0;
+            this->TransferData(&other);
         }
         return *this;
     }
@@ -493,7 +511,7 @@ template <
     size_t MaxSize = UINT_MAX - 1,
     typename CompareHelper = CSimpleArrayStandardCompareHelper<T>
 >
-class CLocalSimpleArray : public CTSimpleArray<T, MaxSize, CTPolicyLocalMem<T>, CompareHelper> // Name assumed
+class CLocalSimpleArray : public CTSimpleArray<T, MaxSize, CTPolicyLocalMem<T>, CompareHelper>
 {
 };
 
@@ -508,6 +526,21 @@ public:
     ~CSimplePointerArray()
     {
         RemoveAndReleaseAll();
+    }
+
+    HRESULT RemoveAndReleaseAt(size_t iElem)
+    {
+        T* pT;
+        HRESULT hr = this->GetAt(iElem, pT);
+        if (SUCCEEDED(hr))
+        {
+            hr = this->RemoveAt(iElem);
+            if (SUCCEEDED(hr))
+            {
+                ElementAllocator::Destroy(pT);
+            }
+        }
+        return hr;
     }
 
     void RemoveAndReleaseAll()
@@ -525,6 +558,22 @@ template <
     typename CompareHelper = CSimpleArrayStandardCompareHelper<T*>
 >
 class CSimplePointerArrayNewMem : public CSimplePointerArray<T, CTContainer_PolicyNewMem, CompareHelper>
+{
+};
+
+template <
+    typename T,
+    typename CompareHelper = CSimpleArrayStandardCompareHelper<T*>
+>
+class CSimplePointerArrayCoTaskMem : public CSimplePointerArray<T, CTPolicyCoTaskMem<T>, CompareHelper>
+{
+};
+
+template <
+    typename T,
+    typename CompareHelper = CSimpleArrayStandardCompareHelper<T*>
+>
+class CSimplePointerArrayLocalMem : public CSimplePointerArray<T, CTPolicyLocalMem<T>, CompareHelper>
 {
 };
 

@@ -130,7 +130,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;CONSOLELOGON_FOR=$(_Variant);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;CONSOLELOGON_FOR=$(_Variant);__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -151,7 +151,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;CONSOLELOGON_FOR=$(_Variant);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;CONSOLELOGON_FOR=$(_Variant);__WRL_CONFIGURATION_LEGACY__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir);shell\auth\authux\consolelogon\lib;shell\auth\authux\consolelogon\dll;sdk\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -220,6 +220,7 @@
     <ClInclude Include="sdk\inc\memsafe.h" />
     <ClInclude Include="sdk\inc\NativeString.h" />
     <ClInclude Include="sdk\inc\NotificationDispatcher.h" />
+    <ClInclude Include="sdk\inc\ntassert.h" />
     <ClInclude Include="sdk\inc\RefCountedObject.h" />
     <ClInclude Include="sdk\inc\ResultUtils.h" />
     <ClInclude Include="sdk\inc\SimpleArray.h" />
