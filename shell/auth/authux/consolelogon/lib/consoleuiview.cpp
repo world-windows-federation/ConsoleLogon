@@ -115,7 +115,7 @@ HRESULT ConsoleUIView::ResizeControl(IUnknown* handle, UINT newHeight)
 
 HRESULT ConsoleUIView::RemoveAll()
 {
-	for (size_t i = 0; i < m_controlTable.GetCapacity(); ++i)
+	for (size_t i = 0; i < m_controlTable.GetSize(); ++i)
 	{
 		RETURN_IF_FAILED(m_controlTable[i]->Destroy()); // 136
 	}
