@@ -42,7 +42,7 @@ HRESULT SelectedCredentialView::RuntimeClassInitialize(LC::LogonUIRequestReason 
 	RETURN_IF_FAILED(credential->get_SubmitButton(&submitButtonField)); // 40
 	if (submitButtonField)
 	{
-		bool isVisibleInDeselectedTile = false;
+		BOOLEAN isVisibleInDeselectedTile = false;
 		RETURN_IF_FAILED(submitButtonField->get_IsVisibleInDeselectedTile(&isVisibleInDeselectedTile));
 
 		if (!isVisibleInDeselectedTile)

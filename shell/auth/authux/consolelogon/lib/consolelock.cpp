@@ -22,10 +22,14 @@ public:
 	ConsoleLock();
 	~ConsoleLock() override;
 
-	STDMETHODIMP ShowWebDialogAsync(HSTRING a1, void** a2) override;
-	STDMETHODIMP LockAsync(LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk, bool* setWin32kForegroundHardening, IUnlockTrigger** ppAction) override;
+	//~ Begin ILockScreenHost Interface
+	STDMETHODIMP ShowWebDialogAsync(HSTRING unk1, IWebDialogDismissTrigger** ppDismissTrigger) override;
+	STDMETHODIMP LockAsync(
+		LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk,
+		BOOLEAN* setWin32kForegroundHardening, IUnlockTrigger** ppAction) override;
 	STDMETHODIMP Reset() override;
 	STDMETHODIMP PreShutdown() override;
+	//~ End ILockScreenHost Interface
 };
 
 ConsoleLock::ConsoleLock()
@@ -36,21 +40,21 @@ ConsoleLock::~ConsoleLock()
 {
 }
 
-HRESULT ConsoleLock::ShowWebDialogAsync(HSTRING a1, void** a2)
+HRESULT ConsoleLock::ShowWebDialogAsync(HSTRING unk1, IWebDialogDismissTrigger** ppDismissTrigger)
 {
 	return S_OK;
 }
 
-HRESULT ConsoleLock::LockAsync(LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk,
-                               bool* setWin32kForegroundHardening, IUnlockTrigger** ppAction)
+HRESULT ConsoleLock::LockAsync(
+	LockOptions options, HSTRING domainName, HSTRING userName, HSTRING friendlyName, HSTRING unk,
+    BOOLEAN* setWin32kForegroundHardening, IUnlockTrigger** ppAction)
 {
 	*ppAction = nullptr;
 	*setWin32kForegroundHardening = false;
 
 	RETURN_HR_IF(E_NOTIMPL, (options & LockOptions_SecureDesktop) == 0);
 
-	RETURN_IF_FAILED(MakeAndInitialize<ConsoleLockAction>(ppAction,domainName,userName,friendlyName)); // 36
-
+	RETURN_IF_FAILED(MakeAndInitialize<ConsoleLockAction>(ppAction, domainName, userName, friendlyName)); // 36
 
 	return S_OK;
 }

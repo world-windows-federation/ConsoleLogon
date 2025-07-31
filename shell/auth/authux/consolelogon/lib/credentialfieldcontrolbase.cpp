@@ -46,10 +46,10 @@ HRESULT CredentialFieldControlBase::GetVisibility(bool* pIsVisible)
 {
 	*pIsVisible = false;
 
-	bool isHidden;
+	BOOLEAN isHidden;
 	RETURN_IF_FAILED(m_FieldInfo->get_IsHidden(&isHidden)); // 49
 
-	bool isVisibleInSelectedTile;
+	BOOLEAN isVisibleInSelectedTile;
 	RETURN_IF_FAILED(m_FieldInfo->get_IsVisibleInSelectedTile(&isVisibleInSelectedTile)); //52
 
 	*pIsVisible = !isHidden && isVisibleInSelectedTile != 0;

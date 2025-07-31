@@ -371,7 +371,7 @@ HRESULT LogonViewManager::RequestCredentials(
 
 	ComPtr<LogonViewManager> thisRef = this;
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, reason, flags, completion,unk]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, reason, flags, completion, unk]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> deferral = completion;
@@ -614,13 +614,13 @@ HRESULT LogonViewManager::LockUIThread(
 	m_currentViewType = LogonView::Locked;
 	m_showCredentialViewOnInitComplete = false;
 
-	RETURN_IF_FAILED(StartCredProvsIfNecessary(reason, allowDirectUserSwitching,0)); // 588
+	RETURN_IF_FAILED(StartCredProvsIfNecessary(reason, allowDirectUserSwitching, nullptr)); // 588
 
 	return S_OK;
 }
 
 HRESULT LogonViewManager::RequestCredentialsUIThread(
-	LC::LogonUIRequestReason reason, LC::LogonUIFlags flags,HSTRING unk,
+	LC::LogonUIRequestReason reason, LC::LogonUIFlags flags, HSTRING unk,
 	WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> completion)
 {
 	auto completeOnFailure = wil::scope_exit([this]() -> void { m_requestCredentialsComplete->Complete(E_UNEXPECTED); });
@@ -779,7 +779,7 @@ HRESULT LogonViewManager::DisplayMessageUIThread(
 	RETURN_IF_FAILED(m_redirectionManager->RedirectMessage(caption, message, messageBoxFlags, &redirectResult, &errorResponse)); // 733
 
 	if (errorResponse == LC::LogonErrorRedirectorResponse_HandledDoNotShowLocally
-		|| errorResponse == LC::LogonErrorRedirectorResponse_HandledDoNotShowLocallyStartOver)	
+		|| errorResponse == LC::LogonErrorRedirectorResponse_HandledDoNotShowLocallyStartOver)
 	{
 		ComPtr<LC::IMessageDisplayResultFactory> factory;
 		RETURN_IF_FAILED(WF::GetActivationFactory<ComPtr<LC::IMessageDisplayResultFactory>>(
@@ -898,7 +898,7 @@ HRESULT LogonViewManager::ShowCredentialView()
 		m_selectedCredentialChangedToken.value = 0;
 	}
 
-	ComPtr<IInspectable> selectedUserOrV1 = nullptr;
+	ComPtr<IInspectable> selectedUserOrV1;
 	RETURN_IF_FAILED(m_credProvDataModel->get_SelectedUserOrV1Credential(&selectedUserOrV1)); // 864
 	if (selectedUserOrV1.Get())
 	{
@@ -1115,9 +1115,9 @@ HRESULT LogonViewManager::StartCredProvsIfNecessary(LC::LogonUIRequestReason rea
 		{
 			ComPtr<WF::IAsyncAction> resetAction;
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-			RETURN_IF_FAILED(m_credProvDataModel->ResetAsync(scenario,0,nullptr,&resetAction)); // 1124
+			RETURN_IF_FAILED(m_credProvDataModel->ResetAsync(scenario, LCPD::SupportedFeatureFlags_0, nullptr, &resetAction)); // 1124
 #else
-			RETURN_IF_FAILED(m_credProvDataModel->ResetAsync(scenario,0,&resetAction)); // 1124
+			RETURN_IF_FAILED(m_credProvDataModel->ResetAsync(scenario, LCPD::SupportedFeatureFlags_0, &resetAction)); // 1124
 #endif
 
 			m_credProvInitialized = false;
@@ -1179,7 +1179,7 @@ HRESULT LogonViewManager::StartCredProvsIfNecessary(LC::LogonUIRequestReason rea
 
 	ComPtr<LCPD::ICredProvDataModelFactory> credProvDataModelFactory;
 	RETURN_IF_FAILED(WF::GetActivationFactory(Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_CredProvData_CredProvDataModel).Get(), &credProvDataModelFactory)); // 1090
-	RETURN_IF_FAILED(credProvDataModelFactory->CreateCredProvDataModel(LCPD::SelectionMode_PLAP,eventDispatcher.Get(), optionalDependencyProvider.Get(), &m_credProvDataModel)); // 1091
+	RETURN_IF_FAILED(credProvDataModelFactory->CreateCredProvDataModel(LCPD::SelectionMode_PLAP, eventDispatcher.Get(), optionalDependencyProvider.Get(), &m_credProvDataModel)); // 1091
 
 	RETURN_IF_FAILED(m_credProvDataModel->add_SerializationComplete(this, &m_serializationCompleteToken)); // 1093
 	RETURN_IF_FAILED(m_credProvDataModel->add_BioFeedbackStateChange(this, &m_bioFeedbackStateChangeToken)); // 1094
@@ -1188,9 +1188,9 @@ HRESULT LogonViewManager::StartCredProvsIfNecessary(LC::LogonUIRequestReason rea
 	LANGID langID = 0;
 	RETURN_IF_FAILED(m_userSettingManager->get_LangID(&langID)); // 1098
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-	RETURN_IF_FAILED(m_credProvDataModel->InitializeAsync(scenario, langID, LCPD::SelectionMode_UserAndV1Aggregate, unk, &initAction)); // 1099
+	RETURN_IF_FAILED(m_credProvDataModel->InitializeAsync(scenario, LCPD::SupportedFeatureFlags_0, langID, unk, &initAction)); // 1099
 #else
-	RETURN_IF_FAILED(m_credProvDataModel->InitializeAsync(scenario, langID, LCPD::SelectionMode_UserAndV1Aggregate, &initAction)); // 1099
+	RETURN_IF_FAILED(m_credProvDataModel->InitializeAsync(scenario, LCPD::SupportedFeatureFlags_0, langID, &initAction)); // 1099
 #endif
 
 	ComPtr<LogonViewManager> thisRef = this;

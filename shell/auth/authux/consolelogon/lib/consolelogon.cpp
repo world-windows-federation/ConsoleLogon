@@ -32,13 +32,20 @@ public:
 		IUserSettingManager* userSettingManager, IDisplayStateProvider* displayStateProvider,
 		IBioFeedbackListener* bioFeedbackListener) override;
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-	STDMETHODIMP DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger) override;
-	STDMETHODIMP HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger) override;
+	STDMETHODIMP DelayLock(
+		BOOLEAN allowDirectUserSwitching, BOOLEAN unk1, BOOLEAN unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger) override;
+	STDMETHODIMP HardLock(
+		LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, BOOLEAN unk1, BOOLEAN unk2, HSTRING unk3,
+		IUnlockTrigger* unlockTrigger) override;
 	STDMETHODIMP RequestCredentialsAsync(
-		LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk, IAsyncOperation<RequestCredentialsData*>** ppOperation) override;
+		LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk,
+		IAsyncOperation<RequestCredentialsData*>** ppOperation) override;
 #else
-	STDMETHODIMP DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger) override;
-	STDMETHODIMP HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger) override;
+	STDMETHODIMP DelayLock(
+		BOOLEAN allowDirectUserSwitching, BOOLEAN unk1, BOOLEAN unk2, IUnlockTrigger* unlockTrigger) override;
+	STDMETHODIMP HardLock(
+		LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, BOOLEAN unk1, BOOLEAN unk2,
+		IUnlockTrigger* unlockTrigger) override;
 	STDMETHODIMP RequestCredentialsAsync(
 		LogonUIRequestReason reason, LogonUIFlags flags, IAsyncOperation<RequestCredentialsData*>** ppOperation) override;
 #endif
@@ -53,7 +60,7 @@ public:
 		IAsyncOperation<MessageDisplayResult*>** ppOperation) override;
 	STDMETHODIMP DisplayStatusAsync(LogonUIState state, HSTRING status, IAsyncAction** ppAction) override;
 	STDMETHODIMP DisplayStatusAndForceCredentialPageAsync(
-		LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk1, LogonUIState state, HSTRING hstrStatus,
+		LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk1, LogonUIState state, HSTRING status,
 		IAsyncAction** ppAction) override;
 	STDMETHODIMP TriggerLogonAnimationAsync(IAsyncAction** ppAction) override;
 	STDMETHODIMP ResetCredentials() override;
@@ -61,7 +68,7 @@ public:
 	STDMETHODIMP ClearUIState(HSTRING statusMessage) override;
 	STDMETHODIMP ShowSecurityOptionsAsync(
 		LogonUISecurityOptions options, IAsyncOperation<LogonUISecurityOptionsResult*>** ppOperation) override;
-	STDMETHODIMP WebDialogDisplayed(void*) override;
+	STDMETHODIMP WebDialogDisplayed(IWebDialogDismissTrigger* dismissTrigger) override;
 	STDMETHODIMP get_WindowContainer(IInspectable** value) override;
 	STDMETHODIMP Hide() override;
 	STDMETHODIMP Stop() override;
@@ -161,10 +168,13 @@ HRESULT ConsoleLogon::Start(
 	RETURN_IF_FAILED(m_consoleUIManager->SetContext(autoLogonManager, userSettingManager, redirectionManager, displayStateProvider, bioFeedbackListener)); // 106
 	return S_OK;
 }
+
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
+HRESULT ConsoleLogon::DelayLock(
+	BOOLEAN allowDirectUserSwitching, BOOLEAN unk1, BOOLEAN unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
 #else
-HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger)
+HRESULT ConsoleLogon::DelayLock(
+	BOOLEAN allowDirectUserSwitching, BOOLEAN unk1, BOOLEAN unk2, IUnlockTrigger* unlockTrigger)
 #endif
 {
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
@@ -173,10 +183,15 @@ HRESULT ConsoleLogon::DelayLock(BOOLEAN allowDirectUserSwitching, UCHAR unk1, UC
 	RETURN_IF_FAILED(Lock(LogonUIRequestReason_LogonUIUnlock, allowDirectUserSwitching, unlockTrigger)); // 120
 	return S_OK;
 }
+
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, HSTRING unk3, IUnlockTrigger* unlockTrigger)
+HRESULT ConsoleLogon::HardLock(
+	LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, BOOLEAN unk1, BOOLEAN unk2, HSTRING unk3,
+	IUnlockTrigger* unlockTrigger)
 #else
-HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, UCHAR unk1, UCHAR unk2, IUnlockTrigger* unlockTrigger)
+HRESULT ConsoleLogon::HardLock(
+	LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, BOOLEAN unk1, BOOLEAN unk2,
+	IUnlockTrigger* unlockTrigger)
 #endif
 {
 	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
@@ -185,6 +200,7 @@ HRESULT ConsoleLogon::HardLock(LogonUIRequestReason reason, BOOLEAN allowDirectU
 	RETURN_IF_FAILED(Lock(reason, allowDirectUserSwitching, unlockTrigger)); // 133
 	return S_OK;
 }
+
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 HRESULT ConsoleLogon::RequestCredentialsAsync(
 	LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk, IAsyncOperation<RequestCredentialsData*>** ppOperation)
@@ -358,9 +374,9 @@ HRESULT ConsoleLogon::DisplayStatusAsync(LogonUIState state, HSTRING status, IAs
 }
 
 HRESULT ConsoleLogon::DisplayStatusAndForceCredentialPageAsync(LogonUIRequestReason reason, LogonUIFlags flags,
-	HSTRING unk1, LogonUIState state, HSTRING hstrStatus, IAsyncAction** ppAction)
+	HSTRING unk1, LogonUIState state, HSTRING status, IAsyncAction** ppAction)
 {
-	return ConsoleLogon::DisplayStatusAsync(state, hstrStatus, ppAction);
+	return ConsoleLogon::DisplayStatusAsync(state, status, ppAction);
 }
 
 static const WCHAR LogonAnimationAction[] = L"Windows.Foundation.IAsyncAction ConsoleLogon.LogonAnimation";
@@ -445,7 +461,8 @@ HRESULT ConsoleLogon::ClearUIState(HSTRING statusMessage)
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::ShowSecurityOptionsAsync(LogonUISecurityOptions options, IAsyncOperation<LogonUISecurityOptionsResult*>** ppOperation)
+HRESULT ConsoleLogon::ShowSecurityOptionsAsync(
+	LogonUISecurityOptions options, IAsyncOperation<LogonUISecurityOptionsResult*>** ppOperation)
 {
 	*ppOperation = nullptr;
 
@@ -467,7 +484,7 @@ HRESULT ConsoleLogon::ShowSecurityOptionsAsync(LogonUISecurityOptions options, I
 	return S_OK;
 }
 
-HRESULT ConsoleLogon::WebDialogDisplayed(void*)
+HRESULT ConsoleLogon::WebDialogDisplayed(IWebDialogDismissTrigger* dismissTrigger)
 {
 	MessageBoxW(nullptr, L"WebDialogDisplayed not Implemented", L"WebDialogDisplayed not Implemented", 0);
 	return S_OK;

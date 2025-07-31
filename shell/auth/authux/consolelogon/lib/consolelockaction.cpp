@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
-#include "consolelockaction.h"
 
-const __declspec(selectany) _Null_terminated_ WCHAR ConsoleLockAsyncAction[] = L"Windows.Foundation.IAsyncAction Windows.Internal.UI.Logon.Controller.ConsoleLockAction";
+#include "consolelockaction.h"
 
 ConsoleLockAction::ConsoleLockAction()
 {
@@ -78,13 +77,13 @@ HRESULT ConsoleLockAction::get_FriendlyName(HSTRING* value)
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_RequireSecureGesture(bool* value)
+HRESULT ConsoleLockAction::get_RequireSecureGesture(BOOLEAN* value)
 {
 	*value = true;
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_ShowSpeedBump(bool* value)
+HRESULT ConsoleLockAction::get_ShowSpeedBump(BOOLEAN* value)
 {
 	*value = false;
 	return S_OK;
@@ -102,7 +101,7 @@ HRESULT ConsoleLockAction::get_SpeedBumpString(HSTRING* value)
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::get_IsLostMode(bool* value)
+HRESULT ConsoleLockAction::get_IsLostMode(BOOLEAN* value)
 {
 	*value = false;
 	return S_OK;
@@ -114,8 +113,8 @@ HRESULT ConsoleLockAction::get_LostModeMessage(HSTRING* value)
 	return S_OK;
 }
 
-HRESULT ConsoleLockAction::add_UserActivity(WF::ITypedEventHandler<LC::ILockInfo*, LC::LockActivity>* handler,
-                                            EventRegistrationToken* token)
+HRESULT ConsoleLockAction::add_UserActivity(
+	WF::ITypedEventHandler<LC::ILockInfo*, LC::LockActivity>* handler, EventRegistrationToken* token)
 {
 	token->value = 0;
 	RETURN_IF_FAILED(m_userActivityEvent.Add(handler,token)); // 99

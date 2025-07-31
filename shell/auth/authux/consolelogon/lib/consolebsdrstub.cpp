@@ -20,18 +20,20 @@ public:
 	ConsoleBSDRStub();
 	~ConsoleBSDRStub() override;
 
-	HRESULT Start(IUserSettingManager* settingsManager, ILogonUIStateInfo* stateInfo) override;
-    HRESULT get_ScaleFactor(UINT* value) override;
-    HRESULT get_WasClicked(bool* value) override;
-    HRESULT AddApplication(IShutdownBlockingApp* blockingApp) override;
-    HRESULT RemoveApplication(UINT appid) override;
-    HRESULT add_Resolved(ITypedEventHandler<IBlockedShutdownResolverUX *, BlockedShutdownResolution>* handler, EventRegistrationToken* token) override;
-    HRESULT remove_Resolved(EventRegistrationToken token) override;
-    HRESULT Hide() override;
-    HRESULT Stop() override;
+	//~ Begin IBlockedShutdownResolverUX Interface
+	STDMETHODIMP Start(IUserSettingManager* settingsManager, ILogonUIStateInfo* stateInfo) override;
+    STDMETHODIMP get_ScaleFactor(UINT* value) override;
+    STDMETHODIMP get_WasClicked(BOOLEAN* value) override;
+    STDMETHODIMP AddApplication(IShutdownBlockingApp* blockingApp) override;
+    STDMETHODIMP RemoveApplication(UINT appid) override;
+	STDMETHODIMP add_Resolved(ITypedEventHandler<IBlockedShutdownResolverUX*, BlockedShutdownResolution>* handler, EventRegistrationToken* token) override;
+    STDMETHODIMP remove_Resolved(EventRegistrationToken token) override;
+    STDMETHODIMP Hide() override;
+    STDMETHODIMP Stop() override;
+	//~ End IBlockedShutdownResolverUX Interface
+
 private:
 	EventSource<ITypedEventHandler<IBlockedShutdownResolverUX*, BlockedShutdownResolution>> _Resolved;
-
 };
 
 ConsoleBSDRStub::ConsoleBSDRStub()
@@ -53,7 +55,7 @@ HRESULT ConsoleBSDRStub::get_ScaleFactor(UINT* value)
 	return S_OK;
 }
 
-HRESULT ConsoleBSDRStub::get_WasClicked(bool* value)
+HRESULT ConsoleBSDRStub::get_WasClicked(BOOLEAN* value)
 {
 	*value = false;
 	return S_OK;
@@ -74,7 +76,7 @@ HRESULT ConsoleBSDRStub::add_Resolved(
 {
 	token->value = 0;
 
-	return _Resolved.Add(handler,token);
+	return _Resolved.Add(handler, token);
 }
 
 HRESULT ConsoleBSDRStub::remove_Resolved(EventRegistrationToken token)

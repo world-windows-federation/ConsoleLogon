@@ -88,7 +88,7 @@ HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 	Wrappers::HString boxLabel;
 	RETURN_IF_FAILED(m_dataSource->get_BoxLabel(boxLabel.ReleaseAndGetAddressOf())); // 44
 
-	bool isChecked;
+	BOOLEAN isChecked;
 	RETURN_IF_FAILED(m_dataSource->get_Checked(&isChecked)); // 47
 
 	CoTaskMemNativeString checkMark;
@@ -126,7 +126,7 @@ HRESULT CheckboxControl::Repaint(IConsoleUIView* view)
 
 HRESULT CheckboxControl::Toggle()
 {
-	bool isChecked;
+	BOOLEAN isChecked;
 	RETURN_IF_FAILED(m_dataSource->get_Checked(&isChecked)); // 85
 	RETURN_IF_FAILED(m_dataSource->put_Checked(!isChecked)); // 86
 

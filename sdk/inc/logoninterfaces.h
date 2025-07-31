@@ -3,7 +3,6 @@
 #include "pch.h"
 
 #include <windows.foundation.collections.h>
-#include <windows.foundation.numerics.h>
 #include <windows.storage.streams.h>
 #include "version.h"
 
@@ -55,7 +54,7 @@ namespace Windows::Internal::UI::Logon
 
 		DEFINE_ENUM_FLAG_OPERATORS(DisplayStateFlags);
 
-		struct IDisplayStateProvider : IInspectable
+		struct DECLSPEC_NOVTABLE IDisplayStateProvider : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_DisplayState(DisplayStateFlags*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_DisplayStateChanged(WF::ITypedEventHandler<IDisplayStateProvider*, DisplayStateFlags>*, EventRegistrationToken*) PURE;
@@ -90,7 +89,7 @@ namespace Windows::Internal::UI::Logon
 			CredentialProviderStatusIcon_Success = 3,
 		};
 
-		struct ICredentialSerialization : IInspectable
+		struct DECLSPEC_NOVTABLE ICredentialSerialization : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_CredentialId(UINT*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SerializationResponse(SerializationResponse*) PURE;
@@ -110,8 +109,8 @@ namespace Windows::Internal::UI::Logon
 		ICheckBoxField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_BoxLabel(HSTRING* boxLabel) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_Checked(bool* isChecked) PURE;
-			virtual HRESULT STDMETHODCALLTYPE put_Checked(bool isChecked) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Checked(BOOLEAN* isChecked) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_Checked(BOOLEAN isChecked) PURE;
 		};
 
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
@@ -122,7 +121,7 @@ namespace Windows::Internal::UI::Logon
 		ICommandLinkField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING* outContent) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsStyledAsButton(bool*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsStyledAsButton(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE Invoke() PURE;
 		};
 
@@ -130,15 +129,15 @@ namespace Windows::Internal::UI::Logon
 		MIDL_INTERFACE("48a0b4dd-74a6-4b03-9850-672ff62135fd")
 		ICredentialEditField : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE put_Content(HSTRING ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordRevealEnabled(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordField(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_MaxPasswordLength(int * ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsNumbersOnly(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsEmailAddress(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsEnglishOnly(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsLogonUserName(bool*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Content(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_Content(HSTRING) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordRevealEnabled(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsPasswordField(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_MaxPasswordLength(int*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsNumbersOnly(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsEmailAddress(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsEnglishOnly(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLogonUserName(BOOLEAN*) PURE;
 		};
 
 		enum CredProvScenario
@@ -171,7 +170,7 @@ namespace Windows::Internal::UI::Logon
 			UserTileImageSize_ExtraSmall = 2
 		};
 
-		struct IUserTileImage : IInspectable
+		struct DECLSPEC_NOVTABLE IUserTileImage : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_TileStream(ABI::Windows::Storage::Streams::IRandomAccessStream**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_TileStreamType(TileStreamType*) PURE;
@@ -189,8 +188,8 @@ namespace Windows::Internal::UI::Logon
 #endif
 		IUser : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_IsLoggedIn(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsBuiltInGuest(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLoggedIn(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsBuiltInGuest(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_DisplayName(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LogonStatus(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_EmailAddress(HSTRING*) PURE;
@@ -200,9 +199,9 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_SmallUserTileImage(IUserTileImage**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_ImageChanged(WF::ITypedEventHandler<User*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_ImageChanged(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_ShouldShowEmail(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_ShouldShowDomainName(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsLocalNoPasswordUser(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ShouldShowEmail(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ShouldShowDomainName(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLocalNoPasswordUser(BOOLEAN*) PURE;
 		};
 
 		class User
@@ -240,20 +239,20 @@ namespace Windows::Internal::UI::Logon
 		ICredentialField : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Label(HSTRING*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInSelectedTile(bool*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInDeselectedTile(bool*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsHidden(bool*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateFocused(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE put_IsInteractiveStateFocused(UCHAR) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateDisabled(unsigned char*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateReadOnly(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInSelectedTile(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsVisibleInDeselectedTile(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsHidden(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateFocused(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_IsInteractiveStateFocused(BOOLEAN) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateDisabled(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsInteractiveStateReadOnly(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Kind(CredentialFieldKind*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_ID(UINT*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_AccessibilityText(HSTRING*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsAccessibilityViewRaw(UCHAR*) PURE;;
+			virtual HRESULT STDMETHODCALLTYPE get_IsAccessibilityViewRaw(BOOLEAN*) PURE;;
 			virtual HRESULT STDMETHODCALLTYPE add_FieldChanged(WF::ITypedEventHandler<ICredentialField*, CredentialFieldChangeKind>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_FieldChanged(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE add_ShuttingDown(WF::ITypedEventHandler<ICredentialField *,IInspectable*>*,EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_ShuttingDown(WF::ITypedEventHandler<ICredentialField*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_ShuttingDown(EventRegistrationToken) PURE;
 		};
 
@@ -271,11 +270,10 @@ namespace Windows::Internal::UI::Logon
 			ConnectionStatus_ConnectionFailed = 3
 		};
 
-		struct ISerializationProgressInfo : IInspectable
+		struct DECLSPEC_NOVTABLE ISerializationProgressInfo : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_Status(ConnectionStatus*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(HSTRING*) PURE;
-
 		};
 
 		class SerializationProgressInfo
@@ -300,29 +298,29 @@ namespace Windows::Internal::UI::Logon
 			//virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonAdjacentID(int*) PURE;
 			//virtual HRESULT STDMETHODCALLTYPE add_SubmitButtonChanged(WF::ITypedEventHandler<Credential*, int>*, EventRegistrationToken*) PURE;
 			//virtual HRESULT STDMETHODCALLTYPE remove_SubmitButtonChanged(EventRegistrationToken) PURE;
-			//virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonEnabled(unsigned char*) PURE;
-			//virtual HRESULT STDMETHODCALLTYPE add_SubmitButtonEnabledChanged(WF::ITypedEventHandler<Credential*, bool>*, EventRegistrationToken*) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonEnabled(BOOLEAN*) PURE;
+			//virtual HRESULT STDMETHODCALLTYPE add_SubmitButtonEnabledChanged(WF::ITypedEventHandler<Credential*, BOOLEAN>*, EventRegistrationToken*) PURE;
 			//virtual HRESULT STDMETHODCALLTYPE remove_SubmitButtonEnabledChanged(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsPicturePassword(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsPicturePassword(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_ProviderId(GUID*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_UIMode(CredentialUIMode*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsSelected(bool*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsTileVisible(bool*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsSelected(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsTileVisible(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_User(IUser**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE add_TileChanged(WF::ITypedEventHandler<Credential*,/*CredProvData::CredentialTileChangeKind*/int> *,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_TileChanged(WF::ITypedEventHandler<Credential*, /*CredProvData::CredentialTileChangeKind*/int>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_TileChanged(EventRegistrationToken) PURE;
 			//virtual HRESULT STDMETHODCALLTYPE get_SubmitButtonField(ICredentialField**) PURE;
 
-			virtual HRESULT STDMETHODCALLTYPE get_HideUserTileImage(bool*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_HideUserTileImage(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_LargeUserTileImage(IUserTileImage**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SmallUserTileImage(IUserTileImage**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_ExtraSmallUserTileImage(IUserTileImage**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_UserImageChanged(WF::ITypedEventHandler<Credential*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_UserImageChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_WebDialogUrl(HSTRING*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsWebDialogVisible(bool*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE put_IsWebDialogVisible(bool) PURE;
-			virtual HRESULT STDMETHODCALLTYPE add_WebDialogVisibilityChanged(WF::ITypedEventHandler<Credential *,IInspectable *> *,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsWebDialogVisible(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE put_IsWebDialogVisible(BOOLEAN) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_WebDialogVisibilityChanged(WF::ITypedEventHandler<Credential*,IInspectable*>*,EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_WebDialogVisibilityChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE Submit() PURE;
 			virtual HRESULT STDMETHODCALLTYPE PicturePasswordSubmit(IInspectable*) PURE;
@@ -336,23 +334,26 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE remove_SelectionStateChanged(EventRegistrationToken) PURE;
 		};
 
+		// ReSharper disable once CppPolymorphicClassWithNonVirtualPublicDestructor
 		class Credential : ICredential
 		{
 		};
 
+		// ReSharper disable once CppPolymorphicClassWithNonVirtualPublicDestructor
 		class CredentialSerialization : ICredentialSerialization
 		{
 		};
 
-		struct IReportResultInfo : IInspectable
+		struct DECLSPEC_NOVTABLE IReportResultInfo : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE get_ProviderCLSID(GUID*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_StatusCode(long*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_SubstatusCode(long*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_StatusCode(NTSTATUS*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_SubstatusCode(NTSTATUS*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_StatusIcon(CredentialProviderStatusIcon*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_StatusMessage(HSTRING*) PURE;
 		};
 
+		// ReSharper disable once CppPolymorphicClassWithNonVirtualPublicDestructor
 		class ReportResultInfo : IReportResultInfo
 		{
 		};
@@ -360,11 +361,10 @@ namespace Windows::Internal::UI::Logon
 		class CredProvDataModel;
 
 		//14361 ICredProvDataModel
-		/*
-		 struct ICredProvDataModel : IInspectable
+		/*struct DECLSPEC_NOVTABLE ICredProvDataModel : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(CredProvScenario, unsigned short, SelectionMode, WF::IAsyncAction**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE InitializeWithContextAsync(CredProvScenario, unsigned short, SelectionMode, UINT, unsigned char, IInspectable*, GUID, ABI::Windows::Storage::Streams::IBuffer*, WF::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(CredProvScenario, LANGID, SelectionMode, WF::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE InitializeWithContextAsync(CredProvScenario, LANGID, SelectionMode, UINT, BOOLEAN, IInspectable*, GUID, ABI::Windows::Storage::Streams::IBuffer*, WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_SelectionMode(SelectionMode*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectionMode(SelectionMode) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Users(WFC::IObservableVector<User*>**) PURE;
@@ -398,27 +398,30 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_BioFeedbackLabel(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_BioFeedbackStateChange(WF::ITypedEventHandler<CredProvDataModel*, BioFeedbackState>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_BioFeedbackStateChange(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE ReportResultAsync(long, long, HSTRING, WF::IAsyncOperation<ReportResultInfo*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ReportResultAsync(NTSTATUSNTSTATUS, NTSTATUS, HSTRING, WF::IAsyncOperation<ReportResultInfo*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ClearState() PURE;
 			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ResetSelection() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Shutdown() PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisconnectCredentials() PURE;
-		};
-		 */
+		};*/
 
-		struct ICredProvDataModel : IInspectable
+		enum SupportedFeatureFlags
 		{
-			//virtual long __cdecl CCredProvDataModel::InitializeAsync(enum Windows::Internal::UI::Logon::CredProvData::CredProvScenario,enum Windows::Internal::UI::Logon::CredProvData::SupportedFeatureFlags,unsigned short,struct HSTRING__ * __ptr64,struct Windows::Foundation::IAsyncAction * __ptr64 * __ptr64) __ptr64
+			SupportedFeatureFlags_0 = 0,
+		};
+
+		struct DECLSPEC_NOVTABLE ICredProvDataModel : IInspectable
+		{
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(CredProvScenario, int, unsigned short, HSTRING, WF::IAsyncAction **) PURE;
-			virtual HRESULT STDMETHODCALLTYPE InitializeAsyncAndReportAutologon(CredProvScenario,/*CredProvData::SupportedFeatureFlags*/ int,USHORT,HSTRING,/*Windows::Foundation::IAsyncOperation<bool> * *  */ void**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(CredProvScenario, SupportedFeatureFlags, LANGID, HSTRING, WF::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE InitializeAsyncAndReportAutologon(CredProvScenario, SupportedFeatureFlags, LANGID, HSTRING, WF::IAsyncOperation<BOOLEAN>**) PURE;
 #else
-			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(CredProvScenario, int, unsigned short, WF::IAsyncAction **) PURE;
-			virtual HRESULT STDMETHODCALLTYPE InitializeAsyncAndReportAutologon(CredProvScenario,/*CredProvData::SupportedFeatureFlags*/ int,USHORT,/*Windows::Foundation::IAsyncOperation<bool> * *  */ void**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE InitializeAsync(CredProvScenario, SupportedFeatureFlags, LANGID, WF::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE InitializeAsyncAndReportAutologon(CredProvScenario, SupportedFeatureFlags, LANGID, WF::IAsyncOperation<BOOLEAN>**) PURE;
 #endif
-			virtual HRESULT STDMETHODCALLTYPE InitializeWithContextAsync(CredProvScenario, unsigned short, SelectionMode, UINT, unsigned char, IInspectable*, GUID, ABI::Windows::Storage::Streams::IBuffer*, WF::IAsyncAction**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE InitializeForFingerprintOnlyAsync(USHORT, WF::IAsyncAction**);
+			virtual HRESULT STDMETHODCALLTYPE InitializeWithContextAsync(CredProvScenario, LANGID, SelectionMode, UINT, BOOLEAN, IInspectable*, GUID, ABI::Windows::Storage::Streams::IBuffer*, WF::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE InitializeForFingerprintOnlyAsync(LANGID, WF::IAsyncAction**);
 			virtual HRESULT STDMETHODCALLTYPE get_SelectionMode(SelectionMode*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_SelectionMode(SelectionMode) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_Users(WFC::IObservableVector<User*>**) PURE;
@@ -468,22 +471,20 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_BioFeedbackAccessibilityText(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_BioFeedbackStateChange(WF::ITypedEventHandler<CredProvDataModel*, BioFeedbackState>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_BioFeedbackStateChange(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE ReportResultAsync(long, long, HSTRING, WF::IAsyncOperation<ReportResultInfo*>**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE ReportResultWithNameAsync(long,long,HSTRING,HSTRING,HSTRING,WF::IAsyncOperation<ReportResultInfo*>**) PURE;
-
+			virtual HRESULT STDMETHODCALLTYPE ReportResultAsync(NTSTATUS, NTSTATUS, HSTRING, WF::IAsyncOperation<ReportResultInfo*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ReportResultWithNameAsync(NTSTATUS, NTSTATUS, HSTRING, HSTRING, HSTRING, WF::IAsyncOperation<ReportResultInfo*>**) PURE;
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_VB
-			virtual HRESULT STDMETHODCALLTYPE SignInOrUnlockUserWithUserManagerAsync(ICredentialSerialization *,WF::IAsyncOperation</*CredProvData::SignInOrUnlockResult * */ void*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE SignInOrUnlockUserWithUserManagerAsync(ICredentialSerialization*, WF::IAsyncOperation</*CredProvData::SignInOrUnlockResult**/void*>**) PURE;
 #endif
-
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE SetUserSuggestion(HSTRING) PURE;
 #endif
 			virtual HRESULT STDMETHODCALLTYPE ClearState() PURE;
 			//virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, WF::IAsyncAction**) PURE;
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, int supportedFeatureFlags, HSTRING, WF::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, SupportedFeatureFlags, HSTRING, WF::IAsyncAction**) PURE;
 #else
-			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, int supportedFeatureFlags, WF::IAsyncAction**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ResetAsync(CredProvScenario, SupportedFeatureFlags, WF::IAsyncAction**) PURE;
 #endif
 			virtual HRESULT STDMETHODCALLTYPE ResetSelection() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Shutdown() PURE;
@@ -494,7 +495,7 @@ namespace Windows::Internal::UI::Logon
 		{
 		};
 
-		struct IDispatchEvent : IInspectable
+		struct DECLSPEC_NOVTABLE IDispatchEvent : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE Dispatch() PURE;
 		};
@@ -525,7 +526,7 @@ namespace Windows::Internal::UI::Logon
 		MIDL_INTERFACE("4b869909-e780-424e-ae03-210fe46f4527")
 		ICredProvDataModelFactory : IInspectable
 		{
-			//CredProvDataModelFactory::CreateCredProvDataModel(enum Windows::Internal::UI::Logon::CredProvData::SelectionMode,struct Windows::Internal::UI::Logon::CredProvData::IUIThreadEventDispatcher * __ptr64,struct Windows::Internal::UI::Logon::CredProvData::IOptionalDependencyProvider * __ptr64,struct Windows::Internal::UI::Logon::CredProvData::ICredProvDataModel * __ptr64 * __ptr64)
+			//CredProvDataModelFactory::CreateCredProvDataModel(enum Windows::Internal::UI::Logon::CredProvData::SelectionMode,struct Windows::Internal::UI::Logon::CredProvData::IUIThreadEventDispatcher* __ptr64,struct Windows::Internal::UI::Logon::CredProvData::IOptionalDependencyProvider* __ptr64,struct Windows::Internal::UI::Logon::CredProvData::ICredProvDataModel* __ptr64* __ptr64)
 			virtual HRESULT CreateCredProvDataModel(SelectionMode,IUIThreadEventDispatcher*, IOptionalDependencyProvider*, ICredProvDataModel**) PURE;
 		};
 
@@ -538,7 +539,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE add_SelectedCredentialChanged(WF::ITypedEventHandler<Credential*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SelectedCredentialChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE RefreshSelection() PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsAutoSubmitPending(unsigned char*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsAutoSubmitPending(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_IsAutoSubmitPendingChanged(WF::ITypedEventHandler<ICredentialGroup*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_IsAutoSubmitPendingChanged(EventRegistrationToken) PURE;
 		};
@@ -597,12 +598,12 @@ namespace Windows::Internal::UI::Logon
 			LogonUIRequestReason_CredUI = 5,
 		};
 
-		struct IRedirectionManager : IInspectable
+		struct DECLSPEC_NOVTABLE IRedirectionManager : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE OnBeginPainting() PURE;
 			virtual HRESULT STDMETHODCALLTYPE RedirectStatus(HSTRING, LogonErrorRedirectorResponse*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE RedirectMessage(HSTRING, HSTRING, UINT, UINT*, LogonErrorRedirectorResponse*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE RedirectLogonError(long, long, HSTRING, HSTRING, UINT, UINT*, LogonErrorRedirectorResponse*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE RedirectLogonError(NTSTATUS, NTSTATUS, HSTRING, HSTRING, UINT, UINT*, LogonErrorRedirectorResponse*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsRedirectMode(BOOLEAN*) PURE;
 		};
 
@@ -627,7 +628,7 @@ namespace Windows::Internal::UI::Logon
 
 		DEFINE_ENUM_FLAG_OPERATORS(EmbeddedSKUPolicyFlags);
 
-		struct IUserSettingManager : IInspectable
+		struct DECLSPEC_NOVTABLE IUserSettingManager : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE IsUserSwitchingAllowed(LogonUIRequestReason, BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE CancelUserSwitch() PURE;
@@ -637,14 +638,14 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE put_UserSid(HSTRING) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_CaretWidth(int*) PURE;
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-			virtual HRESULT STDMETHODCALLTYPE get_TextScale(int *) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsTransparencyEnabled(UCHAR*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_TextScale(int*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsTransparencyEnabled(BOOLEAN*) PURE;
 #endif
 			virtual HRESULT STDMETHODCALLTYPE get_LastLoggedOnUserSid(HSTRING*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_TelemetryDataProvider(CredProvData::ITelemetryDataProvider**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsLockScreenAllowed(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE put_IsLockScreenAllowed(BOOLEAN) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsSwitchUser(UCHAR*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsSwitchUser(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_UserTheme(UserTheme*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsLowMemoryDevice(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsFirstLogonAfterSignOutOrSwitchUser(BOOLEAN*) PURE;
@@ -657,9 +658,9 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE put_ShouldLaunchFirstSignInAnimationInUserSession(BOOLEAN) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_IsAudioHIDEnabled(BOOLEAN*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_CurrentInputProfile(HSTRING*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsUserAssignedAccess(UCHAR*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsLowPowerState(UCHAR*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE add_LowPowerStateChanged(WF::ITypedEventHandler<IUserSettingManager *,IInspectable *> *,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsUserAssignedAccess(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLowPowerState(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_LowPowerStateChanged(WF::ITypedEventHandler<IUserSettingManager*,IInspectable*>*,EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_LowPowerStateChanged(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE add_SessionDisconnected(WF::ITypedEventHandler<IUserSettingManager*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SessionDisconnected(EventRegistrationToken) PURE;
@@ -670,16 +671,15 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE add_CaretWidthChanged(WF::ITypedEventHandler<IUserSettingManager*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_CaretWidthChanged(EventRegistrationToken) PURE;
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-			virtual HRESULT STDMETHODCALLTYPE add_TextScaleChanged(WF::ITypedEventHandler<IUserSettingManager *,IInspectable *>*,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_TextScaleChanged(WF::ITypedEventHandler<IUserSettingManager*,IInspectable*>*,EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_TextScaleChanged(EventRegistrationToken) PURE;
-			virtual HRESULT STDMETHODCALLTYPE add_IsTransparencyEnabledChanged(WF::ITypedEventHandler<IUserSettingManager *,IInspectable *>*,EventRegistrationToken *) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_IsTransparencyEnabledChanged(WF::ITypedEventHandler<IUserSettingManager*,IInspectable*>*,EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_IsTransparencyEnabledChanged(EventRegistrationToken) PURE;
 #endif
 			virtual HRESULT STDMETHODCALLTYPE add_SlideToShutdownDetected(WF::ITypedEventHandler<IUserSettingManager*, IInspectable*>*, EventRegistrationToken*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE remove_SlideToShutdownDetected(EventRegistrationToken) PURE;
 		};
 
-		//todo: verify
 		MIDL_INTERFACE("bd4fd664-fd5e-4ea2-8a71-48a75a4529c0")
 		IUnlockTrigger : IInspectable
 		{
@@ -698,7 +698,8 @@ namespace Windows::Internal::UI::Logon
 
 		DEFINE_ENUM_FLAG_OPERATORS(LogonUIFlags);
 
-		struct IBioFeedbackListener : IInspectable
+		MIDL_INTERFACE("963ffa57-1043-4961-8bf0-d3966cd5b833")
+		IBioFeedbackListener : IInspectable
 		{
 			virtual HRESULT STDMETHODCALLTYPE OnBioFeedbackUpdate(CredProvData::BioFeedbackState, HSTRING) PURE;
 		};
@@ -747,6 +748,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_SaveCredential(BOOLEAN*) PURE;
 		};
 
+		// ReSharper disable once CppPolymorphicClassWithNonVirtualPublicDestructor
 		class RequestCredentialsData : public IRequestCredentialsData
 		{
 		};
@@ -791,6 +793,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_Response(LogonUICredProvResponse*) PURE;
 		};
 
+		// ReSharper disable once CppPolymorphicClassWithNonVirtualPublicDestructor
 		class ReportCredentialsData : public IReportCredentialsData
 		{
 		};
@@ -807,6 +810,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_ResultCode(UINT*) PURE;
 		};
 
+		// ReSharper disable once CppPolymorphicClassWithNonVirtualPublicDestructor
 		class MessageDisplayResult : public IMessageDisplayResult
 		{
 		};
@@ -824,6 +828,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE get_ShutdownChoice(LogonUIShutdownChoice*) PURE;
 		};
 
+		// ReSharper disable once CppPolymorphicClassWithNonVirtualPublicDestructor
 		class LogonUISecurityOptionsResult : ILogonUISecurityOptionsResult
 		{
 		};
@@ -834,6 +839,13 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE CreateSecurityOptionsResult(LogonUISecurityOptions, LogonUIShutdownChoice, ILogonUISecurityOptionsResult**) PURE;
 		};
 
+		MIDL_INTERFACE("15be936a-4b14-4d87-bfeb-668c6d4aff2a")
+		IWebDialogDismissTrigger : IInspectable
+		{
+			virtual HRESULT STDMETHODCALLTYPE DismissWebDialog() PURE;
+			virtual HRESULT STDMETHODCALLTYPE SyncBackstop() PURE;
+		};
+
 		//14361 ILogonUX
 		/*MIDL_INTERFACE("fbc9fd2c-9b7e-4ed1-9b60-61cf17f4ec4c")
 		ILogonUX : IInspectable
@@ -842,9 +854,9 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE DelayLock(BOOLEAN, IUnlockTrigger*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE HardLock(LogonUIRequestReason, BOOLEAN, IUnlockTrigger*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE RequestCredentialsAsync(LogonUIRequestReason, LogonUIFlags, WF::IAsyncOperation<RequestCredentialsData*>**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE ReportCredentialsAsync(LogonUIRequestReason, long, long, HSTRING, HSTRING, HSTRING, WF::IAsyncOperation<ReportCredentialsData*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ReportCredentialsAsync(LogonUIRequestReason, NTSTATUS, NTSTATUS, HSTRING, HSTRING, HSTRING, WF::IAsyncOperation<ReportCredentialsData*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisplayMessageAsync(LogonMessageMode, UINT, HSTRING, HSTRING, WF::IAsyncOperation<MessageDisplayResult*>**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE DisplayCredentialErrorAsync(long, long, UINT, HSTRING, HSTRING, WF::IAsyncOperation<MessageDisplayResult*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE DisplayCredentialErrorAsync(NTSTATUS, NTSTATUS, UINT, HSTRING, HSTRING, WF::IAsyncOperation<MessageDisplayResult*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisplayStatusAsync(LogonUIState, HSTRING, WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE TriggerLogonAnimationAsync(WF::IAsyncAction**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE ResetCredentials() PURE;
@@ -855,6 +867,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE Hide() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Stop() PURE;
 		};*/
+
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 		MIDL_INTERFACE("0f689741-b89f-41f0-8f2b-19da66e5f54b")
 #else
@@ -864,17 +877,17 @@ namespace Windows::Internal::UI::Logon
 		{
 			virtual HRESULT STDMETHODCALLTYPE Start(IInspectable*, IRedirectionManager*, IUserSettingManager*, CredProvData::IDisplayStateProvider*, IBioFeedbackListener*) PURE;
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-			virtual HRESULT STDMETHODCALLTYPE DelayLock(BOOLEAN, UCHAR, UCHAR, HSTRING, IUnlockTrigger*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE HardLock(LogonUIRequestReason, BOOLEAN, UCHAR, UCHAR, HSTRING, IUnlockTrigger*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE DelayLock(BOOLEAN, BOOLEAN, BOOLEAN, HSTRING, IUnlockTrigger*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE HardLock(LogonUIRequestReason, BOOLEAN, BOOLEAN, BOOLEAN, HSTRING, IUnlockTrigger*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE RequestCredentialsAsync(LogonUIRequestReason, LogonUIFlags, HSTRING, WF::IAsyncOperation<RequestCredentialsData*>**) PURE;
 #else
-			virtual HRESULT STDMETHODCALLTYPE DelayLock(BOOLEAN, UCHAR, UCHAR, IUnlockTrigger*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE HardLock(LogonUIRequestReason, BOOLEAN, UCHAR, UCHAR, IUnlockTrigger*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE DelayLock(BOOLEAN, BOOLEAN, BOOLEAN, IUnlockTrigger*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE HardLock(LogonUIRequestReason, BOOLEAN, BOOLEAN, BOOLEAN, IUnlockTrigger*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE RequestCredentialsAsync(LogonUIRequestReason, LogonUIFlags, WF::IAsyncOperation<RequestCredentialsData*>**) PURE;
 #endif
-			virtual HRESULT STDMETHODCALLTYPE ReportCredentialsAsync(LogonUIRequestReason, long, long, HSTRING, HSTRING, HSTRING, WF::IAsyncOperation<ReportCredentialsData*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ReportCredentialsAsync(LogonUIRequestReason, NTSTATUS, NTSTATUS, HSTRING, HSTRING, HSTRING, WF::IAsyncOperation<ReportCredentialsData*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisplayMessageAsync(LogonMessageMode, UINT, HSTRING, HSTRING, WF::IAsyncOperation<MessageDisplayResult*>**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE DisplayCredentialErrorAsync(long, long, UINT, HSTRING, HSTRING, WF::IAsyncOperation<MessageDisplayResult*>**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE DisplayCredentialErrorAsync(NTSTATUS, NTSTATUS, UINT, HSTRING, HSTRING, WF::IAsyncOperation<MessageDisplayResult*>**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE DisplayStatusAsync(LogonUIState, HSTRING, WF::IAsyncAction**) PURE;
 #if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
 			virtual HRESULT STDMETHODCALLTYPE DisplayStatusAndForceCredentialPageAsync(LogonUIRequestReason, LogonUIFlags, HSTRING, LogonUIState, HSTRING, WF::IAsyncAction**) PURE;
@@ -884,7 +897,7 @@ namespace Windows::Internal::UI::Logon
 			virtual HRESULT STDMETHODCALLTYPE ClearUIState(HSTRING) PURE;
 			virtual HRESULT STDMETHODCALLTYPE RestoreFromFirstSignInAnimation() PURE;
 			virtual HRESULT STDMETHODCALLTYPE ShowSecurityOptionsAsync(LogonUISecurityOptions, WF::IAsyncOperation<LogonUISecurityOptionsResult*>**) PURE;
-			virtual HRESULT STDMETHODCALLTYPE WebDialogDisplayed(void*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE WebDialogDisplayed(IWebDialogDismissTrigger*) PURE;
 			virtual HRESULT STDMETHODCALLTYPE get_WindowContainer(IInspectable**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE Hide() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Stop() PURE;
@@ -892,86 +905,87 @@ namespace Windows::Internal::UI::Logon
 
 		enum LockOptions
 		{
-			LockOptions_Default=0,
-			LockOptions_SecureDesktop=1,
-			LockOptions_TooManyFailedAttempts=2,
-			LockOptions_RequireSecureGesture=4,
-			LockOptions_DelayLock=8
+			LockOptions_Default = 0,
+			LockOptions_SecureDesktop = 0x1,
+			LockOptions_TooManyFailedAttempts = 0x2,
+			LockOptions_RequireSecureGesture = 0x4,
+			LockOptions_DelayLock = 0x8,
 		};
 
 		//MIDL_INTERFACE("133bcdc9-89ab-4094-941e-9e8a69407eb4")
 		MIDL_INTERFACE("716a5b05-6e30-4f65-8a89-97de0fda0852")
 		ILockScreenHost : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE ShowWebDialogAsync(HSTRING, void**/* Windows::Internal::UI::Logon::Controller::IWebDialogDismissTrigger** */) PURE;
-			virtual HRESULT STDMETHODCALLTYPE LockAsync(LockOptions, HSTRING, HSTRING, HSTRING,HSTRING, bool*, IUnlockTrigger**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE ShowWebDialogAsync(HSTRING, IWebDialogDismissTrigger**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE LockAsync(LockOptions, HSTRING, HSTRING, HSTRING, HSTRING, BOOLEAN*, IUnlockTrigger**) PURE;
 			virtual HRESULT STDMETHODCALLTYPE Reset() PURE;
 			virtual HRESULT STDMETHODCALLTYPE PreShutdown() PURE;
 		};
 
 		enum LockDisplayOwner
 		{
-			LockDisplayOwner_LockHost=0,
-			LockDisplayOwner_LogonUX=1
+			LockDisplayOwner_LockHost = 0,
+			LockDisplayOwner_LogonUX = 1,
 		};
 
 		enum LockActivity
 		{
-			LockActivity_None=0,
-			LockActivity_Manipulation=1,
-			LockActivity_StartDismiss=2,
-			LockActivity_StopDismiss=3,
-			LockActivity_AboveLockApp=4
+			LockActivity_None = 0,
+			LockActivity_Manipulation = 0x1,
+			LockActivity_StartDismiss = 0x2,
+			LockActivity_StopDismiss = 0x3,
+			LockActivity_AboveLockApp = 0x4,
 		};
 
 		MIDL_INTERFACE("c1dee830-94c1-488c-82d0-3332c15a6f2d")
 		ILockInfo : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_VisualOwner(LockDisplayOwner * ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_DomainName(HSTRING* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_UserName(HSTRING* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_FriendlyName(HSTRING* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_RequireSecureGesture(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_ShowSpeedBump(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_RequireSecureGestureString(HSTRING* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_SpeedBumpString(HSTRING* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsLostMode(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_LostModeMessage(HSTRING* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE add_UserActivity(WF::ITypedEventHandler<ILockInfo *,LockActivity>*, EventRegistrationToken*) PURE;
-			virtual HRESULT STDMETHODCALLTYPE remove_UserActivity(struct EventRegistrationToken ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_VisualOwner(LockDisplayOwner*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_DomainName(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_UserName(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_FriendlyName(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_RequireSecureGesture(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ShowSpeedBump(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_RequireSecureGestureString(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_SpeedBumpString(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsLostMode(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_LostModeMessage(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_UserActivity(WF::ITypedEventHandler<ILockInfo*, LockActivity>*, EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_UserActivity(EventRegistrationToken) PURE;
 		};
 
-		struct ILogonUIStateInfo : IInspectable
+		MIDL_INTERFACE("00915c44-56ec-46c4-a0bd-154182b2a893")
+		ILogonUIStateInfo : IInspectable
 		{
-			HRESULT get_CurrentLogonUIState(LogonUIState* );
+			virtual HRESULT get_CurrentLogonUIState(LogonUIState*) PURE;
 		};
 
-		struct IShutdownBlockingApp : IInspectable
+		struct DECLSPEC_NOVTABLE IShutdownBlockingApp : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE get_Icon(ABI::Windows::Storage::Streams::IRandomAccessStream** ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_Caption(HSTRING* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_BlockReason(HSTRING* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_IsBlocking(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_Id(UINT* ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Icon(ABI::Windows::Storage::Streams::IRandomAccessStream**) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Caption(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_BlockReason(HSTRING*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_IsBlocking(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_Id(UINT*) PURE;
 		};
 
 		enum BlockedShutdownResolution
 		{
-			BlockedShutdownResolution_None=0,
-			BlockedShutdownResolution_Force=1,
-			BlockedShutdownResolution_Cancel=2
+			BlockedShutdownResolution_None = 0,
+			BlockedShutdownResolution_Force = 1,
+			BlockedShutdownResolution_Cancel = 2,
 		};
 
 		MIDL_INTERFACE("36d8e713-0af2-428f-931c-346c1cd1a722")
 		IBlockedShutdownResolverUX : IInspectable
 		{
-			virtual HRESULT STDMETHODCALLTYPE Start(IUserSettingManager* , ILogonUIStateInfo* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_ScaleFactor(UINT* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE get_WasClicked(bool* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE AddApplication(IShutdownBlockingApp* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE RemoveApplication(UINT ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE add_Resolved(WF::ITypedEventHandler<IBlockedShutdownResolverUX*,BlockedShutdownResolution>* , EventRegistrationToken* ) PURE;
-			virtual HRESULT STDMETHODCALLTYPE remove_Resolved(EventRegistrationToken ) PURE;
+			virtual HRESULT STDMETHODCALLTYPE Start(IUserSettingManager*, ILogonUIStateInfo*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_ScaleFactor(UINT*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE get_WasClicked(BOOLEAN*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE AddApplication(IShutdownBlockingApp*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE RemoveApplication(UINT) PURE;
+			virtual HRESULT STDMETHODCALLTYPE add_Resolved(WF::ITypedEventHandler<IBlockedShutdownResolverUX*, BlockedShutdownResolution>*, EventRegistrationToken*) PURE;
+			virtual HRESULT STDMETHODCALLTYPE remove_Resolved(EventRegistrationToken) PURE;
 			virtual HRESULT STDMETHODCALLTYPE Hide() PURE;
 			virtual HRESULT STDMETHODCALLTYPE Stop() PURE;
 		};
@@ -1056,11 +1070,10 @@ namespace ABI::Windows::Foundation
 		}
 	};
 
-	//TODO: verify guid
 	template <>
-	struct __declspec(uuid("d31db316-e169-4263-8f34-99aa38b92275"))
-	ITypedEventHandler<LC::ILockInfo *, LC::LockActivity>
-		: ITypedEventHandler_impl<LC::ILockInfo *, LC::LockActivity>
+	struct __declspec(uuid("fdbc116e-6b5c-5474-b5c9-86eb542dec81"))
+	ITypedEventHandler<LC::ILockInfo*, LC::LockActivity>
+		: ITypedEventHandler_impl<LC::ILockInfo*, LC::LockActivity>
 	{
 		static const wchar_t* z_get_rc_name_impl()
 		{
@@ -1069,9 +1082,9 @@ namespace ABI::Windows::Foundation
 	};
 
 	template <>
-	struct __declspec(uuid("00915c44-56ec-46c4-a0bd-154182b2a893"))
-	ITypedEventHandler<LC::IBlockedShutdownResolverUX *, LC::BlockedShutdownResolution>
-		: ITypedEventHandler_impl<LC::IBlockedShutdownResolverUX *, LC::BlockedShutdownResolution>
+	struct __declspec(uuid("e2b942b6-affd-5dd4-bb99-47f5be2e1616"))
+	ITypedEventHandler<LC::IBlockedShutdownResolverUX*, LC::BlockedShutdownResolution>
+		: ITypedEventHandler_impl<LC::IBlockedShutdownResolverUX*, LC::BlockedShutdownResolution>
 	{
 		static const wchar_t* z_get_rc_name_impl()
 		{

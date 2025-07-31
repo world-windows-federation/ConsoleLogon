@@ -128,7 +128,7 @@ HRESULT EditControl::Repaint(IConsoleUIView* view)
 	Wrappers::HString label;
 	RETURN_IF_FAILED(fieldInfo->get_Label(label.ReleaseAndGetAddressOf())); // 52
 
-	bool isPasswordField;
+	BOOLEAN isPasswordField;
 	RETURN_IF_FAILED(m_dataSource->get_IsPasswordField(&isPasswordField)); // 55
 
 	int maxPasswordLength;
