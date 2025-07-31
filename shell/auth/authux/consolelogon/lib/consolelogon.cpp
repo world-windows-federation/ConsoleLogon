@@ -52,14 +52,16 @@ public:
 		NTSTATUS ntsStatus, NTSTATUS ntsSubstatus, UINT messageBoxFlags, HSTRING caption, HSTRING message,
 		IAsyncOperation<MessageDisplayResult*>** ppOperation) override;
 	STDMETHODIMP DisplayStatusAsync(LogonUIState state, HSTRING status, IAsyncAction** ppAction) override;
-	STDMETHODIMP DisplayStatusAndForceCredentialPageAsync(LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk1, LogonUIState state, HSTRING unk2, WF::IAsyncAction**);
+	STDMETHODIMP DisplayStatusAndForceCredentialPageAsync(
+		LogonUIRequestReason reason, LogonUIFlags flags, HSTRING unk1, LogonUIState state, HSTRING hstrStatus,
+		IAsyncAction** ppAction) override;
 	STDMETHODIMP TriggerLogonAnimationAsync(IAsyncAction** ppAction) override;
 	STDMETHODIMP ResetCredentials() override;
 	STDMETHODIMP RestoreFromFirstSignInAnimation() override;
 	STDMETHODIMP ClearUIState(HSTRING statusMessage) override;
 	STDMETHODIMP ShowSecurityOptionsAsync(
 		LogonUISecurityOptions options, IAsyncOperation<LogonUISecurityOptionsResult*>** ppOperation) override;
-	STDMETHODIMP WebDialogDisplayed(void*);
+	STDMETHODIMP WebDialogDisplayed(void*) override;
 	STDMETHODIMP get_WindowContainer(IInspectable** value) override;
 	STDMETHODIMP Hide() override;
 	STDMETHODIMP Stop() override;
@@ -96,17 +98,9 @@ private:
 	{
 		*ppOperation = nullptr;
 		ComPtr<ConsoleLogon> thisRef = this;
-		HRESULT hr = WI::MakeAsyncHelper<
-			IAsyncOperation<TResultRaw>,
-			IAsyncOperationCompletedHandler<TResultRaw>,
-			WI::INilDelegate,
-			TResult,
-			THandler&,
-			AsyncOptions<>
-		>(
+		HRESULT hr = WI::MakeAsyncOperationHelper(
+			wistd::forward<THandler>(handler),
 			ppOperation,
-			handler,
-			IAsyncOperation<TResultRaw>::z_get_rc_name_impl(),
 			BaseTrust,
 			WI::MakeOperationStagedLambda<TResult>([this, thisRef, lambda](WI::AsyncStage stage, HRESULT hr, TResult& result) -> HRESULT
 			{
@@ -127,17 +121,9 @@ private:
 	{
 		*ppAction = nullptr;
 		ComPtr<ConsoleLogon> thisRef = this;
-		HRESULT hr = WI::MakeAsyncHelper<
-			IAsyncAction,
-			IAsyncActionCompletedHandler,
-			WI::INilDelegate,
-			WI::CNoResult,
-			THandler&,
-			TOptions
-		>(
+		HRESULT hr = WI::MakeAsyncActionHelper<THandler, TOptions>(
+			wistd::forward<THandler>(handler),
 			ppAction,
-			handler,
-			L"Windows.Foundation.IAsyncAction",
 			BaseTrust,
 			WI::MakeOperationStagedLambda<WI::CNoResult>([this, thisRef, lambda](WI::AsyncStage stage, HRESULT hr, WI::CNoResult& result) -> HRESULT
 			{
@@ -372,9 +358,9 @@ HRESULT ConsoleLogon::DisplayStatusAsync(LogonUIState state, HSTRING status, IAs
 }
 
 HRESULT ConsoleLogon::DisplayStatusAndForceCredentialPageAsync(LogonUIRequestReason reason, LogonUIFlags flags,
-	HSTRING unk1, LogonUIState state, HSTRING status, WF::IAsyncAction** asyncAction)
+	HSTRING unk1, LogonUIState state, HSTRING hstrStatus, IAsyncAction** ppAction)
 {
-	return ConsoleLogon::DisplayStatusAsync(state,status,asyncAction);
+	return ConsoleLogon::DisplayStatusAsync(state, hstrStatus, ppAction);
 }
 
 static const WCHAR LogonAnimationAction[] = L"Windows.Foundation.IAsyncAction ConsoleLogon.LogonAnimation";
@@ -418,17 +404,9 @@ HRESULT ConsoleLogon::ClearUIState(HSTRING statusMessage)
 		ComPtr<ConsoleLogon> asyncReference = this;
 		ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
 		ComPtr<IAsyncAction> cleanupAction;
-		HRESULT hr = WI::MakeAsyncHelper<
-			IAsyncAction,
-			IAsyncActionCompletedHandler,
-			WI::INilDelegate,
-			WI::CNoResult,
-			WI::ComTaskPoolHandler,
-			AsyncCausalityOptions<StopAction>
-		>(
-			&cleanupAction,
+		HRESULT hr = WI::MakeAsyncActionHelper<WI::ComTaskPoolHandler, AsyncCausalityOptions<StopAction>>(
 			WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
-			L"Windows.Foundation.IAsyncAction",
+			&cleanupAction,
 			BaseTrust,
 			WI::MakeOperationLambda<WI::CNoResult>([asyncReference, this, viewManager](WI::CNoResult& result) -> HRESULT
 			{
@@ -491,7 +469,7 @@ HRESULT ConsoleLogon::ShowSecurityOptionsAsync(LogonUISecurityOptions options, I
 
 HRESULT ConsoleLogon::WebDialogDisplayed(void*)
 {
-	MessageBoxW(nullptr,L"WebDialogDisplayed not Implemented",L"WebDialogDisplayed not Implemented",0);
+	MessageBoxW(nullptr, L"WebDialogDisplayed not Implemented", L"WebDialogDisplayed not Implemented", 0);
 	return S_OK;
 }
 
@@ -515,17 +493,9 @@ HRESULT ConsoleLogon::Stop()
 		ComPtr<ConsoleLogon> asyncReference = this;
 		ComPtr<LogonViewManager> viewManager = m_consoleUIManager;
 		ComPtr<IAsyncAction> cleanupAction;
-		HRESULT hr = WI::MakeAsyncHelper<
-			IAsyncAction,
-			IAsyncActionCompletedHandler,
-			WI::INilDelegate,
-			WI::CNoResult,
-			WI::ComTaskPoolHandler,
-			AsyncCausalityOptions<StopAction>
-		>(
-			&cleanupAction,
+		HRESULT hr = WI::MakeAsyncActionHelper<WI::ComTaskPoolHandler, AsyncCausalityOptions<StopAction>>(
 			WI::ComTaskPoolHandler(WI::TaskApartment::Any, WI::TaskOptions::SyncNesting),
-			L"Windows.Foundation.IAsyncAction",
+			&cleanupAction,
 			BaseTrust,
 			WI::MakeOperationLambda<WI::CNoResult>([asyncReference, this, viewManager](WI::CNoResult& result) -> HRESULT
 			{
