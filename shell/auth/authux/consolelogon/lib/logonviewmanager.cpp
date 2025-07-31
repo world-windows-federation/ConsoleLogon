@@ -343,9 +343,16 @@ HRESULT LogonViewManager::SetContext(
 	return S_OK;
 }
 
-HRESULT LogonViewManager::Lock(LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, LC::IUnlockTrigger* unlockTrigger)
+HRESULT LogonViewManager::Lock(
+	LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, HSTRING unk,
+	LC::IUnlockTrigger* unlockTrigger)
 {
 	RETURN_IF_FAILED(EnsureUIStarted()); // 353
+
+	ComPtr<CRefCountedObject<Wrappers::HString>> unkRef = CreateRefCountedObj<Wrappers::HString>();
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
+	RETURN_IF_FAILED(unkRef->Set(unk));
+#endif
 
 	ComPtr<LC::IUnlockTrigger> unlockTriggerRef = unlockTrigger;
 	ComPtr<LogonViewManager> thisRef = this;
@@ -353,7 +360,7 @@ HRESULT LogonViewManager::Lock(LC::LogonUIRequestReason reason, BOOLEAN allowDir
 	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [=]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
-		HRESULT hrInner = LockUIThread(reason, allowDirectUserSwitching, unlockTriggerRef.Get());
+		HRESULT hrInner = LockUIThread(reason, allowDirectUserSwitching, unkRef->Get(), unlockTriggerRef.Get());
 		if (FAILED(hrInner))
 		{
 			unlockTriggerRef->TriggerUnlock();
@@ -369,13 +376,18 @@ HRESULT LogonViewManager::RequestCredentials(
 {
 	RETURN_IF_FAILED(EnsureUIStarted()); // 370
 
+	ComPtr<CRefCountedObject<Wrappers::HString>> unkRef = CreateRefCountedObj<Wrappers::HString>();
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
+	RETURN_IF_FAILED(unkRef->Set(unk));
+#endif
+
 	ComPtr<LogonViewManager> thisRef = this;
 
-	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, reason, flags, completion, unk]() -> void
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, reason, flags, unkRef, completion]() -> void
 	{
 		UNREFERENCED_PARAMETER(thisRef);
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> deferral = completion;
-		HRESULT hrInner = RequestCredentialsUIThread(reason, flags, unk, deferral);
+		HRESULT hrInner = RequestCredentialsUIThread(reason, flags, unkRef->Get(), deferral);
 		if (FAILED(hrInner))
 		{
 			deferral.Complete(hrInner);
@@ -595,7 +607,7 @@ HRESULT LogonViewManager::SetContextUIThread(
 }
 
 HRESULT LogonViewManager::LockUIThread(
-	LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, LC::IUnlockTrigger* unlockTrigger)
+	LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, HSTRING unk, LC::IUnlockTrigger* unlockTrigger)
 {
 	m_requestCredentialsComplete.reset();
 
@@ -614,7 +626,7 @@ HRESULT LogonViewManager::LockUIThread(
 	m_currentViewType = LogonView::Locked;
 	m_showCredentialViewOnInitComplete = false;
 
-	RETURN_IF_FAILED(StartCredProvsIfNecessary(reason, allowDirectUserSwitching, nullptr)); // 588
+	RETURN_IF_FAILED(StartCredProvsIfNecessary(reason, allowDirectUserSwitching, unk)); // 588
 
 	return S_OK;
 }

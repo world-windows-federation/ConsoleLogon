@@ -56,7 +56,9 @@ public:
 		IInspectable* autoLogonManager, LC::IUserSettingManager* userSettingManager,
 		LC::IRedirectionManager* redirectionManager, LCPD::IDisplayStateProvider* displayStateProvider,
 		LC::IBioFeedbackListener* bioFeedbackListener);
-	HRESULT Lock(LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, LC::IUnlockTrigger* unlockTrigger);
+	HRESULT Lock(
+		LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, HSTRING unk,
+		LC::IUnlockTrigger* unlockTrigger);
 	HRESULT RequestCredentials(
 		LC::LogonUIRequestReason reason, LC::LogonUIFlags flags, HSTRING unk,
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> completion);
@@ -83,7 +85,8 @@ private:
 		LC::IRedirectionManager* redirectionManager, LCPD::IDisplayStateProvider* displayStateProvider,
 		LC::IBioFeedbackListener* bioFeedbackListener);
 	HRESULT LockUIThread(
-		LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, LC::IUnlockTrigger* unlockTrigger);
+		LC::LogonUIRequestReason reason, BOOLEAN allowDirectUserSwitching, HSTRING unk,
+		LC::IUnlockTrigger* unlockTrigger);
 	HRESULT RequestCredentialsUIThread(
 		LC::LogonUIRequestReason reason, LC::LogonUIFlags flags, HSTRING unk,
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>> completion);
