@@ -69,6 +69,172 @@ inline PVOID FindPattern(PVOID pBase, SIZE_T dwSize, LPCSTR lpPattern, LPCSTR lp
 
 #pragma endregion "Pattern search stuff"
 
+BOOL SHProcessMessagesUpdateTimeout(DWORD dwStartTick, DWORD dwTimeoutTotal, DWORD* pdwTimeoutRemaining)
+{
+    *pdwTimeoutRemaining = 0;
+    BOOL bRet = TRUE;
+
+    if (dwTimeoutTotal != -1)
+    {
+        DWORD dwWaitedTick = GetTickCount() - dwStartTick;
+        if (dwWaitedTick <= dwTimeoutTotal)
+        {
+            *pdwTimeoutRemaining = dwTimeoutTotal - dwWaitedTick;
+        }
+        else
+        {
+            bRet = FALSE;
+        }
+    }
+    else
+    {
+        *pdwTimeoutRemaining = -1;
+    }
+
+    return bRet;
+}
+
+BOOL PeekMessageWithWakeMask(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, BOOL bRemove, DWORD dwWakeMask)
+{
+    BOOL bRet = FALSE;
+    UINT wRemoveMsg = 0;
+
+    if (dwWakeMask == QS_ALLINPUT)
+    {
+        if (bRemove)
+            wRemoveMsg |= PM_REMOVE;
+        bRet = PeekMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
+    }
+    else
+    {
+        if ((dwWakeMask & QS_INPUT) != 0)
+            wRemoveMsg |= PM_QS_INPUT;
+
+        if ((dwWakeMask & (QS_POSTMESSAGE | QS_ALLPOSTMESSAGE)) != 0)
+            wRemoveMsg |= PM_QS_POSTMESSAGE;
+
+        if ((dwWakeMask & QS_PAINT) != 0)
+            wRemoveMsg |= PM_QS_PAINT;
+
+        if ((dwWakeMask & QS_SENDMESSAGE) != 0)
+            wRemoveMsg |= PM_QS_SENDMESSAGE;
+
+        if (wRemoveMsg)
+        {
+            if (bRemove)
+                wRemoveMsg |= PM_REMOVE;
+            bRet = PeekMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
+        }
+    }
+
+    return bRet;
+}
+
+DWORD SHProcessMessagesUntilEventsEx(HWND hwnd, HANDLE* pHandles, DWORD cHandles, DWORD dwTimeout, DWORD dwWakeMask, DWORD dwFlags)
+{
+    APTTYPE aptType;
+    APTTYPEQUALIFIER aptTypeQualifier;
+    BOOL fIsASTA = SUCCEEDED(CoGetApartmentType(&aptType, &aptTypeQualifier))
+        && aptTypeQualifier == APTTYPEQUALIFIER_APPLICATION_STA
+        && aptType == APTTYPE_STA;
+
+    DWORD dwStartTick = GetTickCount();
+    DWORD dwTimeoutRemaining = dwTimeout;
+
+    if (!pHandles && dwTimeout == INFINITE)
+    {
+        return WAIT_FAILED;
+    }
+
+    DWORD dwReturn;
+
+    do
+    {
+        do
+        {
+            if (fIsASTA)
+            {
+                HRESULT hrCoWait = CoWaitForMultipleHandles(
+                    ((dwFlags & MWMO_INPUTAVAILABLE) != 0 ? COWAIT_INPUTAVAILABLE : 0)
+                    | (COWAIT_DISPATCH_CALLS | COWAIT_DISPATCH_WINDOW_MESSAGES),
+                    dwTimeoutRemaining, cHandles, pHandles, &dwReturn);
+                if (hrCoWait == RPC_S_CALLPENDING)
+                {
+                    dwReturn = WAIT_TIMEOUT;
+                }
+                else if (FAILED(hrCoWait))
+                {
+                    dwReturn = WAIT_FAILED;
+                }
+            }
+            else
+            {
+                dwReturn = MsgWaitForMultipleObjectsEx(cHandles, pHandles, dwTimeoutRemaining, dwWakeMask, dwFlags);
+            }
+
+            if (!SHProcessMessagesUpdateTimeout(dwStartTick, dwTimeout, &dwTimeoutRemaining))
+            {
+                dwReturn = WAIT_TIMEOUT;
+            }
+
+            if (dwReturn != cHandles)
+            {
+                break;
+            }
+
+            MSG msg;
+            while (PeekMessageWithWakeMask(&msg, hwnd, 0, 0, TRUE, QS_ALLINPUT))
+            {
+                if (msg.message == WM_QUIT)
+                {
+                    PostQuitMessage((int)msg.wParam);
+                    dwReturn = WAIT_TIMEOUT;
+                    break;
+                }
+
+                TranslateMessage(&msg);
+                if (msg.message == WM_SETCURSOR && LOWORD(msg.lParam) != HTERROR)
+                {
+                    SetCursor(LoadCursorW(nullptr, IDC_WAIT));
+                }
+                else
+                {
+                    DispatchMessageW(&msg);
+                }
+
+                if (cHandles)
+                {
+                    DWORD dwReturnTemp = WaitForMultipleObjectsEx(cHandles, pHandles, 0, 0, FALSE);
+                    if (dwReturnTemp != WAIT_TIMEOUT)
+                    {
+                        dwReturn = dwReturnTemp;
+                        break;
+                    }
+                }
+
+                if (!SHProcessMessagesUpdateTimeout(dwStartTick, dwTimeout, &dwTimeoutRemaining))
+                {
+                    dwReturn = WAIT_TIMEOUT;
+                    break;
+                }
+            }
+        }
+        while (dwReturn == cHandles);
+    }
+    while (dwReturn == WAIT_IO_COMPLETION);
+
+    if (dwReturn == WAIT_TIMEOUT && cHandles)
+    {
+        DWORD dwReturnTemp = WaitForMultipleObjectsEx(cHandles, pHandles, 0, 0, FALSE);
+        if (dwReturnTemp != WAIT_TIMEOUT)
+        {
+            dwReturn = dwReturnTemp;
+        }
+    }
+
+    return dwReturn;
+}
+
 namespace Windows::Internal::ComTaskPool
 {
 	volatile DWORD s_dwUniqueCallingContext = 0x80000000;

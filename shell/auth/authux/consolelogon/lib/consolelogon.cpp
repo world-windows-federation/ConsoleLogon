@@ -2,6 +2,8 @@
 
 #include "logonviewmanager.h"
 
+#include "WaitForCompletion.h"
+
 using namespace Microsoft::WRL;
 
 using namespace ABI::Windows::Foundation;
@@ -404,14 +406,6 @@ HRESULT ConsoleLogon::ResetCredentials()
 HRESULT ConsoleLogon::RestoreFromFirstSignInAnimation()
 {
 	return S_OK;
-}
-
-#include <wil/winrt.h>
-
-template <typename THandler, typename TOperation>
-HRESULT WaitForCompletion(TOperation* pOperation, COWAIT_FLAGS flags = (COWAIT_FLAGS)-1, HANDLE hEventCancelled = nullptr)
-{
-	return wil::wait_for_completion_nothrow(pOperation, flags != (COWAIT_FLAGS)-1 ? flags : COWAIT_DISPATCH_CALLS); // TODO Real function body later
 }
 
 static const WCHAR StopAction[] = L"Windows.Foundation.IAsyncAction ConsoleLogon.Stop";

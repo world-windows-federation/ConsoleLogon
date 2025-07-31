@@ -225,6 +225,7 @@
     <ClInclude Include="sdk\inc\ResultUtils.h" />
     <ClInclude Include="sdk\inc\SimpleArray.h" />
     <ClInclude Include="sdk\inc\version.h" />
+    <ClInclude Include="sdk\inc\WaitForCompletion.h" />
     <ClInclude Include="sdk\inc\windowscollections.h" />
     <ClInclude Include="sdk\inc\xhashmap.h" />
     <ClInclude Include="shell\auth\authux\consolelogon\dll\pch.h" />
