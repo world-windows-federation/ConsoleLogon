@@ -14,13 +14,14 @@ HRESULT SerializationFailedOptionControl::RuntimeClassInitialize(IConsoleUIView*
 	RETURN_IF_FAILED(m_label.Initialize(HINST_THISCOMPONENT, IDS_OK)); // 23
 
 	RETURN_IF_FAILED(Repaint(view));
+	m_view = view;
 	return S_OK;
 }
 
 HRESULT SerializationFailedOptionControl::v_OnFocusChange(BOOL hasFocus)
 {
 	m_hasFocus = hasFocus != 0;
-	RETURN_IF_FAILED(Repaint(nullptr)); // 59
+	RETURN_IF_FAILED(Repaint(m_view.Get())); // 59
 	return S_OK;
 }
 
