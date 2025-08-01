@@ -14,7 +14,6 @@ HRESULT SerializationFailedOptionControl::RuntimeClassInitialize(IConsoleUIView*
 	RETURN_IF_FAILED(m_label.Initialize(HINST_THISCOMPONENT, IDS_OK)); // 23
 
 	RETURN_IF_FAILED(Repaint(view));
-	m_view = view;
 	return S_OK;
 }
 
