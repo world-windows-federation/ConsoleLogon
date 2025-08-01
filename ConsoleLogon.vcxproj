@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug.RS2|Win32"><Configuration>Debug.RS2</Configuration><Platform>Win32</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Debug.RS2|x64"><Configuration>Debug.RS2</Configuration><Platform>x64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Debug.RS2|ARM64"><Configuration>Debug.RS2</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Debug.RS3|Win32"><Configuration>Debug.RS3</Configuration><Platform>Win32</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Debug.RS3|x64"><Configuration>Debug.RS3</Configuration><Platform>x64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Debug.RS3|ARM64"><Configuration>Debug.RS3</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Debug.RS4|Win32"><Configuration>Debug.RS4</Configuration><Platform>Win32</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Debug.RS4|x64"><Configuration>Debug.RS4</Configuration><Platform>x64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Debug.RS4|ARM64"><Configuration>Debug.RS4</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
     <ProjectConfiguration Include="Debug.RS5|Win32"><Configuration>Debug.RS5</Configuration><Platform>Win32</Platform></ProjectConfiguration>
     <ProjectConfiguration Include="Debug.RS5|x64"><Configuration>Debug.RS5</Configuration><Platform>x64</Platform></ProjectConfiguration>
     <ProjectConfiguration Include="Debug.RS5|ARM64"><Configuration>Debug.RS5</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
@@ -37,15 +28,6 @@
     <ProjectConfiguration Include="Debug.GE|Win32"><Configuration>Debug.GE</Configuration><Platform>Win32</Platform></ProjectConfiguration>
     <ProjectConfiguration Include="Debug.GE|x64"><Configuration>Debug.GE</Configuration><Platform>x64</Platform></ProjectConfiguration>
     <ProjectConfiguration Include="Debug.GE|ARM64"><Configuration>Debug.GE</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release.RS2|Win32"><Configuration>Release.RS2</Configuration><Platform>Win32</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release.RS2|x64"><Configuration>Release.RS2</Configuration><Platform>x64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release.RS2|ARM64"><Configuration>Release.RS2</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release.RS3|Win32"><Configuration>Release.RS3</Configuration><Platform>Win32</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release.RS3|x64"><Configuration>Release.RS3</Configuration><Platform>x64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release.RS3|ARM64"><Configuration>Release.RS3</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release.RS4|Win32"><Configuration>Release.RS4</Configuration><Platform>Win32</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release.RS4|x64"><Configuration>Release.RS4</Configuration><Platform>x64</Platform></ProjectConfiguration>
-    <ProjectConfiguration Include="Release.RS4|ARM64"><Configuration>Release.RS4</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
     <ProjectConfiguration Include="Release.RS5|Win32"><Configuration>Release.RS5</Configuration><Platform>Win32</Platform></ProjectConfiguration>
     <ProjectConfiguration Include="Release.RS5|x64"><Configuration>Release.RS5</Configuration><Platform>x64</Platform></ProjectConfiguration>
     <ProjectConfiguration Include="Release.RS5|ARM64"><Configuration>Release.RS5</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
@@ -85,9 +67,6 @@
     <_ConfigurationWithoutSpecifier Condition="$(_ConfigurationSepIndex) == -1">Release</_ConfigurationWithoutSpecifier>
     <_VariantName Condition="$(_ConfigurationSepIndex) != -1">$(Configuration.Substring($([MSBuild]::Add($(_ConfigurationSepIndex), 1))))</_VariantName>
     <_VariantName Condition="$(_ConfigurationSepIndex) == -1">RS5</_VariantName>
-    <_Variant Condition="$(_VariantName) == 'RS2'">0</_Variant>
-    <_Variant Condition="$(_VariantName) == 'RS3'">1</_Variant>
-    <_Variant Condition="$(_VariantName) == 'RS4'">2</_Variant>
     <_Variant Condition="$(_VariantName) == 'RS5'">3</_Variant>
     <_Variant Condition="$(_VariantName) == '19H1'">4</_Variant>
     <_Variant Condition="$(_VariantName) == 'VB'">5</_Variant>

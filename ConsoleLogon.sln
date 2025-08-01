@@ -7,27 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleLogon", "ConsoleLogo
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug.RS2|x86 = Debug.RS2|Win32
-		Debug.RS2|x64 = Debug.RS2|x64
-		Debug.RS2|ARM64 = Debug.RS2|ARM64
-		Release.RS2|x86 = Release.RS2|Win32
-		Release.RS2|x64 = Release.RS2|x64
-		Release.RS2|ARM64 = Release.RS2|ARM64
-
-		Debug.RS3|x86 = Debug.RS3|Win32
-		Debug.RS3|x64 = Debug.RS3|x64
-		Debug.RS3|ARM64 = Debug.RS3|ARM64
-		Release.RS3|x86 = Release.RS3|Win32
-		Release.RS3|x64 = Release.RS3|x64
-		Release.RS3|ARM64 = Release.RS3|ARM64
-
-		Debug.RS4|x86 = Debug.RS4|Win32
-		Debug.RS4|x64 = Debug.RS4|x64
-		Debug.RS4|ARM64 = Debug.RS4|ARM64
-		Release.RS4|x86 = Release.RS4|Win32
-		Release.RS4|x64 = Release.RS4|x64
-		Release.RS4|ARM64 = Release.RS4|ARM64
-
 		Debug.RS5|x86 = Debug.RS5|Win32
 		Debug.RS5|x64 = Debug.RS5|x64
 		Debug.RS5|ARM64 = Debug.RS5|ARM64
