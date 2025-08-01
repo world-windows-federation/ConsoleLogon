@@ -116,6 +116,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <UseFullPaths>false</UseFullPaths>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -139,6 +140,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MinSpace</Optimization>
       <UseFullPaths>false</UseFullPaths>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
