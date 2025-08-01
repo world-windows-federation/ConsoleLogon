@@ -26,6 +26,7 @@ LogonViewManager::LogonViewManager()
 	, m_selectedUserChangeToken()
 	, m_credentialsChangedToken()
 	, m_selectedCredentialChangedToken()
+	, m_webDialogVisibilityChangedToken()
 	, m_isCredentialResetRequired(false)
 	, m_credProvInitialized(false)
 	, m_showCredentialViewOnInitComplete(false)
@@ -39,14 +40,19 @@ HRESULT LogonViewManager::RuntimeClassInitialize()
 	return S_OK;
 }
 
-HRESULT LogonViewManager::Invoke(LCPD::ICredential* sender, IInspectable* args)
+HRESULT LogonViewManager::Invoke(LCPD::ICredentialGroup* sender, LCPD::ICredential* args)
 {
+	if (m_webDialogDismissTrigger.Get())
+	{
+		RETURN_IF_FAILED(m_webDialogDismissTrigger->DismissWebDialog());
+	}
+
 	if (m_currentViewType == LogonView::UserSelection
 		|| m_currentViewType == LogonView::CredProvSelection
 		|| m_currentViewType == LogonView::SelectedCredential
 		|| m_currentViewType == LogonView::ComboBox)
 	{
-		RETURN_IF_FAILED(ShowCredentialView()); // 235
+		RETURN_IF_FAILED(ShowCredentialView());
 	}
 
 	return S_OK;
@@ -79,8 +85,13 @@ HRESULT LogonViewManager::Invoke(WFC::IObservableVector<IInspectable*>* sender, 
 	return S_OK;
 }
 
-HRESULT LogonViewManager::Invoke(IInspectable* sender, IInspectable* args)
+HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, IInspectable* args)
 {
+	if (m_webDialogDismissTrigger.Get())
+	{
+		RETURN_IF_FAILED(m_webDialogDismissTrigger->DismissWebDialog());
+	}
+
 	if (m_currentViewType == LogonView::UserSelection
 		|| m_currentViewType == LogonView::CredProvSelection
 		|| m_currentViewType == LogonView::SelectedCredential
@@ -217,6 +228,38 @@ HRESULT LogonViewManager::Invoke(LCPD::ICredProvDataModel* sender, LCPD::ICreden
 		m_cachedSerialization = args;
 		RETURN_IF_FAILED(m_unlockTrigger->TriggerUnlock()); // 165
 		m_unlockTrigger.Reset();
+	}
+
+	return S_OK;
+}
+
+HRESULT LogonViewManager::Invoke(LCPD::ICredential* sender, IInspectable* args)
+{
+	BOOLEAN webDialogVisible;
+	RETURN_IF_FAILED(sender->get_IsWebDialogVisible(&webDialogVisible));
+
+	if (webDialogVisible)
+	{
+		if (m_requestCredentialsComplete)
+		{
+			Wrappers::HString webDialogUrl;
+			RETURN_IF_FAILED(sender->get_WebDialogUrl(webDialogUrl.ReleaseAndGetAddressOf()));
+			ComPtr<LC::IRequestCredentialsDataFactory> factory;
+			RETURN_IF_FAILED(WF::GetActivationFactory(Wrappers::HStringReference(RuntimeClass_Windows_Internal_UI_Logon_Controller_RequestCredentialsData).Get(), &factory));
+
+			ComPtr<LC::IRequestCredentialsData> data;
+			RETURN_IF_FAILED(factory->CreateRequestCredentialsData(nullptr, LC::LogonUIShutdownChoice_None, webDialogUrl.Get(), &data));
+
+			RETURN_IF_FAILED(m_requestCredentialsComplete->GetResult().Set(data.Get()));
+			m_requestCredentialsComplete->Complete(S_OK);
+		}
+	}
+	else
+	{
+		if (m_webDialogDismissTrigger.Get())
+		{
+			RETURN_IF_FAILED(m_webDialogDismissTrigger->DismissWebDialog());
+		}
 	}
 
 	return S_OK;
@@ -561,6 +604,22 @@ HRESULT LogonViewManager::ShowSecurityOptions(
 	return S_OK;
 }
 
+HRESULT LogonViewManager::WebDialogDisplayed(LC::IWebDialogDismissTrigger* dismissTrigger)
+{
+	RETURN_IF_FAILED(EnsureUIStarted());
+
+	ComPtr<LC::IWebDialogDismissTrigger> webDialogDismissTriggerRef = dismissTrigger;
+	ComPtr<LogonViewManager> thisRef = this;
+
+	HRESULT hr = BeginInvoke(m_Dispatcher.Get(), [thisRef, this, webDialogDismissTriggerRef]() -> void
+	{
+		UNREFERENCED_PARAMETER(thisRef);
+		WebDialogDisplayedUIThread(webDialogDismissTriggerRef.Get());
+	});
+	RETURN_IF_FAILED(hr);
+	return S_OK;
+}
+
 HRESULT LogonViewManager::Cleanup(WI::AsyncDeferral<WI::CNoResult> completion)
 {
 	RETURN_IF_FAILED(EnsureUIStarted()); // 530
@@ -614,6 +673,7 @@ HRESULT LogonViewManager::LockUIThread(
 	RETURN_IF_FAILED(DestroyCurrentView()); // 573
 	m_currentReason = reason;
 	m_unlockTrigger = unlockTrigger;
+	m_webDialogDismissTrigger.Reset();
 
 	ComPtr<LockedView> lockView;
 	RETURN_IF_FAILED(MakeAndInitialize<LockedView>(&lockView)); // 578
@@ -800,7 +860,7 @@ HRESULT LogonViewManager::DisplayMessageUIThread(
 		ComPtr<LC::IMessageDisplayResult> messageResult;
 		RETURN_IF_FAILED(factory->CreateMessageDisplayResult(redirectResult, &messageResult)); // 744
 
-		//WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult> result = completion.GetResult(); // @Note: This is a copy of `completion`, not a reference, and is set below???
+		// WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult> result = completion.GetResult(); // @Note: This is a copy of `completion`, not a reference, and is set below???
 		RETURN_IF_FAILED(completion.GetResult().Set(messageResult.Get())); // 747
 
 		completion.Complete(S_OK);
@@ -844,8 +904,8 @@ HRESULT LogonViewManager::DisplayCredentialErrorUIThread(
 		ComPtr<LC::IMessageDisplayResult> messageResult;
 		RETURN_IF_FAILED(factory->CreateMessageDisplayResult(redirectResult, &messageResult)); // 807
 
-		Windows::Internal::CMarshaledInterfaceResult<LC::IMessageDisplayResult> result = completion.GetResult(); // @Note: This is a copy of `completion`, not a reference, and is set below???
-		RETURN_IF_FAILED(result.Set(messageResult.Get())); // 810
+		// WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult> result = completion.GetResult(); // @Note: This is a copy of `completion`, not a reference, and is set below???
+		RETURN_IF_FAILED(completion.GetResult().Set(messageResult.Get())); // 810
 
 		completion.Complete(S_OK);
 	}
@@ -867,6 +927,24 @@ HRESULT LogonViewManager::ClearCredentialStateUIThread()
 		m_isCredentialResetRequired = true;
 		m_cachedSerialization.Reset();
 		m_showCredentialViewOnInitComplete = false;
+	}
+
+	return S_OK;
+}
+
+HRESULT LogonViewManager::WebDialogDisplayedUIThread(LC::IWebDialogDismissTrigger* dismissTrigger)
+{
+	m_webDialogDismissTrigger = dismissTrigger;
+
+	if (m_selectedGroup.Get())
+	{
+		ComPtr<LCPD::ICredential> credential;
+		RETURN_IF_FAILED(m_selectedGroup->get_SelectedCredential(&credential)); // 907
+
+		if (credential.Get())
+		{
+			RETURN_IF_FAILED(credential->put_IsWebDialogVisible(true)); // 911
+		}
 	}
 
 	return S_OK;
@@ -896,6 +974,12 @@ HRESULT LogonViewManager::CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> compl
 
 HRESULT LogonViewManager::ShowCredentialView()
 {
+	if (m_selectedCredential.Get() && m_webDialogVisibilityChangedToken.value)
+	{
+		RETURN_IF_FAILED(m_selectedCredential->remove_WebDialogVisibilityChanged(m_webDialogVisibilityChangedToken));
+		m_webDialogVisibilityChangedToken.value = 0;
+	}
+
 	if (m_credentialsChangedToken.value)
 	{
 		ComPtr<WFC::IObservableVector<LCPD::Credential*>> credentials;
@@ -915,11 +999,21 @@ HRESULT LogonViewManager::ShowCredentialView()
 	if (selectedUserOrV1.Get())
 	{
 		ComPtr<LCPD::IUser> selectedUser;
-		ComPtr<LCPD::ICredential> selectedCredential;
 		Wrappers::HString userName;
 
 		if (SUCCEEDED(selectedUserOrV1.As(&selectedUser)))
 		{
+			Wrappers::HString qualifiedUserName;
+			RETURN_IF_FAILED(selectedUser->get_QualifiedUsername(qualifiedUserName.ReleaseAndGetAddressOf()));
+			RETURN_IF_FAILED(m_userSettingManager->put_UserSid(qualifiedUserName.Get()));
+
+			Wrappers::HString currentInputProfile;
+			RETURN_IF_FAILED(m_userSettingManager->get_CurrentInputProfile(currentInputProfile.ReleaseAndGetAddressOf()));
+			if (currentInputProfile.Get())
+			{
+				LOG_IF_FAILED(m_inputSwitchControl->ActivateInputProfile(currentInputProfile.GetRawBuffer(nullptr)));
+			}
+
 			RETURN_IF_FAILED(selectedUser->get_DisplayName(userName.ReleaseAndGetAddressOf())); // 873
 
 			RETURN_IF_FAILED(selectedUser.As(&m_selectedGroup)); // 875
@@ -930,14 +1024,14 @@ HRESULT LogonViewManager::ShowCredentialView()
 
 			RETURN_IF_FAILED(m_selectedGroup->add_SelectedCredentialChanged(this, &m_selectedCredentialChangedToken)); // 881
 
-			RETURN_IF_FAILED(m_selectedGroup->get_SelectedCredential(&selectedCredential)); // 883
+			RETURN_IF_FAILED(m_selectedGroup->get_SelectedCredential(&m_selectedCredential)); // 883
 		}
 		else
 		{
 			m_selectedGroup.Reset();
 
-			RETURN_IF_FAILED(selectedUserOrV1.As(&selectedCredential)); // 889
-			RETURN_IF_FAILED(selectedCredential->get_LogoLabel(userName.ReleaseAndGetAddressOf())); // 890
+			RETURN_IF_FAILED(selectedUserOrV1.As(&m_selectedCredential)); // 889
+			RETURN_IF_FAILED(m_selectedCredential->get_LogoLabel(userName.ReleaseAndGetAddressOf())); // 890
 
 			if (!userName.Get())
 			{
@@ -947,9 +1041,10 @@ HRESULT LogonViewManager::ShowCredentialView()
 			}
 		}
 
-		if (selectedCredential.Get())
+		if (m_selectedCredential.Get())
 		{
-			RETURN_IF_FAILED(ShowSelectedCredentialView(selectedCredential.Get(), userName.Get())); // 902
+			RETURN_IF_FAILED(m_selectedCredential->add_WebDialogVisibilityChanged(this, &m_webDialogVisibilityChangedToken));
+			RETURN_IF_FAILED(ShowSelectedCredentialView(m_selectedCredential.Get(), userName.Get())); // 902
 		}
 		else
 		{
@@ -984,8 +1079,11 @@ HRESULT LogonViewManager::ShowCredProvSelection(LCPD::ICredentialGroup* group, H
 {
 	RETURN_IF_FAILED(DestroyCurrentView()); // 935
 
+	BOOLEAN userSwitchingAllowed;
+	RETURN_IF_FAILED(m_userSettingManager->IsUserSwitchingAllowed(m_currentReason, &userSwitchingAllowed)); // 937
+
 	ComPtr<CredProvSelectionView> credProvSelectionView;
-	RETURN_IF_FAILED(MakeAndInitialize<CredProvSelectionView>(&credProvSelectionView, group, userName)); // 938
+	RETURN_IF_FAILED(MakeAndInitialize<CredProvSelectionView>(&credProvSelectionView, group, userName, userSwitchingAllowed)); // 938
 
 	RETURN_IF_FAILED(credProvSelectionView->CredProvSelectionView::Advise(this)); // 940
 

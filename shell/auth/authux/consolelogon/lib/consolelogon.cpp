@@ -503,7 +503,9 @@ HRESULT ConsoleLogon::ShowSecurityOptionsAsync(
 
 HRESULT ConsoleLogon::WebDialogDisplayed(IWebDialogDismissTrigger* dismissTrigger)
 {
-	MessageBoxW(nullptr, L"WebDialogDisplayed not Implemented", L"WebDialogDisplayed not Implemented", 0);
+	Wrappers::SRWLock::SyncLockShared lock = m_Lock.LockShared();
+	RETURN_IF_FAILED(CheckUIStarted());
+	RETURN_IF_FAILED(m_consoleUIManager->WebDialogDisplayed(dismissTrigger));
 	return S_OK;
 }
 

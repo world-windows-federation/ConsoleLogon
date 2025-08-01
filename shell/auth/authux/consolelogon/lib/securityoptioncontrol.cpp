@@ -53,6 +53,10 @@ HRESULT SecurityOptionControl::RuntimeClassInitialize(IConsoleUIView* view, LC::
 			resourceId = IDS_SWITCHUSER;
 			break;
 
+		case LC::LogonUISecurityOptions_0x20:
+			resourceId = IDS_MANAGEACCOUNT;
+			break;
+
 		default:
 			RETURN_HR(E_INVALIDARG); // 51
 	}

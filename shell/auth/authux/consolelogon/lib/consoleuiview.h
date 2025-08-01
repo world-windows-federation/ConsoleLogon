@@ -8,7 +8,12 @@ MIDL_INTERFACE("04ae9c0f-e0cc-43c8-9d9f-a9ad229c114a")
 INavigationCallback : IUnknown
 {
 	virtual HRESULT STDMETHODCALLTYPE OnNavigation() PURE;
-	virtual HRESULT STDMETHODCALLTYPE ShowComboBox(Windows::Internal::UI::Logon::CredProvData::IComboBoxField*) PURE;
+};
+
+MIDL_INTERFACE("ff4c41eb-2841-4dbc-9690-41fa2e6ef395")
+IComboBoxNavigationCallback : IUnknown
+{
+	virtual HRESULT STDMETHODCALLTYPE ShowComboBox(Windows::Internal::UI::Logon::CredProvData::IComboBoxField*) PURE; // Split out from INavigationCallback in 19H1
 };
 
 // Belongs to internal inputswitchserver.h
@@ -36,9 +41,9 @@ typedef struct __MIDL___MIDL_itf_inputswitchserver_0000_0000_0002
 	BOOL fIme;
 	BOOL fDesktopIncompatibleIme;
 	BOOL fImmersiveIncompatibleIme;
-// #if TASKBAR_FOR >= TASKBAR_FOR_22621
-	// BYTE gap[8];
-// #endif
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_NI
+	BYTE gap[8];
+#endif
 	WCHAR* pszBcp47;
 	WCHAR* pszFontFaceName;
 	int nFontSizeAdjustment;
@@ -102,9 +107,9 @@ IInputSwitchControl : IUnknown
 	virtual HRESULT STDMETHODCALLTYPE GetCurrentProfile(INPUT_SWITCH_IDL_PROFILE_DATA*) = 0;
 	virtual HRESULT STDMETHODCALLTYPE RegisterHotkeys() = 0;
 	virtual HRESULT STDMETHODCALLTYPE ClickImeModeItem(INPUT_SWITCH_IDL_IME_CLICK_TYPE, POINT, const RECT*) = 0;
-// #if TASKBAR_FOR >= TASKBAR_FOR_22621
-	// virtual HRESULT STDMETHODCALLTYPE ClickImeModeItemWithAnchor(INPUT_SWITCH_IDL_IME_CLICK_TYPE, IUnknown*) = 0;
-// #endif
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_NI
+	virtual HRESULT STDMETHODCALLTYPE ClickImeModeItemWithAnchor(INPUT_SWITCH_IDL_IME_CLICK_TYPE, IUnknown*) = 0;
+#endif
 	virtual HRESULT STDMETHODCALLTYPE ForceHide() = 0;
 	virtual HRESULT STDMETHODCALLTYPE ShowTouchKeyboardInputSwitch(const RECT*, INPUT_SWITCH_IDL_ALIGNMENT, int, DWORD, INPUT_SWITCH_IDL_MODALITY) = 0;
 	virtual HRESULT STDMETHODCALLTYPE GetContextFlags(DWORD*) = 0;

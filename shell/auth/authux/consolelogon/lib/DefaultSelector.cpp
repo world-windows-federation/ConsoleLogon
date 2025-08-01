@@ -37,18 +37,20 @@ HRESULT DefaultSelector::get_UseLastLoggedOnProvider(BOOLEAN* value)
 	*value = TRUE;
 	return S_OK;
 }
-#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
-HRESULT DefaultSelector::get_PreferredProvidersDup(WFC::IVectorView<GUID>** ppValue)
-{
-	RETURN_IF_FAILED(m_preferredProviders.CopyTo(ppValue)); // 51
-	return S_OK;
-}
-#endif
+
 HRESULT DefaultSelector::get_PreferredProviders(WFC::IVectorView<GUID>** ppValue)
 {
 	RETURN_IF_FAILED(m_preferredProviders.CopyTo(ppValue)); // 51
 	return S_OK;
 }
+
+#if CONSOLELOGON_FOR >= CONSOLELOGON_FOR_19h1
+HRESULT DefaultSelector::get_OtherUserPreferredProviders(WFC::IVectorView<GUID>** ppValue)
+{
+	RETURN_IF_FAILED(m_preferredProviders.CopyTo(ppValue)); // 51
+	return S_OK;
+}
+#endif
 
 HRESULT DefaultSelector::get_ExcludedProviders(WFC::IVectorView<GUID>** ppValue)
 {

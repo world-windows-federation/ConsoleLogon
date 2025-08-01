@@ -15,14 +15,14 @@ CredProvSelectionView::~CredProvSelectionView()
 {
 }
 
-HRESULT CredProvSelectionView::RuntimeClassInitialize(LCPD::ICredentialGroup* credentialGroup, HSTRING userName)
+HRESULT CredProvSelectionView::RuntimeClassInitialize(LCPD::ICredentialGroup* credentialGroup, HSTRING userName, bool userSwitchingAllowed)
 {
 	RETURN_IF_FAILED(Initialize()); // 22
 
 	m_credentialGroup = credentialGroup;
 
 	CoTaskMemNativeString navigationString;
-	RETURN_IF_FAILED(navigationString.InitializeResFormat(HINST_THISCOMPONENT, IDS_SELECTSIGNINOPT, WindowsGetStringRawBuffer(userName, nullptr))); // 27
+	RETURN_IF_FAILED(navigationString.InitializeResFormat(HINST_THISCOMPONENT, userSwitchingAllowed ? IDS_SELECTSIGNINOPT : IDS_SELECTSIGNINOPT2, WindowsGetStringRawBuffer(userName, nullptr))); // 27
 
 	ComPtr<BasicTextControl> navigationMessage;
 	RETURN_IF_FAILED(MakeAndInitialize<BasicTextControl>(&navigationMessage, this, navigationString.Get(), false)); // 31

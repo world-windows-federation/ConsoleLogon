@@ -9,7 +9,7 @@ STRINGTABLE
 	IDS_ENTERCREDS       "Enter credentials for %s or hit ESC to switch users/sign-in methods"
 	IDS_SELECTOPT        "Select an option or hit ESC to go back"
 	IDS_USER             "User"
-	IDS_OK               "Ok"
+	IDS_OK               "OK"
 	IDS_CANCEL           "Cancel"
 	IDS_YES              "Yes"
 	IDS_NO               "No"
@@ -18,16 +18,14 @@ STRINGTABLE
 	IDS_CHANGEPASSWD     "Change a password"
 	IDS_TASKMGR          "Task Manager"
 	IDS_SWITCHUSER       "Switch User"
+	IDS_MANAGEACCOUNT    "Manage your account"
 	IDS_COMBOBOXFORMAT   "%1!s! %2!s!"
 	IDS_X                "X"
 	IDS_UNDERSCORE       "_"
-}
-
-STRINGTABLE
-{
 	IDS_WINSECURITY      "Windows Security"
 	IDS_ENTERNEWCREDS    "Enter new credentials for %s or hit ESC to cancel"
 	IDS_SIGNIN           "Sign in"
+	IDS_SELECTSIGNINOPT2 "Select a sign-in option for %s"
 }
 
 #include <ntverp.h>

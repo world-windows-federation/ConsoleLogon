@@ -9,11 +9,13 @@ class LogonViewManager final
 		, ConsoleUIManager
 		, WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*>
 		, WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::BioFeedbackState>
-		, WF::ITypedEventHandler<IInspectable*, IInspectable*>
+		, WF::ITypedEventHandler<LCPD::CredProvDataModel*, IInspectable*> // Changed in RS5. Was WF::ITypedEventHandler<IInspectable*, IInspectable*>
 		, WFC::VectorChangedEventHandler<IInspectable*>
 		, WFC::VectorChangedEventHandler<LCPD::Credential*>
-		, WF::ITypedEventHandler<LCPD::Credential*, IInspectable*>
+		, WF::ITypedEventHandler<LCPD::ICredentialGroup*, LCPD::Credential*> // New in RS5
+		, WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> // Changed in RS5, now for add_WebDialogVisibilityChanged. Previously for add_SelectedCredentialChanged
 		, INavigationCallback
+		, IComboBoxNavigationCallback // New in 19H1
 		, Microsoft::WRL::FtmBase
 	>
 {
@@ -23,9 +25,14 @@ public:
 	// ReSharper disable once CppHidingFunction
 	HRESULT RuntimeClassInitialize();
 
-	//~ Begin WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface
+	// 14361
+	/*//~ Begin WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface
 	STDMETHODIMP Invoke(LCPD::ICredential* sender, IInspectable* args) override;
-	//~ End WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface
+	//~ End WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface*/
+
+	//~ Begin WF::ITypedEventHandler<LCPD::ICredentialGroup*, LCPD::Credential*> Interface
+	STDMETHODIMP Invoke(LCPD::ICredentialGroup* sender, LCPD::ICredential* args) override;
+	//~ End WF::ITypedEventHandler<LCPD::ICredentialGroup*, LCPD::Credential*> Interface
 
 	//~ Begin WFC::VectorChangedEventHandler<LCPD::Credential*> Interface
 	STDMETHODIMP Invoke(WFC::IObservableVector<LCPD::Credential*>* sender, WFC::IVectorChangedEventArgs* args) override;
@@ -35,9 +42,9 @@ public:
 	STDMETHODIMP Invoke(WFC::IObservableVector<IInspectable*>* sender, WFC::IVectorChangedEventArgs* args) override;
 	//~ End WFC::VectorChangedEventHandler<IInspectable*> Interface
 
-	//~ Begin WF::ITypedEventHandler<IInspectable*, IInspectable*> Interface
-	STDMETHODIMP Invoke(IInspectable* sender, IInspectable* args) override;
-	//~ End WF::ITypedEventHandler<IInspectable*, IInspectable*> Interface
+	//~ Begin WF::ITypedEventHandler<LCPD::CredProvDataModel*, IInspectable*> Interface
+	STDMETHODIMP Invoke(LCPD::ICredProvDataModel* sender, IInspectable* args) override;
+	//~ End WF::ITypedEventHandler<LCPD::CredProvDataModel*, IInspectable*> Interface
 
 	//~ Begin WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::BioFeedbackState> Interface
 	STDMETHODIMP Invoke(LCPD::ICredProvDataModel* sender, LCPD::BioFeedbackState args) override;
@@ -47,10 +54,17 @@ public:
 	STDMETHODIMP Invoke(LCPD::ICredProvDataModel* sender, LCPD::ICredentialSerialization* args) override;
 	//~ End WF::ITypedEventHandler<LCPD::CredProvDataModel*, LCPD::CredentialSerialization*> Interface
 
+	//~ Begin WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface
+	STDMETHODIMP Invoke(LCPD::ICredential* sender, IInspectable* args) override;
+	//~ End WF::ITypedEventHandler<LCPD::Credential*, IInspectable*> Interface
+
 	//~ Begin INavigationCallback Interface
 	STDMETHODIMP OnNavigation() override;
-	STDMETHODIMP ShowComboBox(LCPD::IComboBoxField* dataSource) override;
 	//~ End INavigationCallback Interface
+
+	//~ Begin IComboBoxNavigationCallback Interface
+	STDMETHODIMP ShowComboBox(LCPD::IComboBoxField* dataSource) override;
+	//~ End IComboBoxNavigationCallback Interface
 
 	HRESULT SetContext(
 		IInspectable* autoLogonManager, LC::IUserSettingManager* userSettingManager,
@@ -77,6 +91,7 @@ public:
 	HRESULT ShowSecurityOptions(
 		LC::LogonUISecurityOptions options,
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::ILogonUISecurityOptionsResult>> completion);
+	HRESULT WebDialogDisplayed(LC::IWebDialogDismissTrigger* dismissTrigger);
 	HRESULT Cleanup(WI::AsyncDeferral<WI::CNoResult> completion);
 
 private:
@@ -105,6 +120,7 @@ private:
 		NTSTATUS ntsStatus, NTSTATUS ntsSubStatus, UINT messageBoxFlags, HSTRING caption, HSTRING message,
 		WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IMessageDisplayResult>> completion);
 	HRESULT ClearCredentialStateUIThread();
+	HRESULT WebDialogDisplayedUIThread(LC::IWebDialogDismissTrigger* dismissTrigger);
 	HRESULT CleanupUIThread(WI::AsyncDeferral<WI::CNoResult> completion);
 	HRESULT ShowCredentialView();
 	HRESULT ShowUserSelection();
@@ -142,17 +158,20 @@ private:
 	Microsoft::WRL::ComPtr<LC::IBioFeedbackListener> m_bioFeedbackListener;
 	Microsoft::WRL::ComPtr<LCPD::ICredProvDataModel> m_credProvDataModel;
 	Microsoft::WRL::ComPtr<LCPD::ICredentialGroup> m_selectedGroup;
+	Microsoft::WRL::ComPtr<LCPD::ICredential> m_selectedCredential;
 	EventRegistrationToken m_serializationCompleteToken;
 	EventRegistrationToken m_bioFeedbackStateChangeToken;
 	EventRegistrationToken m_usersChangedToken;
 	EventRegistrationToken m_selectedUserChangeToken;
 	EventRegistrationToken m_credentialsChangedToken;
 	EventRegistrationToken m_selectedCredentialChangedToken;
+	EventRegistrationToken m_webDialogVisibilityChangedToken;
 	bool m_isCredentialResetRequired;
 	bool m_credProvInitialized;
 	bool m_showCredentialViewOnInitComplete;
 	LC::LogonUIRequestReason m_currentReason;
 	Microsoft::WRL::ComPtr<LC::IUnlockTrigger> m_unlockTrigger;
+	Microsoft::WRL::ComPtr<LC::IWebDialogDismissTrigger> m_webDialogDismissTrigger;
 	wistd::unique_ptr<WI::AsyncDeferral<WI::CMarshaledInterfaceResult<LC::IRequestCredentialsData>>> m_requestCredentialsComplete;
 	Microsoft::WRL::ComPtr<LCPD::IReportResultInfo> m_lastReportResultInfo;
 	Microsoft::WRL::ComPtr<LCPD::ICredentialSerialization> m_cachedSerialization;

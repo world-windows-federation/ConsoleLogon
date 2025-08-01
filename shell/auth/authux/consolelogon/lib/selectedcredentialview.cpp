@@ -120,7 +120,9 @@ HRESULT SelectedCredentialView::RuntimeClassInitialize(LC::LogonUIRequestReason 
 
 HRESULT SelectedCredentialView::OnComboboxSelected(LCPD::IComboBoxField* comboBox)
 {
-	RETURN_IF_FAILED(m_navigationCallback->ShowComboBox(comboBox)); // 104
+	ComPtr<IComboBoxNavigationCallback> comboBoxNavigationCallback;
+	RETURN_IF_FAILED(m_navigationCallback.As(&comboBoxNavigationCallback));
+	RETURN_IF_FAILED(comboBoxNavigationCallback->ShowComboBox(comboBox)); // 104
 	return S_OK;
 }
 
