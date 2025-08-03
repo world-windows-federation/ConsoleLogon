@@ -6,18 +6,7 @@
 
 using namespace Microsoft::WRL;
 
-typedef HWND (*SHCreateWorkerWindowW_t)(WNDPROC, HWND, DWORD, DWORD, HMENU, LONG_PTR); // 188
-HWND SHCreateWorkerWindowW(WNDPROC wndProc, HWND hWndParent, DWORD dwExStyle, DWORD dwStyle, HMENU hMenu, LONG_PTR wnd_extra)
-{
-	static SHCreateWorkerWindowW_t fn = nullptr;
-	if (!fn)
-	{
-		HMODULE h = GetModuleHandleW(L"shcore.dll");
-		if (h)
-			fn = (SHCreateWorkerWindowW_t)GetProcAddress(h, MAKEINTRESOURCEA(188));
-	}
-	return fn ? fn(wndProc, hWndParent, dwExStyle, dwStyle, hMenu, wnd_extra) : (SetLastError(ERROR_PROC_NOT_FOUND), nullptr);
-}
+STDAPI_(HWND) SHCreateWorkerWindowW(WNDPROC wndProc, HWND hWndParent, DWORD dwExStyle, DWORD dwStyle, HMENU hMenu, LONG_PTR wnd_extra);
 
 CNotificationDispatcherBase::CNotificationDispatcherBase()
 	: _hwndMsgWindow(nullptr)

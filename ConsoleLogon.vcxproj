@@ -245,9 +245,33 @@
   <ItemGroup>
     <ResourceCompile Include="shell\auth\authux\consolelogon\dll\consolelogon.rc" />
   </ItemGroup>
+  <ItemGroup Condition="'$(Platform)'=='Win32'">
+    <_DefToLib Include="defs\Win32\*.def" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Platform)'!='Win32'">
+    <_DefToLib Include="defs\Win64\*.def" />
+  </ItemGroup>
+  <Target Name="_GenerateDefLib"
+          BeforeTargets="Link"
+          Inputs="@(_DefToLib)"
+          Outputs="@(_DefToLib->'$(IntDir)%(Filename).lib')">
+    <Exec Command="lib /nologo /def:&quot;%(_DefToLib.Identity)&quot; /machine:$(PlatformShortName) /out:&quot;$(IntDir)%(Filename).lib&quot;"/>
+    <Message Text="$(PlatformShortName)" />
+  </Target>
+  <PropertyGroup>
+    <_GeneratedLibs>@(_DefToLib->'%(Filename).lib')</_GeneratedLibs>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalLibraryDirectories>$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(_GeneratedLibs);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="shell\auth\authux\consolelogon\dll\ConsoleLogon.def" />
+    <None Include="defs\Win32\*.def" />
+    <None Include="defs\Win64\*.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
