@@ -1,0 +1,3 @@
+LIBRARY SHCORE.dll
+EXPORTS
+	SHCreateWorkerWindowW @188 NONAME ;argsize=24

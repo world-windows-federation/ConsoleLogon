@@ -62,6 +62,8 @@
     <ProjectGuid>{dd1a9c44-ef9a-406e-8023-38085c2b3bde}</ProjectGuid>
     <RootNamespace>ConsoleLogon</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <IntDir>$(SolutionDir)obj\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <_ConfigurationSepIndex>$(Configuration.IndexOf('.'))</_ConfigurationSepIndex>
     <_ConfigurationWithoutSpecifier Condition="$(_ConfigurationSepIndex) != -1">$(Configuration.Substring(0, $(_ConfigurationSepIndex)))</_ConfigurationWithoutSpecifier>
     <_ConfigurationWithoutSpecifier Condition="$(_ConfigurationSepIndex) == -1">Release</_ConfigurationWithoutSpecifier>
@@ -245,35 +247,12 @@
   <ItemGroup>
     <ResourceCompile Include="shell\auth\authux\consolelogon\dll\consolelogon.rc" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Platform)'=='Win32'">
-    <_DefToLib Include="defs\Win32\*.def" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Platform)'!='Win32'">
-    <_DefToLib Include="defs\Win64\*.def" />
-  </ItemGroup>
-  <Target Name="_GenerateDefLib"
-          BeforeTargets="Link"
-          Inputs="@(_DefToLib)"
-          Outputs="@(_DefToLib->'$(IntDir)%(Filename).lib')">
-    <Exec Command="lib /nologo /def:&quot;%(_DefToLib.Identity)&quot; /machine:$(PlatformShortName) /out:&quot;$(IntDir)%(Filename).lib&quot;"/>
-    <Message Text="$(PlatformShortName)" />
-  </Target>
-  <PropertyGroup>
-    <_GeneratedLibs>@(_DefToLib->'%(Filename).lib')</_GeneratedLibs>
-  </PropertyGroup>
-  <ItemDefinitionGroup>
-    <Link>
-      <AdditionalLibraryDirectories>$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(_GeneratedLibs);%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="shell\auth\authux\consolelogon\dll\ConsoleLogon.def" />
-    <None Include="defs\Win32\*.def" />
-    <None Include="defs\Win64\*.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="libs\DefToLib\DefToLib.targets" Condition="Exists('libs\DefToLib\DefToLib.targets')" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('packages\Microsoft.Windows.ImplementationLibrary.1.0.240803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
